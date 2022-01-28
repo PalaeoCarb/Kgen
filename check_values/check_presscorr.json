@@ -1,0 +1,18 @@
+{
+    "info": "Pressure correction check values or 300bar from Table A.11.2 of Zeebe and Wolf-Gladrow (2001). Units are pK.",
+    "input_conditions": {
+        "S": 35,
+        "TC": 25,
+        "P": 300
+    },
+    "check_values" : {
+        "K1": 5.7397,
+        "K2": 8.8409,
+        "KW": 13.1039,
+        "KB": 8.4746,
+        "KHSO4": 0.9129,
+        "KspA": 6.0182,
+        "KspC": 6.1847,
+        "KF": 2.4646
+    }
+}

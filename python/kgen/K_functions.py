@@ -30,8 +30,8 @@ def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """
     
     return np.power(10, 
-        p[0] +
-        p[1] / TK +
+        p[0] / TK+
+        p[1] +
         p[2] * lnTK +
         p[3] * S +
         p[4] * S * S
@@ -124,9 +124,9 @@ def fn_K0(p, TK, lnTK, S, sqrtS):
     """
     return np.exp(
         p[0] +
-        p[1] / TK +
+        p[1] * 100 / TK +
         p[2] * np.log(TK / 100) +
-        S * (p[3] - p[4] * TK + p[5] * TK * TK)
+        S * (p[3] + p[4] * TK / 100 + p[5] * (TK / 100) * (TK / 100))
     )
 
 def fn_KHSO4(p, TK, lnTK, S, sqrtS):

@@ -1,7 +1,7 @@
 {
     "info": "All coefficients except KspX from Chapter 5 of Dickson, Sabine and Christian (2007). See attached documentation for functional forms. KspX values taken from Zeebe & Wolf-Gladrow (2001), which come from Mucci (1983).",
     "coefficients": {
-        "K0": [-60.2409, 9345.17, 23.3585, 0.023517, -0.023656E-2, 0.0047036E-4],
+        "K0": [-60.2409, 93.4517, 23.3585, 0.023517, -0.023656, 0.0047036],
         "K1": [-3633.86, 61.2172, -9.67770, 0.011555, -0.0001152],
         "K2": [-471.78, -25.9290, 3.16967, 0.01781, -0.0001122],
         "KW": [148.9652, -13847.26, -23.6521, 118.67, -5.977, 1.0495, -0.01615],

@@ -30,8 +30,8 @@ def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """
     
     return np.power(10, 
-        p[0] / TK+
-        p[1] +
+        p[0] +
+        p[1] / TK +
         p[2] * lnTK +
         p[3] * S +
         p[4] * S * S

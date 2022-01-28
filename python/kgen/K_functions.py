@@ -94,8 +94,7 @@ def fn_KB(p, TK, lnTK, S, sqrtS):
             p[2] * S +
             p[3] * S * sqrtS +
             p[4] * S * S
-        )
-        / TK +
+        ) / TK +
         (p[5] + p[6] * sqrtS + p[7] * S) +
         (p[8] + p[9] * sqrtS + p[10] * S) * lnTK +
         p[11] * sqrtS * TK

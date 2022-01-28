@@ -267,10 +267,11 @@ def fn_KF(p, TK, lnTK, S, sqrtS):
     array-like
         KF on XXXXX pH scale.
     """
-
-    Istr = 19.924 * S / (1000 - 1.005 * S)
-
-    return np.exp(p[0] / TK + p[1] + p[2] * Istr ** 0.5) * (1 - 0.001005 * S)
+    return np.exp(
+        p[0] / TK + 
+        p[1] + 
+        p[2] * sqrtS
+    )
 
 K_fns = {
     "K0": fn_K0,

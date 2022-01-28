@@ -1,5 +1,5 @@
 {
-    "info": "All coefficients from A.11 of Zeebe & Wolf-Gladrow (2001). See attached documentation for functional forms.",
+    "info": "All coefficients from Table A.11.1 of Zeebe & Wolf-Gladrow (2001). See attached documentation for functional forms.",
     "coefficients": {
         "K0": [  0   , 0     , 0        , 0        , 0        ],
         "K1": [-25.50, 0.1271, 0        ,-0.00308  , 0.0000877],

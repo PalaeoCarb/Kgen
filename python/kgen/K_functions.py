@@ -7,7 +7,7 @@ TODO: Think about pH scales!
 """
 import numpy as np
 
-def fn_K1K2(p, TK, lnTK, S):
+def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters
 
     Parameters
@@ -16,10 +16,12 @@ def fn_K1K2(p, TK, lnTK, S):
         parameters for K calculation
     TK : array-like
         Temperature in Kelvin
-    lnTK : arra-ylike
+    lnTK : array-like
         natural log of temperature in kelvin
     S : arry-like
         Salinity
+    sqrtS : array-like
+        square root of salinity
 
     Returns
     -------
@@ -99,7 +101,7 @@ def fn_KB(p, TK, lnTK, S, sqrtS):
         p[11] * sqrtS * TK
     )
     
-def fn_K0(p, TK, S):
+def fn_K0(p, TK, lnTK, S, sqrtS):
     """Calculate K0 from given parameters.
 
     Parameters
@@ -108,8 +110,12 @@ def fn_K0(p, TK, S):
         parameters for K calculation
     TK : array-like
         Temperature in Kelvin
+    lnTK : array-like
+        natural log of temperature in kelvin
     S : arry-like
         Salinity
+    sqrtS : array-like
+        square root of salinity
             
     Returns
     -------
@@ -123,7 +129,7 @@ def fn_K0(p, TK, S):
         S * (p[3] - p[4] * TK + p[5] * TK * TK)
     )
 
-def fn_KHSO4(p, TK, lnTK, S):
+def fn_KHSO4(p, TK, lnTK, S, sqrtS):
     Istr = (
         19.924 * S / (1000 - 1.005 * S)
     )
@@ -142,7 +148,7 @@ def fn_KHSO4(p, TK, lnTK, S):
         + np.log(1 - 0.001005 * S)
     )
     
-def fn_Ksp(p, TK, S, sqrtS):
+def fn_Ksp(p, TK, lnTK, S, sqrtS):
     """Calculate Ksp from given parameters
 
     Parameters
@@ -151,6 +157,8 @@ def fn_Ksp(p, TK, S, sqrtS):
         parameters for K calculation
     TK : array-like
         Temperature in Kelvin
+    lnTK : array-like
+        natural log of temperature in kelvin
     S : arry-like
         Salinity
     sqrtS : array-like
@@ -177,7 +185,7 @@ def fn_Ksp(p, TK, S, sqrtS):
 
 def fn_KP(p, TK, lnTK, S, sqrtS):
     """Calculate KP(s) from given parameters
-
+    
     Parameters
     ----------
     p : array-like
@@ -205,7 +213,7 @@ def fn_KP(p, TK, lnTK, S, sqrtS):
         + (p[5] / TK + p[6]) * S
     )
 
-def fn_KSi(p, TK, S):
+def fn_KSi(p, TK, lnTK, S, sqrtS):
     """Calculate KSi from given parameters
 
     Parameters
@@ -214,8 +222,12 @@ def fn_KSi(p, TK, S):
         parameters for K calculation
     TK : array-like
         Temperature in Kelvin
+    lnTK : array-like
+        natural log of temperature in kelvin
     S : arry-like
         Salinity
+    sqrtS : array-like
+        square root of salinity
 
     Returns
     -------
@@ -234,7 +246,7 @@ def fn_KSi(p, TK, S):
         (p[7] / TK + p[8]) * Istr ** 2
     ) * (1 - 0.001005 * S)
 
-def fn_KF(p, TK, S):
+def fn_KF(p, TK, lnTK, S, sqrtS):
     """Calculate KSi from given parameters
 
     Parameters
@@ -243,8 +255,12 @@ def fn_KF(p, TK, S):
         parameters for K calculation
     TK : array-like
         Temperature in Kelvin
+    lnTK : array-like
+        natural log of temperature in kelvin
     S : arry-like
         Salinity
+    sqrtS : array-like
+        square root of salinity
 
     Returns
     -------
@@ -255,6 +271,22 @@ def fn_KF(p, TK, S):
     Istr = 19.924 * S / (1000 - 1.005 * S)
 
     return np.exp(p[0] / TK + p[1] + p[2] * Istr ** 0.5) * (1 - 0.001005 * S)
+
+K_fns = {
+    "K0": fn_K0,
+    "K1": fn_K1K2,
+    "K2": fn_K1K2,
+    "KW": fn_KW,
+    "KB": fn_KB,
+    "KHSO4": fn_KHSO4,
+    "KspA": fn_Ksp,
+    "KspC": fn_Ksp,
+    "KP1": fn_KP,
+    "KP2": fn_KP,
+    "KP3": fn_KP,
+    "KSi": fn_KSi,
+    "KF": fn_KF
+}
 
 def prescorr(p, P, TC):
     """Calculate pressore correction factor for thermodynamic Ks.
@@ -279,4 +311,4 @@ def prescorr(p, P, TC):
     dV = a0 + a1 * TC + a2 * TC ** 2
     dk = (b0 + b1 * TC)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (TC + 273.15)
-    return np.exp((-dV + 0.5 * dk * P) * P / RT)
+    return np.exp((-dV + 0.5 * dk * P) * P / RT)    

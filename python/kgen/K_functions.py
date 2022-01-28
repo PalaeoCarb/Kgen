@@ -129,7 +129,7 @@ def fn_K0(p, TK, lnTK, S, sqrtS):
         S * (p[3] + p[4] * TK / 100 + p[5] * (TK / 100) * (TK / 100))
     )
 
-def fn_KHSO4(p, TK, lnTK, S, sqrtS):
+def fn_KS(p, TK, lnTK, S, sqrtS):
     Istr = (
         19.924 * S / (1000 - 1.005 * S)
     )
@@ -279,7 +279,7 @@ K_fns = {
     "K2": fn_K1K2,
     "KW": fn_KW,
     "KB": fn_KB,
-    "KHSO4": fn_KHSO4,
+    "KS": fn_KS,
     "KspA": fn_Ksp,
     "KspC": fn_Ksp,
     "KP1": fn_KP,

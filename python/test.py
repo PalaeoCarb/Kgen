@@ -1,7 +1,7 @@
 import unittest
 import json
 import numpy as np
-from kgen.K_functions import K_fns
+from kgen.K_functions import K_fns, prescorr
 
 class checkKValues(unittest.TestCase):
     """
@@ -29,4 +29,22 @@ class checkKValues(unittest.TestCase):
             
             self.assertAlmostEqual(np.log(K), check['check_values'][k], msg=f'{k}: {K}', places=sigfig)
 
-# class checkPressureCorrection(unittest.TestCase):
+    def test_presscorr(self):
+        with open('../coefficients/K_pressure_correction.json') as f:
+            pcoefs = json.load(f)
+
+        with open("../check_values/check_presscorr.json") as f:
+            check = json.load(f)
+
+        S = check['input_conditions']['S']
+        P = check['input_conditions']['P']
+        TC = check['input_conditions']['TC']
+        
+
+        for k, p in pcoefs['coefficients'].items():
+            
+            pF = prescorr(p, P=P, TC=TC)
+
+            checkval = check['check_values'][k]
+        
+            self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)

@@ -1,5 +1,5 @@
 {
-    "info": "All coefficients from Table A.11.1 of Zeebe & Wolf-Gladrow (2001). See attached documentation for functional forms.",
+    "info": "Coefficients are from Table 5 of Millero 2007 (doi:10.1021/cr0503557), with the exception of KW, which was reported there for fresh water so we use (Millero, 1983). See attached documentation for functional form of correction.",
     "coefficients": {
         "K0": [  0   , 0     , 0        , 0        , 0        ],
         "K1": [-25.50, 0.1271, 0        ,-0.00308  , 0.0000877],

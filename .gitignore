@@ -1,6 +1,9 @@
 # ignore compiled python files
 *.pyc
 
+# ignore temporary matlab files
+*.asv
+
 # ignore anything marked 'dev
 dev*
 

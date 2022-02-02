@@ -9,3 +9,6 @@ dev*
 
 # VSCode specific
 settings.json
+
+# venv
+**/.environment

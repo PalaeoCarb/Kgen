@@ -48,3 +48,6 @@ class checkKValues(unittest.TestCase):
             checkval = check['check_values'][k]
         
             self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
+
+if __name__ == '__main__':
+    unittest.main()

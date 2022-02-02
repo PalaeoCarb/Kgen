@@ -88,14 +88,14 @@ def fn_KB(p, TK, lnTK, S, sqrtS):
         KB on XXXXX pH scale.
     """
     return np.exp(
+        (p[0] + p[1] * sqrtS + p[2] * S) + 
         (
-            p[0] +
-            p[1] * sqrtS +
-            p[2] * S +
-            p[3] * S * sqrtS +
-            p[4] * S * S
+            p[3] +
+            p[4] * sqrtS +
+            p[5] * S +
+            p[6] * S * sqrtS +
+            p[7] * S * S
         ) / TK +
-        (p[5] + p[6] * sqrtS + p[7] * S) +
         (p[8] + p[9] * sqrtS + p[10] * S) * lnTK +
         p[11] * sqrtS * TK
     )
@@ -138,10 +138,8 @@ def fn_KS(p, TK, lnTK, S, sqrtS):
         p[0]
         + p[1] / TK
         + p[2] * lnTK
-        + np.sqrt(Istr)
-        * (p[3] + p[4] / TK + p[5] * lnTK)
-        + Istr
-        * (p[6] + p[7] / TK + p[8] * lnTK)
+        + np.sqrt(Istr) * (p[3] / TK + p[4] + p[5] * lnTK)
+        + Istr * (p[6] / TK + p[7] + p[8] * lnTK)
         + p[9] / TK * Istr * np.sqrt(Istr)
         + p[10] / TK * Istr ** 2
         + np.log(1 - 0.001005 * S)
@@ -210,6 +208,35 @@ def fn_KP(p, TK, lnTK, S, sqrtS):
         + p[2] * lnTK
         + (p[3] / TK + p[4]) * sqrtS
         + (p[5] / TK + p[6]) * S
+    )
+
+def fn_KP3(p, TK, lnTK, S, sqrtS):
+    """Calculate KP3(s) from given parameters
+    
+    Parameters
+    ----------
+    p : array-like
+        parameters for K calculation
+    TK : array-like
+        Temperature in Kelvin
+    lnTK : array-like
+        natural log of temperature in kelvin
+    S : arry-like
+        Salinity
+    sqrtS : array-like
+        square root of salinity
+
+    Returns
+    -------
+    array-like
+        KP3 on XXXXX pH scale.
+    """
+
+    return np.exp(
+        p[0] / TK
+        + p[1]
+        + (p[2] / TK + p[3]) * sqrtS
+        + (p[4] / TK + p[5]) * S
     )
 
 def fn_KSi(p, TK, lnTK, S, sqrtS):
@@ -283,7 +310,7 @@ K_fns = {
     "KspC": fn_Ksp,
     "KP1": fn_KP,
     "KP2": fn_KP,
-    "KP3": fn_KP,
+    "KP3": fn_KP3,
     "KSi": fn_KSi,
     "KF": fn_KF
 }

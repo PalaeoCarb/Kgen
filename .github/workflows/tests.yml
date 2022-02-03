@@ -19,7 +19,6 @@ jobs:
       - name: "Install Dependencies"
         run: |
           cd python
-          pwd
           python3 -m pip install -r requirements.txt
       - name: 'Run Tests'
         run: |

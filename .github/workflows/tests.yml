@@ -1,0 +1,22 @@
+name: Check K values
+
+on: [push, pull_request]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9']
+    name: Python ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Python K tests
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+        run:
+          cd python
+          python3 -m pip install -r requirements.txt
+          python3 -m unittest

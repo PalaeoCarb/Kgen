@@ -25,11 +25,14 @@ class checkKValues(unittest.TestCase):
             K = K_fns[k](p, TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
             check_val = check['check_values'][k]
-            sigfig = len(str(check_val).rstrip('0').split('.')[1])
+            sigfig = len(str(check_val).rstrip('0').split('.')[1])  # determine significant figures of check value
             
             self.assertAlmostEqual(np.log(K), check['check_values'][k], msg=f'{k}: {K}', places=sigfig)
 
     def test_presscorr(self):
+        """
+        Test pressure correction coefficients on K values.
+        """
         with open('../coefficients/K_pressure_correction.json') as f:
             pcoefs = json.load(f)
 

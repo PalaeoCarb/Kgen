@@ -4,6 +4,9 @@ Coefficients for consistently calculating and pressure correcting Ks for carbon 
 [![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
 [![Check K values - Python](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
 
+## Availability
+- **Python** via the 'Kgen' python package [![PyPI version](https://badge.fury.io/py/Kgen.svg)](https://badge.fury.io/py/Kgen)
+
 ## How this is intended to be used:
 
 The coefficients and functions provided here may be directly imported by scripts used for calculating carbon chemistry of seawater.

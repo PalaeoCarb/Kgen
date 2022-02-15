@@ -24,10 +24,10 @@
         "KS":"Total",
         "KspA":"Total",
         "KspC":"Total",
-        "KP1":"SWS",
-        "KP2":"SWS",
-        "KP3":"SWS",
-        "KSi":"SWS",
-        "KF":"SWS"
+        "KP1":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KP2":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KP3":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KSi":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KF":"Total"
     }
 }

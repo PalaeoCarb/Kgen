@@ -1,5 +1,7 @@
 # ignore compiled python files
 *.pyc
+*.egg-info
+*/dist
 
 # ignore temporary matlab files
 *.asv

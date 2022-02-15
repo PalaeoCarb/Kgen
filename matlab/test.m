@@ -1,5 +1,3 @@
-reading_files = 1;
-
 run("./kgen/K_functions.m");
 K_names = string(K_dictionary.keys());
 
@@ -29,9 +27,6 @@ for K_index = 1:numel(K_names)
 end
 
 tolerance = 1;
-
-%% Reading in information
-assert(reading_files==1,"Read in files successfully");
 
 %% Modern surface K's
 tolerance = 1e-2;

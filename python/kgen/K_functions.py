@@ -6,6 +6,7 @@ All functional forms are from Dickson, Sabine and Christian, 2007.
 TODO: Think about pH scales!
 """
 import numpy as np
+from .coefs import K_coefs, K_presscorr_coefs
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters
@@ -313,7 +314,7 @@ K_fns = {
     "KP3": fn_KP3,
     "KSi": fn_KSi,
     "KF": fn_KF
-}
+}    
 
 def prescorr(p, P, TC):
     """Calculate pressore correction factor for thermodynamic Ks.
@@ -339,3 +340,80 @@ def prescorr(p, P, TC):
     dk = (b0 + b1 * TC)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (TC + 273.15)
     return np.exp((-dV + 0.5 * dk * P) * P / RT)    
+
+def calc_K(k, TempC=25., Sal=35., Pres=None):
+    """
+    Calculate a specified stoichiometric equilibrium constants at given
+    temperature, salinity and pressure.
+
+    TODO: document pH scales.
+
+    Parameters
+    ----------
+    TempC : array-like
+        Temperature in Celcius
+    Sal : array-like
+        Salinity in PSU
+    Pres : array-like
+        Pressure in bar
+
+    Returns
+    -------
+    array-like
+        The specified K at the given conditions.
+    """
+    if k not in K_fns:
+        raise ValueError(f'{k} is not valid. Should be one of {K_fns.keys}')
+    
+    TK = TempC + 273.15
+    lnTK = np.log(TK)
+    S = Sal
+    sqrtS = S**0.5
+
+    K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+
+    if Pres is not None:
+        K *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+
+    return K
+
+
+def calc_Ks(TempC=25., Sal=35., Pres=None, K_list=None):
+    """
+    Calculate all stoichiometric equilibrium constants at given
+    temperature, salinity and pressure.
+
+    TODO: document pH scales.
+
+    Parameters
+    ----------
+    TempC : array-like
+        Temperature in Celcius
+    Sal : array-like
+        Salinity in PSU
+    Pres : array-like
+        Pressure in bar
+    K_list : array-like
+        List of Ks to calculate. If None, all are calculated
+
+    Returns
+    -------
+    dict
+        Containing calculated Ks.
+    """
+    if K_list is None:
+        K_list = K_fns.keys()
+
+    TK = TempC + 273.15
+    lnTK = np.log(TK)
+    S = Sal
+    sqrtS = S**0.5
+
+    Ks = {}
+    for k in K_list:
+        Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+
+        if Pres is not None:
+            Ks[k] *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+    
+    return Ks

@@ -414,6 +414,7 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, K_list=None):
         Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
         if Pres is not None:
-            Ks[k] *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+            if k in K_presscorr_coefs:
+                Ks[k] *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
     
     return Ks

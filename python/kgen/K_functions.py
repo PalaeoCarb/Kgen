@@ -7,6 +7,7 @@ TODO: Think about pH scales!
 """
 import numpy as np
 from .coefs import K_coefs, K_presscorr_coefs
+from myami import calc_Fcorr, approximate_Fcorr
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters
@@ -341,7 +342,7 @@ def prescorr(p, P, TC):
     RT = 83.1451 * (TC + 273.15)
     return np.exp((-dV + 0.5 * dk * P) * P / RT)    
 
-def calc_K(k, TempC=25., Sal=35., Pres=None):
+def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, MyAMI_mode='calculate',):
     """
     Calculate a specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -356,6 +357,24 @@ def calc_K(k, TempC=25., Sal=35., Pres=None):
         Salinity in PSU
     Pres : array-like
         Pressure in bar
+    Mg : array-like
+        Mg concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* Mg concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    Ca : array-like
+        Ca concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* Ca concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    MyAMI_mode : str
+        Either 'calculate' or 'approximate'. In the former case,
+        the full MyAMI model is run to calculate the correction
+        factor for the Ks. In the latter, a polynomial function is
+        used to approximate the correction factor. The latter is faster,
+        though marginally less accurate.
 
     Returns
     -------
@@ -374,11 +393,23 @@ def calc_K(k, TempC=25., Sal=35., Pres=None):
 
     if Pres is not None:
         K *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
-
+    
+    if Mg is not None or Ca is not None:
+        if Ca is None:
+            Ca = 0.0102821
+        if Mg is None:
+            Mg = 0.0528171
+        if MyAMI_mode == 'calculate':
+            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        else:
+            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        if k in Fcorr:
+            K *= Fcorr[k]
+    
     return K
 
 
-def calc_Ks(TempC=25., Sal=35., Pres=None, K_list=None):
+def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, MyAMI_mode='calculate', K_list=None):
     """
     Calculate all stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -393,6 +424,24 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, K_list=None):
         Salinity in PSU
     Pres : array-like
         Pressure in bar
+    Mg : array-like
+        Mg concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* Mg concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    Ca : array-like
+        Ca concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* Ca concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    MyAMI_mode : str
+        Either 'calculate' or 'approximate'. In the former case,
+        the full MyAMI model is run to calculate the correction
+        factor for the Ks. In the latter, a polynomial function is
+        used to approximate the correction factor. The latter is faster,
+        though marginally less accurate.
     K_list : array-like
         List of Ks to calculate. If None, all are calculated
 
@@ -416,5 +465,18 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, K_list=None):
         if Pres is not None:
             if k in K_presscorr_coefs:
                 Ks[k] *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+    
+    if Mg is not None or Ca is not None:
+        if Ca is None:
+            Ca = 0.0102821
+        if Mg is None:
+            Mg = 0.0528171
+        if MyAMI_mode == 'calculate':
+            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        else:
+            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        for k, f in Fcorr.items():
+            if k in Ks:
+                Ks[k] *= f
     
     return Ks

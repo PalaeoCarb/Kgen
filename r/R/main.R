@@ -11,6 +11,10 @@
 #' @export
 calc_K <- function(k, TC=25, S=35, P=NA) {
   
+  # Check input values
+  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 °C.")}
+  if(S < 30 | S > 40){stop("Salinity must be between 30 and 40 psu.")}
+  
   # Load K_calculation.json
   K_coefs <- fromJSON(file=system.file("K_calculation.json", package="Kgen"))
   K_coefs <- K_coefs$coefficients
@@ -67,6 +71,10 @@ calc_K <- function(k, TC=25, S=35, P=NA) {
 #' calc_Ks(25, 35, K_list = c("K0", "K1"))
 #' @export
 calc_Ks <- function(TC=25, S=35, P=NA, K_list) {
+  
+  # Check input values
+  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 °C.")}
+  if(S < 30 | S > 40){stop("Salinity must be between 30 and 40 psu.")}
   
   # Load K_calculation.json
   K_coefs <- fromJSON(file=system.file("K_calculation.json", package="Kgen"))

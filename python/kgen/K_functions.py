@@ -7,7 +7,7 @@ TODO: Think about pH scales!
 """
 import numpy as np
 from .coefs import K_coefs, K_presscorr_coefs
-from myami import calc_Fcorr, approximate_Fcorr
+from pymyami import calc_Fcorr, approximate_Fcorr
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters

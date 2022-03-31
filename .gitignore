@@ -14,3 +14,9 @@ settings.json
 
 # venv
 **/.environment
+
+# R
+.Rhistory
+
+# Darwin (MacOS)
+.DS_Store

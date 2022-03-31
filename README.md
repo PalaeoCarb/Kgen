@@ -7,6 +7,8 @@ Coefficients for consistently calculating and pressure correcting Ks for carbon 
 ## Availability
 - **Python** via the 'Kgen' python package [![PyPI version](https://badge.fury.io/py/Kgen.svg)](https://badge.fury.io/py/Kgen)
 
+- **R**: Download the Kgen R package directly from this repository with devtools `devtools::install_github('PalaeoCarb/Kgen/r')`
+
 ## How this is intended to be used:
 
 The coefficients and functions provided here may be directly imported by scripts used for calculating carbon chemistry of seawater.

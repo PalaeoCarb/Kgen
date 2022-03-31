@@ -1,5 +1,7 @@
 # ignore compiled python files
 *.pyc
+*.egg-info
+*/dist
 
 # ignore temporary matlab files
 *.asv
@@ -12,3 +14,11 @@ settings.json
 
 # venv
 **/.environment
+
+# R
+.Rhistory
+
+# Darwin (MacOS)
+.DS_Store
+
+

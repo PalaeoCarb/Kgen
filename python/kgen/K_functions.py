@@ -6,6 +6,8 @@ All functional forms are from Dickson, Sabine and Christian, 2007.
 TODO: Think about pH scales!
 """
 import numpy as np
+from .coefs import K_coefs, K_presscorr_coefs
+from pymyami import calc_Fcorr, approximate_Fcorr
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters
@@ -313,7 +315,7 @@ K_fns = {
     "KP3": fn_KP3,
     "KSi": fn_KSi,
     "KF": fn_KF
-}
+}    
 
 def prescorr(p, P, TC):
     """Calculate pressore correction factor for thermodynamic Ks.
@@ -339,3 +341,142 @@ def prescorr(p, P, TC):
     dk = (b0 + b1 * TC)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (TC + 273.15)
     return np.exp((-dV + 0.5 * dk * P) * P / RT)    
+
+def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, MyAMI_mode='calculate',):
+    """
+    Calculate a specified stoichiometric equilibrium constants at given
+    temperature, salinity and pressure.
+
+    TODO: document pH scales.
+
+    Parameters
+    ----------
+    TempC : array-like
+        Temperature in Celcius
+    Sal : array-like
+        Salinity in PSU
+    Pres : array-like
+        Pressure in bar
+    Mg : array-like
+        Mg concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* Mg concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    Ca : array-like
+        Ca concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* Ca concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    MyAMI_mode : str
+        Either 'calculate' or 'approximate'. In the former case,
+        the full MyAMI model is run to calculate the correction
+        factor for the Ks. In the latter, a polynomial function is
+        used to approximate the correction factor. The latter is faster,
+        though marginally less accurate.
+
+    Returns
+    -------
+    array-like
+        The specified K at the given conditions.
+    """
+    if k not in K_fns:
+        raise ValueError(f'{k} is not valid. Should be one of {K_fns.keys}')
+    
+    TK = TempC + 273.15
+    lnTK = np.log(TK)
+    S = Sal
+    sqrtS = S**0.5
+
+    K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+
+    if Pres is not None:
+        K *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+    
+    if Mg is not None or Ca is not None:
+        if Ca is None:
+            Ca = 0.0102821
+        if Mg is None:
+            Mg = 0.0528171
+        if MyAMI_mode == 'calculate':
+            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        else:
+            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        if k in Fcorr:
+            K *= Fcorr[k]
+    
+    return K
+
+
+def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, MyAMI_mode='calculate', K_list=None):
+    """
+    Calculate all stoichiometric equilibrium constants at given
+    temperature, salinity and pressure.
+
+    TODO: document pH scales.
+
+    Parameters
+    ----------
+    TempC : array-like
+        Temperature in Celcius
+    Sal : array-like
+        Salinity in PSU
+    Pres : array-like
+        Pressure in bar
+    Mg : array-like
+        Mg concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* Mg concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    Ca : array-like
+        Ca concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* Ca concentration in
+        seawater - a salinity correction is then applied to calculate
+        the Mg concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    MyAMI_mode : str
+        Either 'calculate' or 'approximate'. In the former case,
+        the full MyAMI model is run to calculate the correction
+        factor for the Ks. In the latter, a polynomial function is
+        used to approximate the correction factor. The latter is faster,
+        though marginally less accurate.
+    K_list : array-like
+        List of Ks to calculate. If None, all are calculated
+
+    Returns
+    -------
+    dict
+        Containing calculated Ks.
+    """
+    if K_list is None:
+        K_list = K_fns.keys()
+
+    TK = TempC + 273.15
+    lnTK = np.log(TK)
+    S = Sal
+    sqrtS = S**0.5
+
+    Ks = {}
+    for k in K_list:
+        Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+
+        if Pres is not None:
+            if k in K_presscorr_coefs:
+                Ks[k] *= prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC)
+    
+    if Mg is not None or Ca is not None:
+        if Ca is None:
+            Ca = 0.0102821
+        if Mg is None:
+            Mg = 0.0528171
+        if MyAMI_mode == 'calculate':
+            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        else:
+            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+        for k, f in Fcorr.items():
+            if k in Ks:
+                Ks[k] *= f
+    
+    return Ks

@@ -1,5 +1,5 @@
 ---
-name: 'Check K values'
+name: 'Check K values - Python'
 
 on: [push, pull_request]
 

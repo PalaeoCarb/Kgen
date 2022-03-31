@@ -1,0 +1,9 @@
+{
+    "info": "Taken from Chapter 5 of Dickson, Sabine and Christian.",
+    "coefficients": {
+        "R": 8.314472,
+        "F": 96485.3399,
+        "atm_to_Pa": 101325,
+        "R_P": 83.14472
+    }
+}

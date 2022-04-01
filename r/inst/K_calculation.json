@@ -1,0 +1,33 @@
+{
+    "info": "All coefficients except KspX from Chapter 5 of Dickson, Sabine and Christian (2007). See attached documentation for functional forms. KspX values taken from Zeebe & Wolf-Gladrow (2001), which come from Mucci (1983).",
+    "coefficients": {
+        "K0": [-60.2409, 93.4517, 23.3585, 0.023517, -0.023656, 0.0047036],
+        "K1": [61.2172, -3633.86, -9.67770, 0.011555, -0.0001152],
+        "K2": [-25.9290, -471.78, 3.16967, 0.01781, -0.0001122],
+        "KW": [148.9652, -13847.26, -23.6521, 118.67, -5.977, 1.0495, -0.01615],
+        "KB": [148.0248, 137.1942, 1.62142, -8966.90, -2890.53, -77.942, 1.728, -0.0996, -24.4344, -25.085, -0.2474, 0.053105],
+        "KS": [141.328, -4276.1, -23.093, -13856, 324.57, -47.986, 35474, -771.54, 114.723, -2698, 1776],
+        "KspA": [-171.945, -0.077993, 2903.293, 71.595, -0.068393, 0.0017276, 88.135, -0.10018, 0.0059415],
+        "KspC": [-171.9065, -0.077993, 2839.319, 71.595, -0.77712, 0.0028426, 178.34, -0.07711, 0.0041249],
+        "KP1": [-4576.752, 115.525, -18.453, -106.736, 0.69171, -0.65643, -0.01844],
+        "KP2": [-8814.715, 172.0883, -27.927, -160.340, 1.3566, 0.37335, -0.05778],
+        "KP3": [-3070.75, -18.141, 17.27039, 2.81197, -44.99486, -0.09984],
+        "KSi": [-8904.2, 117.385, -19.334, -458.79, 3.5913, 188.74, -1.5998, -12.1652, 0.07871],
+        "KF": [874, -9.68, 0.111]
+    },
+    "pH_scales": {
+        "K0":"Total",
+        "K1":"Total",
+        "K2":"Total",
+        "KW":"Total",
+        "KB":"Total",
+        "KS":"Total",
+        "KspA":"Total",
+        "KspC":"Total",
+        "KP1":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KP2":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KP3":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KSi":"Approx Total (see footnote 5, Chapter 5 of Dickson, Sabine and Christian (2007)",
+        "KF":"Total"
+    }
+}

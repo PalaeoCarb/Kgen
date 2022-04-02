@@ -4,7 +4,15 @@
 \alias{calc_K}
 \title{Calculate a specified stoichiometric equilibrium constants at given temperature, salinity and pressure.}
 \usage{
-calc_K(k, TC = 25, S = 35, P = NA)
+calc_K(
+  k,
+  TC = 25,
+  S = 35,
+  Mg = 0.0528171,
+  Ca = 0.0102821,
+  P = NA,
+  MyAMI_calc = TRUE
+)
 }
 \arguments{
 \item{k}{K to be calculated}
@@ -13,7 +21,13 @@ calc_K(k, TC = 25, S = 35, P = NA)
 
 \item{S}{Salinity (PSU)}
 
+\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the \emph{average} Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+
+\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the \emph{average} Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+
 \item{P}{Pressure (Bar) (optional)}
+
+\item{MyAMI_calc}{TRUE/FALSE}
 }
 \value{
 Specified K at the given conditions

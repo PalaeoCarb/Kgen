@@ -2,4 +2,8 @@
 
 export(calc_K)
 export(calc_Ks)
+importFrom(reticulate,import)
+importFrom(reticulate,install_miniconda)
+importFrom(reticulate,py_install)
+importFrom(reticulate,use_miniconda)
 importFrom(rjson,fromJSON)

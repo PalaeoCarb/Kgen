@@ -5,9 +5,7 @@
 #' @examples
 #' fn_Istr(35)
 fn_Istr <- function(S){ 
-  
-  # Ionic strength after Dickson 1990a; see Dickson et al 2007
-  
+
   Istr = 19.924 * S / (1000 - 1.005 * S)
 
   return(Istr)
@@ -203,7 +201,6 @@ fn_KP3 <- function(p, TK, S){
 fn_KSi <- function(p, TK, S){
 
   Istr = fn_Istr(S) 
-  
   tmp = exp(p[1] / TK + 
         p[2] +
         p[3] * log(TK) +

@@ -25,11 +25,11 @@ jobs:
           cd crosscheck
           python3 ./gen_python.py
   calc_r:
-    name: Calculating R Ks
+    name: Calculating R Ks - TODO
     runs-on: ubuntu-latest
 
   calc_matlab:
-    name: Calculating MATLAB Ks
+    name: Calculating MATLAB Ks - TODO
     runs-on: ubuntu-latest
 
   crosscheck:

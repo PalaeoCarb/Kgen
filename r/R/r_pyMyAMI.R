@@ -50,23 +50,22 @@ mc_exists <- function(path = miniconda_path()) {
   file.exists(conda)
 }
 
-#' Load pyMyAMI from pypi
+#' Install MyAMI from pypi
 #'
 #' @importFrom reticulate install_miniconda
 #' @importFrom reticulate py_install
 #' @importFrom reticulate use_miniconda
 #' @importFrom reticulate import
-load_pymyami <- function() {
+install_pymyami <- function() {
 
   # Check if miniconda is installed 
   ifelse(mc_exists(), print("Miniconda is already installed."), install_miniconda())
   
   # Select python environment
   reticulate::use_miniconda("r-reticulate")
-    
-  # Install pyMyAMI
-  py_install("pymyami", envname = "r-reticulate", pip = T)
-
+  
+  reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)
+  
   # Import pyMyAMI
-  return(reticulate::import("pymyami"))
+  reticulate::import("pymyami")
 }

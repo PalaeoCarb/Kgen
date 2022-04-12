@@ -10,7 +10,7 @@ calc_K(
   S = 35,
   Mg = 0.0528171,
   Ca = 0.0102821,
-  P = NA,
+  P = 0,
   MyAMI_calc = TRUE
 )
 }
@@ -21,9 +21,9 @@ calc_K(
 
 \item{S}{Salinity (PSU)}
 
-\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the \emph{average} Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
 
-\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the \emph{average} Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
 
 \item{P}{Pressure (Bar) (optional)}
 

@@ -4,18 +4,30 @@
 #' @param TC Temperature (Celsius)
 #' @param S Salinity (PSU) 
 #' @param P Pressure (Bar) (optional) 
-#' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the *average* Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
-#' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the *average* Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
+#' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
+#' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
 #' @param MyAMI_calc TRUE/FALSE 
 #' @importFrom rjson fromJSON
+#' @importFrom utils askYesNo
 #' @return Specified K at the given conditions
 #' @examples
 #' calc_K("K0", 25, 35)
 #' @export
-calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NA, MyAMI_calc=TRUE) {
+calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=0, MyAMI_calc=TRUE) {
+  
+  # Check if miniconda is installed 
+  if(!mc_exists()){
+    print("Kgen requires r-Miniconda which appears to not exist on your system.")
+    install_confirm <- askYesNo("Would you like to install it now?")
+    if(install_confirm == TRUE) {
+        install_pymyami()
+    } else {
+      print("Closing Kgen.")
+    }
+  }
   
   # Check input values
-  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 °C.")}
+  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 degC.")}
   if(S < 30 | S > 40){stop("Salinity must be between 30 and 40 psu.")}
   if(Mg < 0 | Mg > 0.06){stop("Mg must be between 0 and 0.06 mol/kgsw.")}
   if(Ca < 0 | Ca > 0.06){stop("Ca must be between 0 and 0.06 mol/kgsw.")}
@@ -57,8 +69,11 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NA, MyAMI_calc=
   K = K_fn(p=K_coefs[[k]], TK=TK, S=S)
   
   # Pressure correction?
-  if(!is.na(P)) {
-    K = K * fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
+  if(P != 0) {
+    pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
+    if(pc != 0) {
+      Ks_list[[k]] = Ks_list[[k]] * pc
+    }
   }
   
   # Calculate correction factor with MyAMI
@@ -82,19 +97,31 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NA, MyAMI_calc=
 #' @param TC Temperature (Celsius)
 #' @param S Salinity (PSU) 
 #' @param P Pressure (Bar) (optional)
-#' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the *average* Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
-#' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the *average* Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
+#' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
+#' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
 #' @param MyAMI_calc TRUE/FALSE 
 #' @importFrom rjson fromJSON
+#' @importFrom utils askYesNo
 #' @param K_list List of Ks to be calculated e.g., list("K0", "K1")
 #' @return Dataframe of specified Ks at the given conditions
 #' @examples
 #' calc_Ks(25, 35, K_list = c("K0", "K1"))
 #' @export
-calc_Ks <- function(TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NA, MyAMI_calc=TRUE, K_list) {
+calc_Ks <- function(TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=0, MyAMI_calc=TRUE, K_list) {
 
+  # Check if miniconda is installed 
+  if(!mc_exists()){
+    print("Kgen requires r-Miniconda which appears to not exist on your system.")
+    install_confirm <- askYesNo("Would you like to install it now?")
+    if(install_confirm == TRUE) {
+      install_pymyami()
+    } else {
+      print("Closing Kgen.")
+    }
+  }
+  
   # Check input values
-  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 °C.")}
+  if(TC < 0 | TC > 40){stop("Temperature must be between 0 and 40 degC.")}
   if(S < 30 | S > 40){stop("Salinity must be between 30 and 40 psu.")}
   if(Mg < 0 | Mg > 0.06){stop("Mg must be between 0 and 0.06 mol/kgsw.")}
   if(Ca < 0 | Ca > 0.06){stop("Ca must be between 0 and 0.06 mol/kgsw.")}
@@ -133,36 +160,40 @@ calc_Ks <- function(TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NA, MyAMI_calc=TR
   
   # Iterate through K_list 
   Ks_list = list()
-  for(k in unique(K_list)){
+  for(k in unique(K_list)) {
     
     # Select function and run calculation
     K_fn = K_fns[[k]]
     Ks_list[k] = K_fn(p=K_coefs[[k]], TK=TK, S=S)
     
     # Pressure correction?
-    if(!is.na(P)){
-      if(k %in% names(K_presscorr_coefs)) {
-        Ks_list[k] = Ks_list[[k]] * fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
-      }
-    }
+     if(P != 0) {
+       if(k %in% names(K_presscorr_coefs)) {
+         pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
+         if(pc != 0) {
+           Ks_list[k] = Ks_list[[k]] * pc
+         }
+       }
+     }
   }
   
   # Calculate correction factor with MyAMI
-  if(MyAMI_calc == TRUE){ 
+  if(MyAMI_calc == TRUE){
     Fcorr = pymyami$calc_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
   } else {
     Fcorr = pymyami$approximate_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
   }
-  
+
   # Apply correction
   for(k in names(Ks_list)) {
     K = Ks_list[[k]]
     KF = Fcorr[[k]]
-    
+
     if(!is.null(KF)){
       Ks_list[[k]] = K * KF
     }
   }
+    
   # Return data.frame
   Ks = data.frame(do.call(rbind, Ks_list))
   names(Ks)[1] <- "values"

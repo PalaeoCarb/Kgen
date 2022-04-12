@@ -2,8 +2,6 @@
 #'
 #' @param S Salinity
 #' @return Ionic strength
-#' @examples
-#' fn_Istr(35)
 fn_Istr <- function(S){ 
 
   Istr = 19.924 * S / (1000 - 1.005 * S)

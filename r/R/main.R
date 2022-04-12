@@ -60,10 +60,11 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   K = K_fn(p=K_coefs[[k]], TK=TK, S=S)
   
   # Pressure correction?
-  if(is.null(P)) {
+  if(!is.null(P)) {
+    
     pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
-    check_pc = ifelse(pc != 0, pc, NA)
-    K = K * pc
+    check_pc = ifelse(pc != 0, pc, 1)
+    K = K * check_pc
   }
   
   # Calculate correction factor with MyAMI
@@ -76,8 +77,8 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   # Apply correction
   KF = Fcorr[[k]]
   if(!is.null(KF)){
-    check_KF = ifelse(KF != 0, KF, NA)
-    K = K * KF
+    check_KF = ifelse(KF != 0, KF, 1)
+    K = K * check_KF
   }
 
   return(K)

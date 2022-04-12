@@ -1,4 +1,5 @@
-library(testthat)
+library('testthat')
+library('Kgen')
 
 # Taken from https://rstudio.github.io/reticulate/articles/package.html
 skip_if_no_pymyami <- function() {

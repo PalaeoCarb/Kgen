@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{calc_K}
 \alias{calc_K}
-\title{Calculate a specified stoichiometric equilibrium constants at given temperature, salinity and pressure.}
+\title{Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.}
 \usage{
 calc_K(
   k,
@@ -10,7 +10,7 @@ calc_K(
   S = 35,
   Mg = 0.0528171,
   Ca = 0.0102821,
-  P = 0,
+  P = NULL,
   MyAMI_calc = TRUE
 )
 }
@@ -33,7 +33,7 @@ calc_K(
 Specified K at the given conditions
 }
 \description{
-Calculate a specified stoichiometric equilibrium constants at given temperature, salinity and pressure.
+Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.
 }
 \examples{
 calc_K("K0", 25, 35)

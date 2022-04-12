@@ -1,16 +1,14 @@
 library('tidyverse')
 library('reticulate')
 
-# Install local r-Miniconda environment
-install_miniconda()
-reticulate::use_miniconda("r-reticulate")
-reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)
-
 # Load Kgen
+detach("package:Kgen", unload=TRUE)
+devtools::install_local("../r", force=T)
 library('Kgen')
 
 # 1. Load test_conditions.csv
 test_df <- read_csv("test_conditions.csv")
+python_df <- read_csv("generated_Ks/python_calculated.csv")
 
 # 2. Calculate and approximate Ks
 Ks_calc <- calc_Ks(TC = test_df$TempC,

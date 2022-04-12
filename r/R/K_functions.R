@@ -248,7 +248,7 @@ fn_pc <- function(p, P, TC) {
   
   RT = 83.1451 * (TC + 273.15)
   
-  prescorr = (-dV + 0.5 * dk * P) * P / RT
+  prescorr = exp((-dV + 0.5 * dk * P) * P / RT)
   
   return(prescorr)
 }   

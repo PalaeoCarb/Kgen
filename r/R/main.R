@@ -27,17 +27,10 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   }
   
   # Check input values
-  TC_check = ifelse(TC < 0 | TC > 40, "out", "in")
-  if("out" %in% TC_check) stop("Temperature must be between 0 and 40 degC.")
-  
-  S_check = ifelse(S < 30 | S > 40, "out", "in")
-  if("out" %in% S_check) stop("Salinity must be between 30 and 40 psu.")
-  
-  Mg_check = ifelse(Mg < 0 | Mg > 0.06, "out", "in")
-  if("out" %in% Mg_check) stop("Mg must be between 0 and 0.06 mol/kgsw.")
-  
-  Ca_check = ifelse(Ca < 0 | Ca > 0.06, "out", "in")
-  if("out" %in% Ca_check) stop("Ca must be between 0 and 0.06 mol/kgsw.")
+  if(any(TC < 0) | any(TC > 40)) stop("Temperature must be between 0 and 40 degC.")
+  if(any(S < 30) | any(S > 40)) stop("Salinity must be between 30 and 40 psu.")
+  if(any(Mg < 0) | any(Mg > 0.06)) stop("Mg must be between 0 and 0.06 mol/kgsw.")
+  if(any(Ca < 0) | any(Ca > 0.06)) stop("Ca must be between 0 and 0.06 mol/kgsw.")
   
   # Load K_calculation.json
   K_coefs <- fromJSON(file=system.file("K_calculation.json", package="Kgen"))
@@ -61,10 +54,9 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   
   # Pressure correction?
   if(!is.null(P)) {
-    
-    pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
-    check_pc = ifelse(pc != 0, pc, 1)
-    K = K * check_pc
+     pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
+     check_pc = ifelse(pc != 0, pc, 1)
+     K = K * check_pc
   }
   
   # Calculate correction factor with MyAMI

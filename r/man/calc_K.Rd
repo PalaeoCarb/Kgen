@@ -10,7 +10,7 @@ calc_K(
   S = 35,
   Mg = 0.0528171,
   Ca = 0.0102821,
-  P,
+  P = NULL,
   MyAMI_calc = TRUE
 )
 }

@@ -43,11 +43,11 @@ jobs:
           R -e 'install.packages("remotes")'
           R -e 'library(remotes)'
           R -e 'remotes::install_local("r")'
-          R -e  'library("Kgen")'
+          R -e 'library("Kgen")'
       - name: Running Kgen
         run: |
           cd crosscheck
-          R -e gen_r.r
+          Rscript gen_r.r
 
   crosscheck:
     name: Comparing Outputs

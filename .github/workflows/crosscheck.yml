@@ -42,7 +42,7 @@ jobs:
           sudo apt-get install curl
           R -e 'install.packages("remotes")'
           R -e 'library(remotes)'
-          R -e 'remotes::install_local("../r")'
+          R -e 'remotes::install_local("r")'
           R -e  'library("Kgen")'
       - name: Running Kgen
         run: |

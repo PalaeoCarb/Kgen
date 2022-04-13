@@ -18,8 +18,6 @@ class crosscheck(unittest.TestCase):
                 checks[method] = {}
             checks[method][lang] = pd.read_csv(f)
 
-        test_pass = True
-
         for method in checks:
             langs = list(checks[method].keys())
             nlangs = len(langs)
@@ -29,6 +27,7 @@ class crosscheck(unittest.TestCase):
             
             print(f'Testing {method} method...')
             for i,j in zip(*np.triu_indices(nlangs, k=1)):
+                test_pass = True
                 ref = checks[method][langs[i]]
                 diff = checks[method][langs[i]] - checks[method][langs[j]]
                 
@@ -40,8 +39,9 @@ class crosscheck(unittest.TestCase):
                 if np.all(maxrdiff <= RDIFF_TOLERANCE):
                     print(f'    OK')
                 else:
-                    print(f'  **FAIL! Max relative difference:')
-                    print('      ' + maxrdiff[maxrdiff>RDIFF_TOLERANCE].to_string().replace('\n', '\n      '))
+                    msg = f'  Max relative difference:'
+                    msg +='\n      ' + maxrdiff[maxrdiff>RDIFF_TOLERANCE].to_string().replace('\n', '\n      ')
                     test_pass = False
             
-            self.assertTrue(test_pass, msg=f'Ks outside tolerance ({RDIFF_TOLERANCE}), see output above.')
+                with self.subTest(msg=f'{method}: {langs[i]} vs. {langs[j]}'):
+                    self.assertTrue(test_pass, msg=f'\n\nKs outside tolerance ({RDIFF_TOLERANCE}):\n{msg}')

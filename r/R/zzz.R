@@ -1,4 +1,6 @@
 # Load pyAMI on package load
+pymyami <- NULL
+
 .onLoad <- function(libname, pkgname){
-  assign('pymyami', load_pymyami(), envir = topenv())
+  pymyami <<- reticulate::import("pymyami", delay_load = TRUE)
 }

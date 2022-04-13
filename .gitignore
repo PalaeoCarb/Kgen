@@ -17,8 +17,7 @@ settings.json
 
 # R
 .Rhistory
+.Rprofile
 
 # Darwin (MacOS)
 .DS_Store
-
-

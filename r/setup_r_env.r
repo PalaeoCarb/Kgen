@@ -1,6 +1,6 @@
-install.packages(devtools)
+install.packages("devtools")
 
 library(devtools)
 devtools::install()
 
-install.packages(tidyverse)
+install.packages("tidyverse")

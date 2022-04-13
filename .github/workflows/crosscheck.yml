@@ -44,6 +44,7 @@ jobs:
           R -e 'library(remotes)'
           R -e 'remotes::install_local("r")'
           R -e 'library("Kgen")'
+          R -e 'reticulate::install_miniconda()'
       - name: Running Kgen
         run: |
           cd crosscheck

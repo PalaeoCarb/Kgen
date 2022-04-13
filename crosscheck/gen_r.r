@@ -2,14 +2,14 @@
 test_df <- read.csv("test_conditions.csv")
 
 # 2. Calculate and approximate Ks
-Ks_calc <- calc_Ks(TC = test_df$TempC,
+Ks_calc <- Kgen::calc_Ks(TC = test_df$TempC,
                     S = test_df$Sal,
                     P = test_df$Pres,
                    Mg = test_df$Mg,
                    Ca = test_df$Ca,
                    MyAMI_calc = T)
 
-Ks_approx <- calc_Ks(TC = test_df$TempC,
+Ks_approx <- Kgen::calc_Ks(TC = test_df$TempC,
                    S = test_df$Sal,
                    P = test_df$Pres,
                    Mg = test_df$Mg,

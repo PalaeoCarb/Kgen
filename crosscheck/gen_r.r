@@ -2,7 +2,9 @@ library('tidyverse')
 library('reticulate')
 
 # Load Kgen
-detach("package:Kgen", unload=TRUE)
+if("Kgen" %in% (.packages())){
+  detach("package:Kgen", unload=TRUE) 
+}
 devtools::install_local("../r", force=T)
 library('Kgen')
 

@@ -2,7 +2,7 @@
 if("Kgen" %in% (.packages())){
   detach("package:Kgen", unload=TRUE)
 }
-devtools::install_local("../r", force=T)
+remotes::install_local("../r", force=T)
 library("Kgen")
 
 # 1. Load test_conditions.csv

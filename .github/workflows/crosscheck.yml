@@ -5,43 +5,43 @@ on: [push, pull_request]
 
 jobs:
   calc_python:
-    name: Calculating Ks with Python
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.9']
+    name: Calculating Ks with Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Set Up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: "Install Dependencies"
+      - name: Install Dependencies
         run: |
           cd python
           python3 -m pip install -r requirements.txt
-      - name: 'Run Tests'
+      - name: Running Kgen
         run: |
           cd crosscheck
           python3 gen_python.py
   calc_r:
-    name: Calculating Ks with R
     runs-on: ubuntu-latest
     strategy:
       matrix:
         R: ['4.1.3']
+    name: Calculating Ks with R ${{ matrix.r-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Set Up R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.R }}
+          r-version: ${{ matrix.r-version }}
       - name: Installing Dependencies
         run: |
           cd r
           Rscript setup_r_env.r
       - name: Running Kgen
-      - run: |
+        run: |
           cd crosscheck
           Rscript gen_r.r
 

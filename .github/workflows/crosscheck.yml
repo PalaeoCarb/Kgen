@@ -47,7 +47,7 @@ jobs:
       - name: Running Kgen
         run: |
           cd crosscheck
-          R -e gen_r.R
+          R -e gen_r.r
 
   crosscheck:
     name: Comparing Outputs

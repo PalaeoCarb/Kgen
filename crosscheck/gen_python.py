@@ -19,3 +19,10 @@ Ks_approx_df = pd.DataFrame.from_dict(Ks_approx)
 
 Ks_calc_df.to_csv('./generated_Ks/python_calculated.csv', index=False)
 Ks_approx_df.to_csv('./generated_Ks/python_approximated.csv', index=False)
+
+import os
+from glob import glob
+
+print(f'Current Dir: {os.getcwd()}')
+ks = glob('./generated_Ks/*.csv')
+print(f'Found Ks: {ks}')

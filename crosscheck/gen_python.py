@@ -5,11 +5,6 @@ sys.path.append('../python')
 
 import kgen
 
-import os
-from glob import glob
-
-print(f'Current Dir: {os.getcwd()}')
-
 # 1. Load test_conditions.csv
 test_df = pd.read_csv('./test_conditions.csv')
 test_dict = {k: np.array(v) for k,v in test_df.to_dict(orient='list').items()}
@@ -24,6 +19,3 @@ Ks_approx_df = pd.DataFrame.from_dict(Ks_approx)
 
 Ks_calc_df.to_csv('./generated_Ks/python_calculated.csv', index=False)
 Ks_approx_df.to_csv('./generated_Ks/python_approximated.csv', index=False)
-
-ks = glob('./generated_Ks/*.csv')
-print(f'Found Ks: {ks}')

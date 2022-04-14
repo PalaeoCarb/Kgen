@@ -17,5 +17,5 @@ Ks_approx <- Kgen::calc_Ks(TC = test_df$TempC,
                    MyAMI_calc = F)
 
 # 3. Save outputs to ./generated_Ks as r_{calculated, approximated}.csv
-write.csv(Ks_calc, "generated_Ks/r_calculated.csv")
-write.csv(Ks_approx, "generated_Ks/r_approximated.csv")
+write.csv(Ks_calc, "generated_Ks/r_calculated.csv", row.names = F)
+write.csv(Ks_approx, "generated_Ks/r_approximated.csv", row.names = F)

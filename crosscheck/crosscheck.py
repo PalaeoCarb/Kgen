@@ -8,6 +8,8 @@ class crosscheck(unittest.TestCase):
 
     def test_all(self):
         fs = glob('generated_Ks/*.csv')
+        
+        print(f'Found Ks: {fs}')
 
         RDIFF_TOLERANCE = 0.1
 
@@ -22,7 +24,7 @@ class crosscheck(unittest.TestCase):
             langs = list(checks[method].keys())
             nlangs = len(langs)
             if nlangs < 2:
-                print(f'Only one language uses {method} method - nothing to compare.')
+                print(f'Only one language ({lang}) uses {method} method - nothing to compare.')
                 continue
             
             print(f'Testing {method} method...')

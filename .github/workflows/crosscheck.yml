@@ -9,34 +9,27 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9']
-    name: Calculating Ks with Python ${{ matrix.python-version }}
+        R: ['4.1.3']
+    name: Calculating Ks
     steps:
       - uses: actions/checkout@v2
-      - name: Set Up Python
+      - name: Set Up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
+      - name: Install Pythhon Dependencies
         run: |
           cd python
           python3 -m pip install -r requirements.txt
-      - name: Running Kgen
+      - name: Running Python Kgen
         run: |
           cd crosscheck
           python3 gen_python.py
-  calc_r:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        R: ['4.1.3']
-    name: Calculating Ks with R ${{ matrix.R }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set Up R
+      - name: Set Up R ${{ matrix.R }}
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.R }}
-      - name: Install dependencies
+      - name: Install R dependencies
         run: |
           sudo apt-get install libcurl4-openssl-dev
           sudo apt-get install curl
@@ -47,29 +40,11 @@ jobs:
           R -e 'reticulate::install_miniconda()'
           R -e 'reticulate::use_miniconda("r-reticulate")'
           R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
-      - name: Running Kgen
+      - name: Running R Kgen
         run: |
           cd crosscheck
           Rscript gen_r.r
-
-  crosscheck:
-    name: Comparing Outputs
-    runs-on: ubuntu-latest
-    needs: [calc_python, calc_r]
-    strategy:
-      matrix:
-        python-version: ['3.9']
-    steps:
-      - uses: actions/checkout@v2
-      - name: "Set Up Python"
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: "Install Dependencies"
-        run: |
-          cd python
-          python3 -m pip install -r requirements.txt
-      - name: 'Run Tests'
+      - name: Comparing Kgen Outputs
         run: |
           cd crosscheck
           python3 -m unittest crosscheck.py

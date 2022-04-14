@@ -4,15 +4,14 @@ import pandas as pd
 import numpy as np
 from glob import glob
 
+
+RDIFF_TOLERANCE = 0.01  # tolrate max 1% difference
+
 class crosscheck(unittest.TestCase):
 
     def test_all(self):
         fs = glob('generated_Ks/*.csv')
         
-        print(f'Found Ks: {fs}')
-
-        RDIFF_TOLERANCE = 0.1
-
         checks = {}
         for f in fs:
             lang, method = os.path.basename(f).replace('.csv', '').split('_')

@@ -28,6 +28,7 @@ class crosscheck(unittest.TestCase):
             print(f'Testing {method} method...')
             for i,j in zip(*np.triu_indices(nlangs, k=1)):
                 test_pass = True
+                msg = ''
                 ref = checks[method][langs[i]]
                 diff = checks[method][langs[i]] - checks[method][langs[j]]
                 

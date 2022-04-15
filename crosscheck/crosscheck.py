@@ -5,7 +5,7 @@ import numpy as np
 from glob import glob
 
 
-RDIFF_TOLERANCE = 0.01  # tolrate max 1% difference
+RDIFF_TOLERANCE = 0.0001  # tolrate max 0.01% difference
 
 class crosscheck(unittest.TestCase):
 

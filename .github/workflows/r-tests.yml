@@ -20,10 +20,14 @@ jobs:
         run: |
           sudo apt-get install libcurl4-openssl-dev
           sudo apt-get install curl
-          R -e 'install.packages("devtools")'
-          R -e 'library(devtools)'
-          R -e 'devtools::install_local("r")'
+          R -e 'install.packages("remotes")'
+          R -e 'library(remotes)'
+          R -e 'remotes::install_local("r")'
           R -e 'library("Kgen")'
+          R -e 'reticulate::install_miniconda()'
+          R -e 'reticulate::use_miniconda("r-reticulate")'
+          R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
       - name: Running Kgen
         run: |
-          printf 'yes' | devtools::check("r")
+          cd r/tests
+          Rscript testthat.R

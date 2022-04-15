@@ -6,14 +6,13 @@
 #' @param P Pressure (Bar) (optional) 
 #' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
-#' @param MyAMI_calc TRUE/FALSE 
+#' @param MyAMI_calc TRUE = calculate corrections with MyAMI, FALSE = "only" approximate corrections with MyAMI.
+#' @param run_MyAMI TRUE = calculate corrections with MyAMI, FALSE = don't calculate corrections with MyAMI. 
 #' @importFrom rjson fromJSON
 #' @importFrom utils askYesNo
 #' @return Specified K at the given conditions
-#' @examples
-#' calc_K("K0", 25, 35)
 #' @export
-calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_calc=TRUE) {
+calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_calc=TRUE, run_MyAMI=TRUE) {
   
   # Check if miniconda is installed 
   if(!mc_exists()){
@@ -33,11 +32,11 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   if(any(Ca < 0) | any(Ca > 0.06)) stop("Ca must be between 0 and 0.06 mol/kgsw.")
   
   # Load K_calculation.json
-  K_coefs <- fromJSON(file=system.file("K_calculation.json", package="Kgen"))
+  K_coefs <- fromJSON(file=system.file("coefficients/K_calculation.json", package="Kgen"))
   K_coefs <- K_coefs$coefficients
   
   # Load K_pressure_correction.json
-  K_presscorr_coefs <- fromJSON(file=system.file("K_pressure_correction.json", package="Kgen"))
+  K_presscorr_coefs <- fromJSON(file=system.file("coefficients/K_pressure_correction.json", package="Kgen"))
   K_presscorr_coefs <- K_presscorr_coefs$coefficients
   
   # Check if selected function exists
@@ -60,19 +59,21 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
   }
   
   # Calculate correction factor with MyAMI
-  if(MyAMI_calc == TRUE){ 
-    Fcorr = pymyami$calc_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
-  } else {
-    Fcorr = pymyami$approximate_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
+  if(run_MyAMI == TRUE){
+    if(MyAMI_calc == TRUE){ 
+      Fcorr = pymyami$calc_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
+    } else {
+      Fcorr = pymyami$approximate_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
+    }
+  
+    # Apply correction
+    KF = Fcorr[[k]]
+    if(!is.null(KF)){
+      check_KF = ifelse(KF != 0, KF, 1)
+      K = K * check_KF
+    }
   }
   
-  # Apply correction
-  KF = Fcorr[[k]]
-  if(!is.null(KF)){
-    check_KF = ifelse(KF != 0, KF, 1)
-    K = K * check_KF
-  }
-
   return(K)
 }
 
@@ -88,8 +89,6 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_cal
 #' @importFrom utils askYesNo
 #' @param k_list List of Ks to be calculated e.g., list("K0", "K1")
 #' @return Dataframe of specified Ks at the given conditions
-#' @examples
-#' calc_Ks(25, 35, k_list = c("K0", "K1"))
 #' @export
 calc_Ks <- function(k_list, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyAMI_calc=TRUE) {
 
@@ -104,11 +103,27 @@ calc_Ks <- function(k_list, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyA
     ks_list[[k]] <- calc_K(k = k, TC=TC,
                            S=S, Mg=Mg, 
                            Ca=Ca, P=P, 
-                           MyAMI_calc=MyAMI_calc)
+                           MyAMI_calc=MyAMI_calc,
+                           run_MyAMI=FALSE)
   }
     
   # Return data.frame
   Ks = data.frame(t(do.call(rbind, ks_list)))
+  
+  # Calculate correction factor with MyAMI
+  if(MyAMI_calc == TRUE){ 
+    Fcorr = pymyami$calc_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
+  } else {
+    Fcorr = pymyami$approximate_Fcorr(Sal=S, TempC=TC, Mg=Mg, Ca=Ca)
+  }
+    
+  # Apply correction
+  KF = Fcorr[[k]]
+  if(!is.null(KF)){
+    check_KF = ifelse(KF != 0, KF, 1)
+    Ks[k] = Ks[k] * check_KF
+  }
+
   return(Ks)
 }
 

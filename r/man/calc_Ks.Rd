@@ -35,6 +35,3 @@ Dataframe of specified Ks at the given conditions
 \description{
 Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.
 }
-\examples{
-calc_Ks(25, 35, k_list = c("K0", "K1"))
-}

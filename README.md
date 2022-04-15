@@ -4,6 +4,7 @@ Coefficients for consistently calculating and pressure correcting Ks for carbon 
 [![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
 [![Check K values - Python](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
 [![Check K values - R](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml)
+[![Crosscheck Methods](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml)
 
 ## Availability
 - **Python** via the 'Kgen' python package [![PyPI version](https://badge.fury.io/py/Kgen.svg)](https://badge.fury.io/py/Kgen)

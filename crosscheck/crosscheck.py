@@ -4,13 +4,14 @@ import pandas as pd
 import numpy as np
 from glob import glob
 
+
+RDIFF_TOLERANCE = 0.01  # tolrate max 1% difference
+
 class crosscheck(unittest.TestCase):
 
     def test_all(self):
         fs = glob('generated_Ks/*.csv')
-
-        RDIFF_TOLERANCE = 0.1
-
+        
         checks = {}
         for f in fs:
             lang, method = os.path.basename(f).replace('.csv', '').split('_')
@@ -22,7 +23,7 @@ class crosscheck(unittest.TestCase):
             langs = list(checks[method].keys())
             nlangs = len(langs)
             if nlangs < 2:
-                print(f'Only one language uses {method} method - nothing to compare.')
+                print(f'Only one language ({lang}) uses {method} method - nothing to compare.')
                 continue
             
             print(f'Testing {method} method...')

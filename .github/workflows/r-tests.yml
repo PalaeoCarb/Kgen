@@ -24,6 +24,9 @@ jobs:
           R -e 'library(remotes)'
           R -e 'remotes::install_local("r")'
           R -e 'library("Kgen")'
+          R -e 'reticulate::install_miniconda()'
+          R -e 'reticulate::use_miniconda("r-reticulate")'
+          R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
       - name: Running Kgen
         run: |
-          printf 'yes' | remotes::check("r")
+          remotes::check("r")

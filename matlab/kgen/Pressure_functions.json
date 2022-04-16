@@ -1,5 +1,0 @@
-{
-    "deltaV": "@(coefficients,t) coefficients(1) + coefficients(2)*t + coefficients(3)*t^2",
-    "deltaK": "@(coefficients,t) coefficients(1) + coefficients(2)*t",
-    "correction": "@(rp,t,p,deltaV,deltaK) exp(-(deltaV./(rp*(t+273.15)))*p + (0.5*deltaK/(rp*(t+273.15)))*p^2)"
-}

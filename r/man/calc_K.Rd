@@ -11,7 +11,8 @@ calc_K(
   Mg = 0.0528171,
   Ca = 0.0102821,
   P = NULL,
-  MyAMI_calc = TRUE
+  MyAMI_calc = TRUE,
+  run_MyAMI = TRUE
 )
 }
 \arguments{
@@ -27,14 +28,13 @@ calc_K(
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{MyAMI_calc}{TRUE/FALSE}
+\item{MyAMI_calc}{TRUE = calculate corrections with MyAMI, FALSE = "only" approximate corrections with MyAMI.}
+
+\item{run_MyAMI}{TRUE = calculate corrections with MyAMI, FALSE = don't calculate corrections with MyAMI.}
 }
 \value{
 Specified K at the given conditions
 }
 \description{
 Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.
-}
-\examples{
-calc_K("K0", 25, 35)
 }

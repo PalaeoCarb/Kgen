@@ -1,4 +1,5 @@
 # Simple helper script to check Kgen for R pre deployment.
+# This script is meant to be executed locally. 
 
 # Required packages
 # install.packages("devtools")
@@ -8,14 +9,14 @@
 devtools::unload("Kgen")
 devtools::install_local("r", force=T)
 
-# (1) Check and copy coefficients to "r/inst/
+# (1) Check and copy coefficients to "r/inst/"
 diff <- system('diff -r --exclude=".*" coefficients r/inst/coefficients')
 if(diff != 0){
   system('rsync -av coefficients r/inst/')
   message("New coefficient files. Syncing files to r/inst/coefficients directory.")
 }
 
-# (2) Check and copy check_values to "r/inst/
+# (2) Check and copy check_values to "r/tests/check_values"
 diff <- system('diff -r --exclude=".*" check_values r/tests/check_values')
 if(diff != 0){
   system('rsync -av check_values r/inst/')

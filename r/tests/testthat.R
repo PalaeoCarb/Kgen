@@ -2,7 +2,7 @@
 skip_if_no_pymyami <- function() {
   have_pymyami <- reticulate::py_module_available("pymyami")
   if (!have_pymyami)
-    skip("pymyami not available for testing")
+    testthat::skip("pymyami not available for testing")
 }
 
 testthat::test_that("Things work as expected", {

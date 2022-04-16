@@ -118,12 +118,13 @@ calc_Ks <- function(k_list, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, MyA
   }
     
   # Apply correction
-  KF = Fcorr[[k]]
-  if(!is.null(KF)){
-    check_KF = ifelse(KF != 0, KF, 1)
-    Ks[k] = Ks[k] * check_KF
+  for(k in unique(k_list)) {
+    KF = Fcorr[[k]]
+    if(!is.null(KF)){
+      Ks[k] = Ks[k] * KF
+    }
   }
-
+  
   return(Ks)
 }
 

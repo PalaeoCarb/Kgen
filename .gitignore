@@ -21,4 +21,6 @@ settings.json
 # Darwin (MacOS)
 .DS_Store
 
-
+# docs
+.jekyll-cache/*
+*.lock

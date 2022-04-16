@@ -1,20 +1,13 @@
-# Kgen
-Coefficients for consistently calculating and pressure correcting Ks for carbon calculation.
+## Kgen Documentation
 
-[![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
-[![Check K values - Python](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
+**Steps to run it locally**
+(1) [Install ruby](https://jekyllrb.com/docs/installation/)
+(2) Download Kgen docs
+(3) Install Jekyll and Bundler `gem install jekyll bundler`
+(4) Install all required packages `cd Docs && bundle install`
+(5) Start Jekyll `jekyll serve`
+(6) Now Kgen Docs should be accessible locally at http://127.0.0.1:4000
 
-## Availability
-- **Python** via the 'Kgen' python package [![PyPI version](https://badge.fury.io/py/Kgen.svg)](https://badge.fury.io/py/Kgen)
+## License
 
-- **R**: Download the Kgen R package directly from this repository with devtools `devtools::install_github('PalaeoCarb/Kgen/r')`
-
-## How this is intended to be used:
-
-The coefficients and functions provided here may be directly imported by scripts used for calculating carbon chemistry of seawater.
-The hope is to unify the outputs of these scripts by ensuring that they are using the same underlying parameters.
-
-Eventually, we hope these constants will be implemented in:
-- cbsyst (Python)
-- csys/BuCC (Matlab)
-- seacarb(?)/seacarbx (R)
+Kgen Docs use [Just the Docs](https://just-the-docs.github.io) theme, which is published under the [MIT License](http://opensource.org/licenses/MIT).

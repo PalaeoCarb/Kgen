@@ -9,7 +9,7 @@ permalink: /
 # Kgen
 {: .fs-9 }
 
-Kgen provides multi-language tools for calculating stoichiometric equilibirium constants (Ks) in the ocean at given Temperatire, Salinity, Pressure, [Mg] and [Ca].
+Kgen provides multi-language tools for calculating stoichiometric equilibirium constants (Ks) for seawater at given temperature, salinity, pressure, [Mg] and [Ca].
 {: .fs-6 .fw-300 }
 [Find out about Kgen](/about){: .btn .fs-5 .mb-4 .mb-md-0 }
 
@@ -17,13 +17,15 @@ Kgen provides multi-language tools for calculating stoichiometric equilibirium c
 
 Kgen is available for use in Matlab, Python and R.
 {: .fs-6 .fw-300 }
-[Get started in Matlab](/Matlab/getting-started){: .btn .fs-5 .mb-4 .mb-md-0 } [Get started in Python](Python/getting-started){: .btn .fs-5 .mb-4 .mb-md-0 } [Get started in R](R/getting-started){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Kgen in Matlab](/matlab){: .btn .fs-5 .mb-4 .mb-md-0 } 
+[Kgen in Python](/python){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Kgen in R](/r){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
 ### License
 
-Kgen is open-source and distributed under an [MIT license](https://github.com/PalaeoCarb/Kgen/blob/main/LICENSE).
+Kgen is open-source and distributed under an [MIT license](https://github.com/PalaeoCarb/Kgen/blob/main/LICENSE). You can find the source code on [GitHub](https://github.com/PalaeoCarb/Kgen).
 
 ### Contributing
 

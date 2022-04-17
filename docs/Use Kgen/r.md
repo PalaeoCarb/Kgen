@@ -22,7 +22,7 @@ This will install Kgen and its dependencies.
 
 ## Getting Started
 
-Two functions are available in Python, `calc_Ks()` for returning all available Ks and `calc_K()` for returning a single K. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pyMyAMI` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pyMyAMI`. This step should not require more than 5 minutes on modern systems.   
+Two functions are available, `calc_Ks()` for returning all available Ks and `calc_K()` for returning a single K. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems.   
 
 ```R
 library('Kgen')
@@ -47,14 +47,14 @@ calc_Ks(k_list, TC, S, Mg, Ca, P, MyAMI_calc)
 
 - **P**: Pressure in bar
 
-- **MyAMI_calc**: If set to `TRUE`, Kgen will calculate Mg and Ca correction factors directly using `pyMyAMI`. If set to `FALSE` Kgen will approximate the correction factors using a polynomial approximation in `pyMyAMI`. 
+- **MyAMI_calc**: If set to `TRUE`, Kgen will calculate Mg and Ca correction factors directly using `pymyami`. If set to `FALSE` Kgen will approximate the correction factors using a polynomial approximation in `pymyami`. 
 
-- **run_MyAMI**: Option in `calc_K()`	specifying if `pyMyAMI` is used to calculate or approximate Mg and Ca correction factors. Defaults to `TRUE` and should not be changed unless you know what you do. 
+- **run_MyAMI**: Option in `calc_K()` specifying if `pymyami` is used to calculate or approximate Mg and Ca correction factors. Defaults to `TRUE` and should not be changed unless you know what you do. 
 
 The inputs to **TC**, **S**, **Mg**, **Ca**, **Mg**, and **P** may be single numbers or arrays of numbers, but where they are arrays, the shape of the array must be the same. If any value is not specified, it defaults back to 'standard' conditions of 25 °C, 35 PSU, and 0 bar, with Mg and Ca at modern ocean concentrations (0.0528171 and 0.0102821 mol kg<sup>-1</sup>).
 
 ## Details
-For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pyMyAMI` in R upon the first time `calc_K()` or `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. 
+For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pymyami` in R upon the first time `calc_K()` or `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. 
 
 Kgen installation and operation example:
 

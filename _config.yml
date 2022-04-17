@@ -14,9 +14,9 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: Kgen
-description: Coefficients for consistently calculating and pressure correcting Ks for carbon calculation.
+description: Tools for consistently calculating and pressure correcting Ks for ocean carbon calculations.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://kgen.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://palaeocarb.github.io/Kgen/" # the base hostname & protocol for your site, e.g. http://example.com
 
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile", "docs/tests/",]

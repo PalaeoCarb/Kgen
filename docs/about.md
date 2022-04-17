@@ -2,7 +2,6 @@
 layout: default
 title: About Kgen
 nav_order: 2
-permalink: /about
 ---
 
 ## What is Kgen?

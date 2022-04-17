@@ -2,7 +2,6 @@
 layout: default
 parent: Use Kgen
 title: R
-permalink: /r
 ---
 
 # R
@@ -68,12 +67,14 @@ Kgen installation and operation example:
 # Test coefficient calculation using default values
 > calc_K('K0')
 
-[1] "Kgen requires r-Miniconda, which appears to not exist on your system."Would you like to install it now? (Yes/no/abbrechen) 
+[1] "Kgen requires r-Miniconda, which appears to not exist on your system."
+Would you like to install it now? (Yes/no/abbrechen) 
 
 # Confirm installation
 > yes
 
-> calc_K('K0')[1] 0.02839188
+> calc_K('K0')
+[1] 0.02839188
 ```
 
 ## See also

@@ -2,7 +2,6 @@
 layout: default
 parent: Use Kgen
 title: Matlab
-permalink: /matlab
 ---
 
 # Matlab

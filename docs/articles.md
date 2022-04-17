@@ -2,6 +2,7 @@
 layout: default
 title: Articles
 nav_order: 98
+permalink: articles
 ---
 
 ## List of projects that use Kgen

@@ -2,6 +2,7 @@
 layout: default
 parent: Use Kgen
 title: Python
+permalink: use_kgen/python
 ---
 
 # Python

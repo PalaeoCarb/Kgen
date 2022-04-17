@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="22.363312mm"
+   height="23.853346mm"
+   viewBox="0 0 22.363312 23.853346"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     lock-margins="true"
+     fit-margin-top="0.5"
+     fit-margin-left="0.5"
+     fit-margin-right="0.5"
+     fit-margin-bottom="0.5"
+     inkscape:zoom="1.9588846"
+     inkscape:cx="67.13004"
+     inkscape:cy="85.763093"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="text6392" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient14524">
+      <stop
+         style="stop-color:#0082ee;stop-opacity:1"
+         offset="0"
+         id="stop14520" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0.7187922"
+         offset="1"
+         id="stop14522" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient13188">
+      <stop
+         style="stop-color:#da0000;stop-opacity:1"
+         offset="0"
+         id="stop13184" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop13186" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient12056">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop12052" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop12054" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient12056"
+       id="linearGradient12146"
+       x1="80.798409"
+       y1="86.045906"
+       x2="97.208717"
+       y2="67.332764"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient13188"
+       id="radialGradient13190"
+       cx="98.313622"
+       cy="66.850159"
+       fx="98.313622"
+       fy="66.850159"
+       r="3.8481021"
+       gradientTransform="matrix(1,0,0,0.95049456,0,3.3094469)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient14524"
+       id="radialGradient14114"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(4.2870738,0,-2.2888297e-8,4.3211158,-318.36295,-223.82199)"
+       cx="97.194046"
+       cy="67.286995"
+       fx="97.194046"
+       fy="67.286995"
+       r="3.8481021" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-80.298408,-62.69256)">
+    <g
+       aria-label="K"
+       id="text2734"
+       style="font-size:25.4px;line-height:1.25;fill:url(#linearGradient12146);fill-opacity:1;stroke-width:0.264583" />
+    <g
+       aria-label="*"
+       id="text6392"
+       style="font-size:25.4px;line-height:1.25;fill:url(#radialGradient13190);fill-opacity:1;stroke-width:0.264583">
+      <path
+         id="path12030"
+         style="fill:url(#radialGradient14114);fill-opacity:1"
+         d="m 97.513516,63.19256 0.127,2.8448 -2.6924,-0.9652 -0.4826,1.4986 2.7432,0.762 -1.7526,2.2606 1.27,0.9144 1.6002,-2.3622 1.5748,2.3622 1.295404,-0.9144 -1.778004,-2.2606 2.743204,-0.762 -0.4826,-1.4986 -2.692404,0.9652 0.127,-2.8448 z m -12.905108,16.655746 1.905,-1.9812 6.0706,8.1788 h 4.5466 l -8.1788,-10.541 7.3914,-7.9756 h -4.4958 l -7.239,8.128 v -8.128 h -3.81 v 18.5166 h 3.81 z" />
+    </g>
+  </g>
+</svg>

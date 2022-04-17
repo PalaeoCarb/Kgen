@@ -23,5 +23,4 @@ settings.json
 
 # docs
 .jekyll-cache/*
-*.lock
 _site/*

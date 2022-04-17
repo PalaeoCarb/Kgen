@@ -2,6 +2,7 @@
 layout: default
 parent: Use Kgen
 title: R
+permalink: use_kgen/r
 ---
 
 # R

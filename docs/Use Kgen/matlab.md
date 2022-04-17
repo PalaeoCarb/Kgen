@@ -2,6 +2,7 @@
 layout: default
 parent: Use Kgen
 title: Matlab
+permalink: use_kgen/matlab
 ---
 
 # Matlab

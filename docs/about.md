@@ -44,17 +44,17 @@ Kgen conducts a number of automated tests whenever the underlying code is change
 
 1. Calculated Ks and pressure correction factors for modern seawater are checked against the nominal values provided in [Dickson, Sabine and Christian (2007)](https://cdiac.ess-dive.lbl.gov/ftp/oceans/Handbook_2007/Guide_all_in_one.pdf).
 
-[![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
-[![Check K values - Python](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
-[![Check K values - R](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml)
+[![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20Matlab/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
+[![Check K values - Python](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20Python/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
+[![Check K values - R](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20R/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml)
 
 2. MyAMI correction factors for seawater Mg and Ca produced by the `pymyami` package are checked against values produced by the original model of [Hain et al., (2015)](https://doi.org/10.1002/2014GB004986), with modifications after [Zeebe & Tyrrel (2018)]( https://doi.org/10.1002/2017GB005786).
 
-[![Check MyAMI Performance](https://github.com/PalaeoCarb/MyAMI/actions/workflows/test-myami.yml/badge.svg)](https://github.com/PalaeoCarb/MyAMI/actions/workflows/test-myami.yml)
+[![Check MyAMI Performance](https://github.com/PalaeoCarb/MyAMI/workflows/Check%20MyAMI%20Performance/badge.svg)](https://github.com/PalaeoCarb/MyAMI/actions/workflows/test-myami.yml)
 
 3. To ensure consistency between languages, we calculate Ks across the complete valid input range of temperature, salinity, pressure, Mg and Ca with each language, and conduct an inter-comparison between the Ks calculated by each language.
 
-[![Crosscheck Methods](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml)
+[![Crosscheck Methods](https://github.com/PalaeoCarb/Kgen/workflows/Crosscheck%20Methods/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml)
 
 ### A note on pH Scales
 

@@ -1,10 +1,13 @@
 # Kgen
 Coefficients for consistently calculating and pressure correcting Ks for carbon calculation.
 
-[![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
-[![Check K values - Python](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
-[![Check K values - R](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml)
-[![Crosscheck Methods](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml)
+### Tests
+
+[![Check K values - Matlab](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20Matlab/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/matlab-tests.yml)
+[![Check K values - Python](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20Python/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/python-tests.yml)
+[![Check K values - R](https://github.com/PalaeoCarb/Kgen/workflows/Check%20K%20values%20-%20R/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/r-tests.yml)
+
+[![Crosscheck Methods](https://github.com/PalaeoCarb/Kgen/workflows/Crosscheck%20Methods/badge.svg)](https://github.com/PalaeoCarb/Kgen/actions/workflows/crosscheck.yml)
 
 ## Availability
 - **Python** via the 'Kgen' python package [![PyPI version](https://badge.fury.io/py/Kgen.svg)](https://badge.fury.io/py/Kgen)

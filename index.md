@@ -11,15 +11,15 @@ permalink: /
 
 Kgen provides multi-language tools for calculating stoichiometric equilibirium constants (Ks) for seawater at given temperature, salinity, pressure, [Mg] and [Ca].
 {: .fs-6 .fw-300 }
-[Find out about Kgen](/about){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Find out about Kgen](/Kgen/about){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ## Use Kgen
 
 Kgen is available for use in Matlab, Python and R.
 {: .fs-6 .fw-300 }
-[Kgen in Matlab](/matlab){: .btn .fs-5 .mb-4 .mb-md-0 } 
-[Kgen in Python](/python){: .btn .fs-5 .mb-4 .mb-md-0 }
-[Kgen in R](/r){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Kgen in Matlab](/Kgen/use_kgen/matlab){: .btn .fs-5 .mb-4 .mb-md-0 } 
+[Kgen in Python](/Kgen/use_kgen/python){: .btn .fs-5 .mb-4 .mb-md-0 }
+[Kgen in R](/Kgen/use_kgen/r){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 

@@ -32,7 +32,11 @@ if(!identical(dev_checks$errors, character(0))) stop("At least one error in devt
 if(!identical(dev_checks$warnings, character(0))) stop("At least one warning in devtools::check")
 if(!identical(dev_checks$notes, character(0))) stop("At least one note in devtools::check")
 
-# (4) Check against CRAN requirements
+# (4) Load and test Kgen
+library('Kgen')
+calc_Ks()
+
+# (5) Check against CRAN requirements
 devtools::build("r")
 Kgen_tar <- list.files()[grep("*.tar.gz",list.files())]
 rhub::check_for_cran(Kgen_tar) 

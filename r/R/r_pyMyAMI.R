@@ -1,3 +1,6 @@
+# Specify pymyami version 
+pymyami_version <- "2.0a3"
+
 # Check if OS is Windows
 is_windows <- function(){
   Sys.info()["sysname"] == "Windows"
@@ -50,6 +53,14 @@ mc_exists <- function(path = miniconda_path()) {
   file.exists(conda)
 }
 
+#' Check if pymyami is installed
+#'
+#' @importFrom reticulate py_list_packages
+pymyami_exists <- function() {
+  check_version <- reticulate::py_list_packages()
+  ifelse(paste0("pymyami=", pymyami_version) %in% check_version$requirement, TRUE, FALSE)
+}
+
 #' Install MyAMI from pypi
 #'
 #' @importFrom reticulate install_miniconda
@@ -59,12 +70,13 @@ mc_exists <- function(path = miniconda_path()) {
 install_pymyami <- function() {
 
   # Check if miniconda is installed 
-  ifelse(mc_exists(), print("Miniconda is already installed."), install_miniconda())
+  ifelse(mc_exists(), "Miniconda is already installed.", install_miniconda())
   
   # Select python environment
   reticulate::use_miniconda("r-reticulate")
   
-  reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)
+  # Install required version of pyMyAMI
+  reticulate::py_install(paste0("pymyami==", pymyami_version), envname = "r-reticulate", pip=T)
   
   # Import pyMyAMI
   reticulate::import("pymyami")

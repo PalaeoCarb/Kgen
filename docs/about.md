@@ -15,9 +15,9 @@ permalink: about
 
 There are multiple tools available for calculating the speciation of carbon in seawater, implemented across multiple platforms and languages. These are used to calculate the state of carbon in modern seawater, and incorporated into routines used to construct records of carbon in palaeo-seawater by integrating proxy records. All of these approaches rely on Ks, which describe the dissociation of weak acids and bases in seawater as a function of pH.
 
-The history of calculating seawater Ks is long and tortuous, plagued by generations of typos and inconsistencies. These have been gradually corrected over time, but these corrections are often done in the back-end of manually-maintained code repositories, where it is difficult to keep track of what has changed when.
+The history of calculating seawater Ks is long and tortuous, plagued by generations of typos and inconsistencies. Thanks to the heroic efforts of a lot of people, these discrepancies have been gradually corrected over time to the point where the majority of carbon calculation tools produce comparable results in modern seawater. However, the corrections to get to this point are often done in the back-end of manually-maintained code repositories, where it is difficult to keep track of what has changed when, and which of the numerous historic definitions in the literature is 'correct'.
 
-This presents newcomers to the field seeking to calculate Ks with a daunting array of options and difficulties. How do they calculate Ks in seawater, and how do they know if their calculations are correct? 
+This presents newcomers to the field seeking to calculate Ks with a daunting array of options. How do they calculate Ks in seawater, and how do they know if their calculations are correct?
 
 This issue has been largely solved in modern seawater by publications such as the `Guide to Best Practices for Ocean CO<sub>2</sub> Measurement' ([Dickson, Sabine and Christian, 2007](https://cdiac.ess-dive.lbl.gov/ftp/oceans/Handbook_2007/Guide_all_in_one.pdf)), which provides a clear and concise description of K calculation along with 'check values' to confirm your implementation of them.
 
@@ -32,7 +32,7 @@ With Kgen, we aim to transparently address all these uncertainties, and present 
 
 For modern seawater, we use the reference formulae for K calculation and pressure corrections in [Dickson, Sabine and Christian (2007)](https://cdiac.ess-dive.lbl.gov/ftp/oceans/Handbook_2007/Guide_all_in_one.pdf). These functions have been manually implemented in each language, but all use a shared database of coefficients within these functions, ensuring that the Ks are consistent across all languages.
 
-For Mg and Ca adjustment, we use a modified version of the MyAMI ion interaction model ([Hain et al., 2015](https://doi.org/10.1002/2014GB004986)), which is available as a standalone Python package [pymyami](https://github.com/PalaeoCarb/pymyami). This modification of MyAMI brings a number of improvements over the origina, most notably calculationg speed (2-4 orders of magnitude faster). For a full account of these differences, see the [MyAMI GitHub page](https://github.com/PalaeoCarb/MyAMI).
+For Mg and Ca adjustment, we use a modified version of the MyAMI ion interaction model ([Hain et al., 2015](https://doi.org/10.1002/2014GB004986)), which is available as a standalone Python package [pymyami](https://github.com/PalaeoCarb/pymyami). This modification of MyAMI brings a number of improvements over the original, most notably calculation speed (2-4 orders of magnitude faster). For a full account of these differences, see the [pymyami GitHub page](https://github.com/PalaeoCarb/pymyami).
 
 For cases where calculation speed is of particular concern, we also provide a polynomial approximation of the K correction factors calculated by MyAMI (accurate to ~0.25%), which can be used instead of the full MyAMI calculation.
 

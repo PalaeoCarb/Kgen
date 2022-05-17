@@ -29,7 +29,7 @@ classdef kgen_static
         end
         function KS = calculate_KS(coefficients,t,s)
             i = kgen.kgen_static.calculate_ionic_strength(s);
-            KS = exp(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5) + coefficients(6).*log(t)) + i.*(coefficients(7)./t + coefficients(8) + coefficients(9).*log(t)) + (coefficients(10).*i.^1.5)/t + (coefficients(11).*i.^2)/t + log(1-0.001005*s));
+            KS = exp(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5) + coefficients(6).*log(t)) + i.*(coefficients(7)./t + coefficients(8) + coefficients(9).*log(t)) + (coefficients(10).*i.^1.5)./t + (coefficients(11).*i.^2)./t + log(1-0.001005*s));
         end
         function KF = calculate_KF(coefficients,t,s)
             i = kgen.kgen_static.calculate_ionic_strength(s);
@@ -71,37 +71,69 @@ classdef kgen_static
 
             deltaV = coefficients(1) + coefficients(2).*t + coefficients(3).*t.^2;
             deltaK = coefficients(4) + coefficients(5).*t;
-            pressure_correction = exp(-(deltaV./(rp*(t+273.15))).*p + (0.5.*deltaK/(rp.*(t+273.15))).*p.^2);
+            pressure_correction = exp(-(deltaV./(rp*(t+273.15))).*p + (0.5.*deltaK./(rp.*(t+273.15))).*p.^2);
         end
-        function seawater_correction = calculate_seawater_correction(name,t,s,mg,ca)
+        function seawater_correction = calculate_seawater_correction(names,t,s,mg,ca,method)
+            if nargin<6
+                method = "MyAMI";
+            end
             polynomial_coefficients = jsondecode(fileread("./polynomial_coefficients.json"));
             seawater_correction_names = string(fieldnames(polynomial_coefficients));
-            if ~any(name==seawater_correction_names)
+            if ~any(names==seawater_correction_names)
                 seawater_correction = 1;
                 return
             end
-            polynomial_values = NaN(1,56);
-            seawater_correction = NaN(numel(t),1);
+            for name = names
+                seawater_correction.(name) = NaN(numel(t),1);
+            end
 
-            for condition_index = 1:numel(t)
-                conditions = [1,t(condition_index)+273.15,log(t(condition_index)+273.15),s(condition_index),mg(condition_index),ca(condition_index)];
+            if method=="Matlab_Polynomial"
     
-                condition_matrix = conditions.*conditions'.*reshape(conditions,[1,1,6]);
-                polynomial_values = NaN(56,1);
-    
-                count = 1;
-                for order_1 = 1:size(condition_matrix,1)
-                    for order_2 = 1:size(condition_matrix,2)
-                        for order_3 = 1:size(condition_matrix,2)
-                            if ((order_1<=order_2) && (order_2<=order_3))
-                                polynomial_values(count) = condition_matrix(order_1,order_2,order_3);
-                                count = count+1;
+                for condition_index = 1:numel(t)
+                    conditions = [1,t(condition_index)+273.15,log(t(condition_index)+273.15),s(condition_index),mg(condition_index),ca(condition_index)];
+        
+                    condition_matrix = conditions.*conditions'.*reshape(conditions,[1,1,6]);
+                    polynomial_values = NaN(56,1);
+                    
+                    count = 1;
+                    for order_1 = 1:size(condition_matrix,1)
+                        for order_2 = 1:size(condition_matrix,2)
+                            for order_3 = 1:size(condition_matrix,2)
+                                if ((order_1<=order_2) && (order_2<=order_3))
+                                    polynomial_values(count) = condition_matrix(order_1,order_2,order_3);
+                                    count = count+1;
+                                end
                             end
                         end
                     end
+                    
+                    for name = string(fieldnames(polynomial_coefficients))'
+                        seawater_correction.(name)(condition_index) = dot(polynomial_coefficients.(name),polynomial_values);
+                    end
                 end
-    
-                seawater_correction(condition_index) = dot(polynomial_coefficients.(name),polynomial_values);
+            elseif method=="MyAMI_Polynomial"
+                numpy = py.importlib.import_module("numpy");
+                pymyami = py.importlib.import_module("pymyami");
+
+                local_t = numpy.array(t);
+                local_s = numpy.array(s);
+                local_mg = numpy.array(mg);
+                local_ca = numpy.array(ca);
+
+                seawater_correction = struct(pymyami.approximate_Fcorr(local_t,local_s,local_mg,local_ca));
+            elseif method=="MyAMI"
+                numpy = py.importlib.import_module("numpy");
+                pymyami = py.importlib.import_module("pymyami");
+
+                local_t = numpy.array(t);
+                local_s = numpy.array(s);
+                local_mg = numpy.array(mg);
+                local_ca = numpy.array(ca);
+
+                seawater_correction = struct(pymyami.calc_Fcorr(local_t,local_s,local_mg,local_ca));
+            
+            else
+                error("Unknown method - must be 'MyAMI','MyAMI_Polynomial' or 'Matlab_Polynomial'");
             end
         end
 
@@ -113,14 +145,18 @@ classdef kgen_static
             magnesium(isnan(magnesium)) = 0.0528171;
         end
 
-        function [K,pressure_correction,seawater_chemistry_correction] = calculate_K(name,temperature,salinity,pressure,calcium,magnesium)
+        function [K,pressure_correction,seawater_chemistry_correction] = calculate_K(name,temperature,salinity,pressure,calcium,magnesium,seawater_correction_method)
+            if nargin<6
+                seawater_correction_method = "MyAMI";
+            end
+            
             pressure = kgen.kgen_static.estimate_pressure(pressure);
             [calcium,magnesium] = kgen.kgen_static.esimate_calcium_magnesium(calcium,magnesium);
             
             assert(numel(name)==1,"Should have one value for name - did you mean calculate_Ks?")
-            assert(all(temperature>0) && all(temperature<40),"Temperature only valid between 0 and 40C")
-            assert(all(salinity>30) && all(salinity<40),"Salinity only valid between 30 and 40")
-            assert(all(calcium>0) && all(calcium<0.06) && all(magnesium>0) && all(magnesium<0.06),"Calcium and magnesium concentration only valid between 0 and 0.06 mol/kg")
+            assert(all(temperature>=0) && all(temperature<40),"Temperature only valid between 0 and 40C")
+            assert(all(salinity>=30) && all(salinity<=40),"Salinity only valid between 30 and 40")
+            assert(all(calcium>=0) && all(calcium<=0.06) && all(magnesium>=0) && all(magnesium<=0.06),"Calcium and magnesium concentration only valid between 0 and 0.06 mol/kg")
 
             K_coefficients = jsondecode(fileread("./../coefficients/K_calculation.json"));
 
@@ -133,17 +169,35 @@ classdef kgen_static
             pressure_correction = kgen.kgen_static.calculate_pressure_correction(name,temperature,pressure);
             K = K.*pressure_correction;
             
-            seawater_chemistry_correction = kgen.kgen_static.calculate_seawater_correction(name,temperature,pressure,calcium,magnesium);
-            K = K.*seawater_chemistry_correction';
-        end
-        function [Ks,pressure_correction,seawater_correction] = calculate_Ks(names,temperature,salinity,pressure,calcium,magnesium)
-            for K_index = 1:numel(names)
-                [Ks.(names(K_index)),pressure_correction.(names(K_index)),seawater_correction.(names(K_index))] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium);
+            if seawater_correction_method~="None" && seawater_correction_method~=""
+                seawater_chemistry_correction = kgen.kgen_static.calculate_seawater_correction(name,temperature,pressure,calcium,magnesium);
+                K = K.*seawater_chemistry_correction';
+            else
+                seawater_chemistry_correction = NaN;
             end
         end
-        function [Ks,pressure_correction,seawater_correction] = calculate_all_Ks(temperature,salinity,pressure,calcium,magnesium)
+        function [Ks,pressure_correction,seawater_correction] = calculate_Ks(names,temperature,salinity,pressure,calcium,magnesium,seawater_correction_method)
+            if nargin<6
+                seawater_correction_method = "MyAMI";
+            end
+            if numel(names)==1
+                [Ks.(names(1)),pressure_correction.(names(1)),seawater_correction.(names(1))] = kgen.kgen_static.calculate_K(names(1),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method);
+            else
+                seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,calcium,magnesium,seawater_correction_method);
+                for K_index = 1:numel(names)                   
+                    [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium,"None");
+                    if contains(fieldnames(seawater_correction),names(K_index))
+                        Ks.(names(K_index)) = Ks.(names(K_index)).*double(seawater_correction.(names(K_index)));
+                    end
+                end
+            end
+        end
+        function [Ks,pressure_correction,seawater_correction] = calculate_all_Ks(temperature,salinity,pressure,calcium,magnesium,seawater_correction_method)
+            if nargin<6
+                seawater_correction_method = "MyAMI";
+            end
             K_map = kgen.kgen_static.build_K_map();
-            [Ks,pressure_correction,seawater_correction] = kgen.kgen_static.calculate_Ks(string(keys(K_map)),temperature,salinity,pressure,calcium,magnesium);
+            [Ks,pressure_correction,seawater_correction] = kgen.kgen_static.calculate_Ks(string(keys(K_map)),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method);
         end
     end
 end

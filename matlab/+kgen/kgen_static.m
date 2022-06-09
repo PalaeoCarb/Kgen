@@ -77,7 +77,7 @@ classdef kgen_static
             if nargin<6
                 method = "MyAMI";
             end
-            polynomial_coefficients = jsondecode(fileread("./polynomial_coefficients.json"));
+            polynomial_coefficients = jsondecode(fileread("polynomial_coefficients.json"));
             seawater_correction_names = string(fieldnames(polynomial_coefficients));
             if ~any(names==seawater_correction_names)
                 seawater_correction = 1;
@@ -121,6 +121,9 @@ classdef kgen_static
                 local_ca = numpy.array(ca);
 
                 seawater_correction = struct(pymyami.approximate_Fcorr(local_t,local_s,local_mg,local_ca));
+                for name = string(fieldnames(seawater_correction))'
+                    seawater_correction.(name) = double(seawater_correction.(name))';
+                end
             elseif method=="MyAMI"
                 numpy = py.importlib.import_module("numpy");
                 pymyami = py.importlib.import_module("pymyami");
@@ -131,6 +134,9 @@ classdef kgen_static
                 local_ca = numpy.array(ca);
 
                 seawater_correction = struct(pymyami.calc_Fcorr(local_t,local_s,local_mg,local_ca));
+                for name = string(fieldnames(seawater_correction))'
+                    seawater_correction.(name) = double(seawater_correction.(name))';
+                end
             
             else
                 error("Unknown method - must be 'MyAMI','MyAMI_Polynomial' or 'Matlab_Polynomial'");
@@ -184,10 +190,11 @@ classdef kgen_static
                 [Ks.(names(1)),pressure_correction.(names(1)),seawater_correction.(names(1))] = kgen.kgen_static.calculate_K(names(1),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method);
             else
                 seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,calcium,magnesium,seawater_correction_method);
-                for K_index = 1:numel(names)                   
+                for K_index = 1:numel(names)
                     [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium,"None");
-                    if contains(fieldnames(seawater_correction),names(K_index))
-                        Ks.(names(K_index)) = Ks.(names(K_index)).*double(seawater_correction.(names(K_index)));
+                    if any(string(fieldnames(seawater_correction))==names(K_index))
+                        seawater_correction.(names(K_index)) = double(seawater_correction.(names(K_index)));
+                        Ks.(names(K_index)) = Ks.(names(K_index)).*seawater_correction.(names(K_index));
                     end
                 end
             end

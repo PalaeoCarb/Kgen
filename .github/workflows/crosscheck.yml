@@ -49,7 +49,7 @@ jobs:
       - name: Run Matlab script
         uses: matlab-actions/run-command@v1
         with:
-          command: cd 'crosscheck',gen_matlab
+          command: cd 'crosscheck',addpath("./../matlab/"),gen_matlab
       - name: Comparing Kgen Outputs
         run: |
           cd crosscheck

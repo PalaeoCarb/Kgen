@@ -46,6 +46,8 @@ jobs:
           Rscript gen_r.r
       - name: Setup Matlab
         uses: matlab-actions/setup-matlab@v1
+        run: |
+          cd crosscheck
       - name: Run Matlab script
         uses: matlab-actions/run-command@v1
         with:

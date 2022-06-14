@@ -16,5 +16,5 @@ for name = string(fieldnames(kgen_full))'
 end
 
 writetable(struct2table(kgen_full),"./generated_Ks/matlab_calculated.csv")
-writetable(struct2table(kgen_python),"./generated_Ks/matlab_python_approximated.csv")
+%writetable(struct2table(kgen_python),"./generated_Ks/matlab_python_approximated.csv")
 writetable(struct2table(kgen_matlab),"./generated_Ks/matlab_approximated.csv")

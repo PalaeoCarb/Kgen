@@ -87,8 +87,7 @@ classdef kgen_static
                 seawater_correction.(name) = NaN(numel(t),1);
             end
 
-            if method=="Matlab_Polynomial"
-    
+            if method=="Matlab_Polynomial"    
                 for condition_index = 1:numel(t)
                     conditions = [1,t(condition_index)+273.15,log(t(condition_index)+273.15),s(condition_index),mg(condition_index),ca(condition_index)];
         
@@ -133,7 +132,7 @@ classdef kgen_static
                 local_mg = numpy.array(mg);
                 local_ca = numpy.array(ca);
 
-                seawater_correction = struct(pymyami.calc_Fcorr(local_t,local_s,local_mg,local_ca));
+                seawater_correction = struct(pymyami.calc_Fcorr(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
                 for name = string(fieldnames(seawater_correction))'
                     seawater_correction.(name) = double(seawater_correction.(name))';
                 end
@@ -186,10 +185,14 @@ classdef kgen_static
             if nargin<6
                 seawater_correction_method = "MyAMI";
             end
+            
+            pressure = kgen.kgen_static.estimate_pressure(pressure);
+            [calcium,magnesium] = kgen.kgen_static.esimate_calcium_magnesium(calcium,magnesium);
+            
             if numel(names)==1
                 [Ks.(names(1)),pressure_correction.(names(1)),seawater_correction.(names(1))] = kgen.kgen_static.calculate_K(names(1),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method);
             else
-                seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,calcium,magnesium,seawater_correction_method);
+                seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,magnesium,calcium,seawater_correction_method);
                 for K_index = 1:numel(names)
                     [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium,"None");
                     if any(string(fieldnames(seawater_correction))==names(K_index))

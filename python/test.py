@@ -43,9 +43,7 @@ class checkKValues(unittest.TestCase):
         P = check['input_conditions']['P']
         TC = check['input_conditions']['TC']
         
-        print(check["check_values"])
         for k, p in pcoefs['coefficients'].items():
-            print(k)
             if k in check['check_values']:            
                 pF = prescorr(p, P=P, TC=TC)
 

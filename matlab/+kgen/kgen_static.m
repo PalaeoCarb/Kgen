@@ -55,10 +55,14 @@ classdef kgen_static
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KP3 = exp(coefficients(1)./t + coefficients(2) + sqrt(s).*(coefficients(3)./t + coefficients(4)) + s.*(coefficients(5)./t + coefficients(6)));
         end
+        function KSi = calculate_KSi(coefficients,t,s)        
+            i = kgen.kgen_static.calculate_ionic_strength(s);
+            KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
+        end
 
         function K_map = build_K_map()
-            K_names = ["K0","K1","K2","KB","KW","KS","KF","KspC","KspA","KP1","KP2","KP3"];
-            K_functions = {@kgen.kgen_static.calculate_K0,@kgen.kgen_static.calculate_K1,@kgen.kgen_static.calculate_K2,@kgen.kgen_static.calculate_KB,@kgen.kgen_static.calculate_KW,@kgen.kgen_static.calculate_KS,@kgen.kgen_static.calculate_KF,@kgen.kgen_static.calculate_KspC,@kgen.kgen_static.calculate_KspA,@kgen.kgen_static.calculate_KP1,@kgen.kgen_static.calculate_KP2,@kgen.kgen_static.calculate_KP3};
+            K_names = ["K0","K1","K2","KB","KW","KS","KF","KspC","KspA","KP1","KP2","KP3","KSi"];
+            K_functions = {@kgen.kgen_static.calculate_K0,@kgen.kgen_static.calculate_K1,@kgen.kgen_static.calculate_K2,@kgen.kgen_static.calculate_KB,@kgen.kgen_static.calculate_KW,@kgen.kgen_static.calculate_KS,@kgen.kgen_static.calculate_KF,@kgen.kgen_static.calculate_KspC,@kgen.kgen_static.calculate_KspA,@kgen.kgen_static.calculate_KP1,@kgen.kgen_static.calculate_KP2,@kgen.kgen_static.calculate_KP3,@kgen.kgen_static.calculate_KSi};
             K_map = containers.Map(K_names,K_functions);
         end
 
@@ -106,8 +110,12 @@ classdef kgen_static
                         end
                     end
                     
-                    for name = string(fieldnames(polynomial_coefficients))'
-                        seawater_correction.(name)(condition_index) = dot(polynomial_coefficients.(name),polynomial_values);
+                    for name = names
+                        if any(string(fieldnames(polynomial_coefficients))==name)
+                            seawater_correction.(name)(condition_index) = dot(polynomial_coefficients.(name),polynomial_values);
+                        else
+                            seawater_correction.(name)(condition_index) = 1;
+                        end
                     end
                 end
             elseif method=="MyAMI_Polynomial"

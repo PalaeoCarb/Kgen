@@ -43,14 +43,15 @@ class checkKValues(unittest.TestCase):
         P = check['input_conditions']['P']
         TC = check['input_conditions']['TC']
         
-
+        print(check["check_values"])
         for k, p in pcoefs['coefficients'].items():
-            
-            pF = prescorr(p, P=P, TC=TC)
+            print(k)
+            if k in check['check_values']:            
+                pF = prescorr(p, P=P, TC=TC)
 
-            checkval = check['check_values'][k]
-        
-            self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
+                checkval = check['check_values'][k]
+            
+                self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
 
     def test_boilerplate(self):
         with open("../check_values/check_Ks.json") as f:

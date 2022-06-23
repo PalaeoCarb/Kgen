@@ -95,8 +95,8 @@ classdef kgen_static
                         [x,y,z] = meshgrid(1:number_of_parameters,1:number_of_parameters,1:number_of_parameters);
                         combination_array = unique([x(:),y(:),z(:)],"rows");
                         combination_subset = combination_array(combination_array(:,2)>=combination_array(:,1) & combination_array(:,3)>=combination_array(:,2),:);
-                        linear_index = (6^2 * (combination_subset(:,1)-1)) + (6 * (combination_subset(:,2)-1)) + combination_subset(:,3);
-        
+                        linear_index = dot(repmat(6.^[2,1,0],size(combination_subset,1),1),combination_subset-1,2)+1;
+
                         conditions = [ones(numel(t),1),t+273.15,log(t+273.15),s,mg,ca];
                         condition_matrix = reshape(conditions,[numel(t),number_of_parameters,1,1]).*reshape(conditions,[numel(t),1,number_of_parameters,1]).*reshape(conditions,[numel(t),1,1,number_of_parameters]);
                         condition_extracted = condition_matrix(:,linear_index);

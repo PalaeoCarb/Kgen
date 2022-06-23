@@ -441,7 +441,7 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
     return K
 
 
-def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, MyAMI_mode='calculate', K_list=None):
+def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, MyAMI_mode='calculate', K_list=None):
     """
     Calculate all stoichiometric equilibrium constants at given
     temperature, salinity and pressure.

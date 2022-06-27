@@ -44,6 +44,12 @@ jobs:
         run: |
           cd crosscheck
           Rscript gen_r.r
+      - name: Setup Matlab
+        uses: matlab-actions/setup-matlab@v1
+      - name: Run Matlab script
+        uses: matlab-actions/run-command@v1
+        with:
+          command: cd 'crosscheck',addpath("./../matlab/"),gen_matlab
       - name: Comparing Kgen Outputs
         run: |
           cd crosscheck

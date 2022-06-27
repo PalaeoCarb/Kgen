@@ -8,11 +8,6 @@ salinity = check_values.input_conditions.S;
 ionic_strength = (19.924.*salinity)./(1000-1.005.*salinity); % see Dickson 2007
 
 pressure = pressure_check_values.input_conditions.P;
-% R_P = fundamental_constants.coefficients.R_P;
-
-% for K_index = 1:numel(K_names)
-%     K_output.(K_names(K_index)) = NaN;
-% end
 
 tolerance = 1;
 

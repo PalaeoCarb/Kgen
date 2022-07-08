@@ -25,11 +25,14 @@ class checkKValues(unittest.TestCase):
             K = K_fns[k](p, TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
             check_val = check['check_values'][k]
-            sigfig = len(str(check_val).rstrip('0').split('.')[1])
+            sigfig = len(str(check_val).rstrip('0').split('.')[1])  # determine significant figures of check value
             
             self.assertAlmostEqual(np.log(K), check['check_values'][k], msg=f'{k}: {K}', places=sigfig)
 
     def test_presscorr(self):
+        """
+        Test pressure correction coefficients on K values.
+        """
         with open('../coefficients/K_pressure_correction.json') as f:
             pcoefs = json.load(f)
 
@@ -40,14 +43,13 @@ class checkKValues(unittest.TestCase):
         P = check['input_conditions']['P']
         TC = check['input_conditions']['TC']
         
-
         for k, p in pcoefs['coefficients'].items():
-            
-            pF = prescorr(p, P=P, TC=TC)
+            if k in check['check_values']:            
+                pF = prescorr(p, P=P, TC=TC)
 
-            checkval = check['check_values'][k]
-        
-            self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
+                checkval = check['check_values'][k]
+            
+                self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
 
     def test_boilerplate(self):
         with open("../check_values/check_Ks.json") as f:

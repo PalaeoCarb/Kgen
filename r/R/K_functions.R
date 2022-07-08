@@ -2,12 +2,8 @@
 #'
 #' @param S Salinity
 #' @return Ionic strength
-#' @examples
-#' fn_Istr(35)
 fn_Istr <- function(S){ 
-  
-  # Ionic strength after Dickson 1990a; see Dickson et al 2007
-  
+
   Istr = 19.924 * S / (1000 - 1.005 * S)
 
   return(Istr)
@@ -203,7 +199,6 @@ fn_KP3 <- function(p, TK, S){
 fn_KSi <- function(p, TK, S){
 
   Istr = fn_Istr(S) 
-  
   tmp = exp(p[1] / TK + 
         p[2] +
         p[3] * log(TK) +
@@ -253,7 +248,23 @@ fn_pc <- function(p, P, TC) {
   
   RT = 83.1451 * (TC + 273.15)
   
-  prescorr = (-dV + 0.5 * dk * P) * P / RT
+  prescorr = exp((-dV + 0.5 * dk * P) * P / RT)
   
   return(prescorr)
 }   
+
+#' List of all functions
+K_fns <- list(
+  K0 = fn_K0,
+  K1 = fn_K1,
+  K2 = fn_K2,
+  KW = fn_KW,
+  KB = fn_KB,
+  KS = fn_KS,
+  KspA = fn_Ksp,
+  KspC = fn_Ksp,
+  KP1 = fn_KP1,
+  KP2 = fn_KP2,
+  KP3 = fn_KP3,
+  KSi = fn_KSi,
+  KF = fn_KF)

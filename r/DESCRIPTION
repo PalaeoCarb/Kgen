@@ -1,6 +1,7 @@
 Package: Kgen
-Title: Parameters for consistently calculating Ks for carbon calculation.
-Version: 0.0.0.1
+Type: Package
+Title: Parameters for Consistently Calculating Ks for Carbon Calculation
+Version: 0.0.1
 Authors@R: 
     person(given = "Dennis",
            family = "Mayk",
@@ -8,7 +9,15 @@ Authors@R:
            email = "dennis@mayk.eu",
            comment = c(ORCID = "0000-0002-5017-1495"))
 Description: Coefficients for consistently calculating and pressure correcting Ks for carbon calculation.
-License: use_gpl3_license()
+License: MIT + file LICENSE
 Encoding: UTF-8
+Depends:
+    R (>= 3.0)
+Imports:
+    rjson (>= 0.2.21),
+    reticulate
+Suggests:
+    rappdirs,
+    testthat
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2

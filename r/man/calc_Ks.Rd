@@ -11,7 +11,7 @@ calc_Ks(
   Mg = 0.0528171,
   Ca = 0.0102821,
   P = NULL,
-  MyAMI_calc = TRUE
+  method = "MyAMI"
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ calc_Ks(
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{MyAMI_calc}{TRUE/FALSE}
+\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (default = MyAMI).}
 }
 \value{
 Dataframe of specified Ks at the given conditions

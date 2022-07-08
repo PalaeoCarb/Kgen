@@ -34,12 +34,18 @@ if(!identical(dev_checks$notes, character(0))) stop("At least one note in devtoo
 
 # (4) Load and test Kgen
 library('Kgen')
-calc_Ks()
+test_MyAMI <- calc_K("K0",method="MyAMI", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
+test_MyAMI_Poly <- calc_K("K0",method="MyAMI_Polynomial", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
+test_R_Poly <- calc_K("K0", method="R_Polynomial", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
+
+test2_MyAMI <- calc_Ks(method="MyAMI", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
+test2_MyAMI_Poly <- calc_Ks(method="MyAMI_Polynomial", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
+test2_R_Poly <- calc_Ks(method="R_Polynomial", TC = c(24,26,27), S=c(34,35,36), Mg=c(0.0528171,0.0528171,0.0528171), Ca=c(0.0102821,0.0102821,0.0102821))
 
 # (5) Check against CRAN requirements
 devtools::build("r")
 Kgen_tar <- list.files()[grep("*.tar.gz",list.files())]
-rhub::check_for_cran(Kgen_tar) 
+rhub::check_for_cran(Kgen_tar, platforms = "macos-highsierra-release-cran") 
 system(paste('rm ', Kgen_tar))
 
 

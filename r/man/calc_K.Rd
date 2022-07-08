@@ -11,8 +11,8 @@ calc_K(
   Mg = 0.0528171,
   Ca = 0.0102821,
   P = NULL,
-  MyAMI_calc = TRUE,
-  run_MyAMI = TRUE
+  method = "MyAMI",
+  Kcorrect = TRUE
 )
 }
 \arguments{
@@ -22,15 +22,15 @@ calc_K(
 
 \item{S}{Salinity (PSU)}
 
-\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
 
-\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{MyAMI_calc}{TRUE = calculate corrections with MyAMI, FALSE = "only" approximate corrections with MyAMI.}
+\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (default = MyAMI).}
 
-\item{run_MyAMI}{TRUE = calculate corrections with MyAMI, FALSE = don't calculate corrections with MyAMI.}
+\item{Kcorrect}{TRUE = calculate corrections, FALSE = don't calculate corrections.}
 }
 \value{
 Specified K at the given conditions

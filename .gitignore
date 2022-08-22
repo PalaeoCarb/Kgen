@@ -21,3 +21,4 @@ settings.json
 
 # Darwin (MacOS)
 .DS_Store
+python/build/*

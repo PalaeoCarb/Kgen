@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Pythhon Dependencies
+      - name: Install Python Dependencies
         run: |
           cd python
           python3 -m pip install -r requirements.txt

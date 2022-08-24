@@ -15,6 +15,3 @@ Ionic strength
 \description{
 Ionic strength after Dickson (1990a); see Dickson et al. (2007)
 }
-\examples{
-fn_Istr(35)
-}

@@ -46,8 +46,6 @@ jobs:
           Rscript gen_r.r
       - name: Setup Matlab
         uses: matlab-actions/setup-matlab@v1
-      - name: Run Matlab script
-        uses: matlab-actions/run-command@v1
       - name: Setup Python venv
         run: |
           cd matlab
@@ -55,6 +53,8 @@ jobs:
           source .environment/bin/activate
           pip install -r python/requirements.txt
           cd ..
+      - name: Run Matlab script
+        uses: matlab-actions/run-command@v1
         with:
           command: cd 'crosscheck',addpath("./../matlab/"),pyenv('Version','./.environment/bin/python'),gen_matlab
       - name: Comparing Kgen Outputs

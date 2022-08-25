@@ -179,9 +179,9 @@ classdef kgen_static
 
             TS = calculate_TS(salinity);
             TF = calculate_TF(salinity);
-            KS_surf = K_map("KS")(K_coefficients.coefficients.("KS"),temperature+273.15,salinity);
+            KS_surf = calculate_KS(K_coefficients.coefficients.("KS"),temperature+273.15,salinity);
             KS_deep = KS_surf * kgen.kgen_static.calculate_pressure_correction("KS",temperature,pressure);
-            KF_surf = K_map("KF")(K_coefficients.coefficients.("KF"),temperature+273.15,salinity);
+            KF_surf = calculate_KF(K_coefficients.coefficients.("KF"),temperature+273.15,salinity);
             KF_deep = KF_surf * kgen.kgen_static.calculate_pressure_correction("KF",temperature,pressure);
             
             tot_to_sws_surface = (1+TS./KS_surf)./(1+TS/KS_surf+TF./KF_surf)

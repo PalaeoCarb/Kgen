@@ -253,6 +253,32 @@ fn_pc <- function(p, P, TC) {
   return(prescorr)
 }   
 
+#' Calculate TS
+#' From Dickson et al., 2007, Table 2
+#' Note: Sal / 1.80655 = Chlorinity#'
+#' 
+#' @param S Salinity
+#' @return TS
+calc_TS <- function(S){
+
+  TS = 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
+
+  return(TS)
+}
+
+#' Calculate TF
+#' From Dickson et al., 2007, Table 2
+#' Note: Sal / 1.80655 = Chlorinity
+#'
+#' @param S Salinity
+#' @return TF
+calc_TF <- function(S){
+
+  TF = 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
+
+  return(TF)
+}
+
 #' List of all functions
 K_fns <- list(
   K0 = fn_K0,

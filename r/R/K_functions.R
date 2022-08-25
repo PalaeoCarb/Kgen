@@ -226,32 +226,6 @@ fn_KF <- function(p, TK, S){
   return(KF)
 }
 
-
-#' Calculate TS
-#'
-#' @param S Salinity
-#' @return TS
-calc_TS <- function(S){
-  # From Dickson et al., 2007, Table 2
-  # Note: Sal / 1.80655 = Chlorinity
-  TS = 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
-
-  return(TS)
-}
-
-#' Calculate TF
-#'
-#' @param S Salinity
-#' @return TF
-calc_TS <- function(S){
-  # From Dickson et al., 2007, Table 2
-  # Note: Sal / 1.80655 = Chlorinity
-  TF = 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
-
-  return(TF)
-}
-
-
 #' Calculate pressure correction factor for Ks
 #' From Millero et al. (2007, doi:10.1021/cr0503557)
 #' Eqns 38-40
@@ -278,6 +252,32 @@ fn_pc <- function(p, P, TC) {
   
   return(prescorr)
 }   
+
+#' Calculate TS
+#' From Dickson et al., 2007, Table 2
+#' Note: Sal / 1.80655 = Chlorinity#'
+#' 
+#' @param S Salinity
+#' @return TS
+calc_TS <- function(S){
+
+  TS = 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
+
+  return(TS)
+}
+
+#' Calculate TF
+#' From Dickson et al., 2007, Table 2
+#' Note: Sal / 1.80655 = Chlorinity
+#'
+#' @param S Salinity
+#' @return TF
+calc_TF <- function(S){
+
+  TF = 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
+
+  return(TF)
+}
 
 #' List of all functions
 K_fns <- list(

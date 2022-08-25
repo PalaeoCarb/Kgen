@@ -83,7 +83,7 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, method="M
   K = K_fn(p=K_coefs[[k]], TK=TK, S=S)
   
   # Pressure correction?
-  if(!is.null(P) & k != "KSi") {
+  if(!is.null(P)) {
     TS = calc_TS(S)
     TF = calc_TF(S)
     
@@ -180,7 +180,7 @@ calc_Ks <- function(k_list, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, met
   }
   if(method == "R_Polynomial"){
     
-    # Load K_pressure_correction.json
+    # Load polynomial_coefficients.json
     poly_coefs <- fromJSON(file=system.file("coefficients/polynomial_coefficients.json", package="Kgen"))
     
     Fcorr <- list()

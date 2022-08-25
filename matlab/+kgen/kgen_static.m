@@ -59,6 +59,12 @@ classdef kgen_static
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
         end
+        function TF = calculate_TF(s)
+            TF = 6.7e-5 * s / 1.80655 / 18.9984  % mol/kg-SW
+        end
+        function TS = calculate_TS(s)
+            TS = 0.14 * Sal / 1.80655 / 96.062  % mol/kg-SW
+        end
 
         function K_map = build_K_map()
             K_names = ["K0","K1","K2","KB","KW","KS","KF","KspC","KspA","KP1","KP2","KP3","KSi"];
@@ -171,7 +177,18 @@ classdef kgen_static
             K_function = K_map(name);
             K = K_function(K_coefficients.coefficients.(name),temperature+273.15,salinity);
 
-            pressure_correction = kgen.kgen_static.calculate_pressure_correction(name,temperature,pressure);
+            TS = calculate_TS(salinity);
+            TF = calculate_TF(salinity);
+            KS_surf = calculate_KS(K_coefficients.coefficients.("KS"),temperature+273.15,salinity);
+            KS_deep = KS_surf * kgen.kgen_static.calculate_pressure_correction("KS",temperature,pressure);
+            KF_surf = calculate_KF(K_coefficients.coefficients.("KF"),temperature+273.15,salinity);
+            KF_deep = KF_surf * kgen.kgen_static.calculate_pressure_correction("KF",temperature,pressure);
+            
+            tot_to_sws_surface = (1+TS./KS_surf)./(1+TS/KS_surf+TF./KF_surf)
+            sws_to_tot_deep = (1+TS./KS_deep+TF./KF_deep)/(1+TS./KS_deep)
+
+            pressure_correction = tot_to_sws_surface.*kgen.kgen_static.calculate_pressure_correction(name,temperature,pressure).*sws_to_tot_deep;
+
             K = K.*pressure_correction;
             
             if seawater_correction_method~="None" && seawater_correction_method~=""

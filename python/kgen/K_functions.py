@@ -388,6 +388,12 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
         seawater - a salinity correction is then applied to calculate
         the Mg concentration in the sample. Used to correct the Ks
         using MyAMI.
+    TS : array-like
+        Total sulphate in mol/kgsw. Calculated from salinity if not
+        given.
+    TF : array-like
+        Total fluorine in mol/kgsw. Calculated from salinity if not
+        given.
     MyAMI_mode : str
         Either 'calculate' or 'approximate'. In the former case,
         the full MyAMI model is run to calculate the correction
@@ -468,6 +474,12 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, M
         seawater - a salinity correction is then applied to calculate
         the Mg concentration in the sample. Used to correct the Ks
         using MyAMI.
+    TS : array-like
+        Total sulphate in mol/kgsw. Calculated from salinity if not
+        given.
+    TF : array-like
+        Total fluorine in mol/kgsw. Calculated from salinity if not
+        given.
     MyAMI_mode : str
         Either 'calculate' or 'approximate'. In the former case,
         the full MyAMI model is run to calculate the correction

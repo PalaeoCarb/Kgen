@@ -11,7 +11,7 @@ build-python:
 	cd python; 	python setup.py sdist bdist_wheel
 
 upload-python:
-	cd python; 	twine upload dist/kgen-$$(python setup.py --version)*
+	cd python; 	twine upload dist/Kgen-$$(python setup.py --version)*
 
 distribute-python:
 	make test-python

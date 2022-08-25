@@ -84,9 +84,20 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, method="M
   
   # Pressure correction?
   if(!is.null(P) & k != "KSi") {
-     pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
-     check_pc = ifelse(pc != 0, pc, 1)
-     K = K * check_pc
+    TS = calc_TS(S)
+    TF = calc_TF(S)
+    
+    KS_surf = K_fns[['KS']](p=K_coefs[['KS']], TK=TK, S=S)
+    KS_deep = KS_surf * fn_pc(p=K_presscorr_coefs[['KS']], P=P, TC=TC)
+    KF_surf = K_fns[['KF']](p=K_coefs[['KF']], TK=TK, S=S)
+    KF_deep = KF_surf * fn_pc(p=K_presscorr_coefs[['KF']], P=P, TC=TC)
+    
+    tot_to_sws_surface = (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)  # convert from TOT to SWS before pressure correction
+    sws_to_tot_deep = (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)  # convert from SWS to TOT after pressure correction
+
+    pc = fn_pc(p=K_presscorr_coefs[[k]], P=P, TC=TC)
+    check_pc = ifelse(pc != 0, pc, 1)
+    K = K * tot_to_sws_surface * check_pc * sws_to_tot_deep
   }
   
   # Calculate correction factor
@@ -100,7 +111,7 @@ calc_K <- function(k, TC=25, S=35, Mg=0.0528171, Ca=0.0102821, P=NULL, method="M
     }
     if(method == "R_Polynomial"){
       
-      # Load K_pressure_correction.json
+      # Load polynomial_coefficients.json
       poly_coefs <- fromJSON(file=system.file("coefficients/polynomial_coefficients.json", package="Kgen"))
       
       Fcorr <- list()

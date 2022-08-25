@@ -51,10 +51,7 @@ jobs:
           cd matlab
           python3 -m venv .environment
           source .environment/bin/activate
-          pwd
-          ls
-          pip install -r ./python/requirements.txt
-          cd ..
+          pip install -r ./../python/requirements.txt
       - name: Run Matlab script
         uses: matlab-actions/run-command@v1
         with:

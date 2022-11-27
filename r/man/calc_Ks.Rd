@@ -5,7 +5,7 @@
 \title{Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.}
 \usage{
 calc_Ks(
-  k_list,
+  ks,
   TC = 25,
   S = 35,
   Mg = 0.0528171,
@@ -15,7 +15,7 @@ calc_Ks(
 )
 }
 \arguments{
-\item{k_list}{List of Ks to be calculated e.g., list("K0", "K1")}
+\item{ks}{character vectors of Ks to be calculated e.g., c("K0", "K1")}
 
 \item{TC}{Temperature (Celsius)}
 
@@ -27,7 +27,7 @@ calc_Ks(
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (default = MyAMI).}
+\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to MyAMI).}
 }
 \value{
 Dataframe of specified Ks at the given conditions

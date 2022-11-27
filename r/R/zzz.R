@@ -1,7 +1,7 @@
 # Load pyAMI on package load
 pymyami <- NULL
 
-.onLoad <- function(libname, pkgname){
+.onLoad <- function(pymyami_version = "2.0a4"){
   
   if(mc_exists()){ 
     if(!pymyami_exists()){ 

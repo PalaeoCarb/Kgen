@@ -4,7 +4,7 @@
 #' @return Ionic strength
 fn_Istr <- function(S){ 
 
-  Istr = 19.924 * S / (1000 - 1.005 * S)
+  Istr <- 19.924 * S / (1000 - 1.005 * S)
 
   return(Istr)
 }
@@ -17,7 +17,7 @@ fn_Istr <- function(S){
 #' @return K1
 fn_K1 <- function(p, TK, S){ 
 
-  K1 = 10 ^ (p[1] +
+  K1 <- 10 ^ (p[1] +
          p[2] / TK +
          p[3] * log(TK) +
          p[4] * S +
@@ -34,7 +34,7 @@ fn_K1 <- function(p, TK, S){
 #' @return K2
 fn_K2 <- function(p, TK, S){ 
   
-  K2 = 10 ^ (p[1] +
+  K2 <- 10 ^ (p[1] +
              p[2] / TK +
              p[3] * log(TK) +
              p[4] * S +
@@ -51,7 +51,7 @@ fn_K2 <- function(p, TK, S){
 #' @return KW
 fn_KW <- function(p, TK, S){
 
-  KW =  exp(p[1] +
+  KW <- exp(p[1] +
         p[2] / TK +
         p[3] * log(TK) +
        (p[4] / TK + p[5] + p[6] * log(TK)) * sqrt(S) +
@@ -68,7 +68,7 @@ fn_KW <- function(p, TK, S){
 #' @return KB
 fn_KB <- function(p, TK, S){
 
-  KB = exp((p[1] + 
+  KB <- exp((p[1] + 
             p[2] * sqrt(S) + 
             p[3] * S) + 
            (p[4] +
@@ -91,7 +91,7 @@ fn_KB <- function(p, TK, S){
 #' @return K0
 fn_K0 <- function(p, TK, S){
 
-  K0 = exp(p[1] + 
+  K0 <- exp(p[1] + 
        p[2] * 100 / TK + 
        p[3] * log(TK / 100) +
        S * (p[4] + p[5] * TK / 100 + p[6] * (TK / 100) * (TK / 100)))
@@ -107,8 +107,8 @@ fn_K0 <- function(p, TK, S){
 #' @return KS
 fn_KS <- function(p, TK, S){
 
-  Istr = fn_Istr(S) 
-  KS = exp(p[1] + 
+  Istr <- fn_Istr(S) 
+  KS <- exp(p[1] + 
        p[2] / TK + 
        p[3] * log(TK) +
        sqrt(Istr) * (p[4] / TK + p[5] + p[6] * log(TK)) +
@@ -128,7 +128,7 @@ fn_KS <- function(p, TK, S){
 #' @return Ksp
 fn_Ksp <- function(p, TK, S){
 
-    Ksp = 10^(p[1] + 
+    Ksp <- 10^(p[1] + 
           p[2] * TK +
           p[3] / TK +
           p[4] * log10(TK) +
@@ -148,7 +148,7 @@ fn_Ksp <- function(p, TK, S){
 #' @return KP1
 fn_KP1 <- function(p, TK, S){
 
-  KP = exp(p[1] / TK + 
+  KP <- exp(p[1] / TK + 
        p[2] + 
        p[3] * log(TK) + 
       (p[4] / TK + p[5]) * sqrt(S) +
@@ -165,7 +165,7 @@ fn_KP1 <- function(p, TK, S){
 #' @return KP2
 fn_KP2 <- function(p, TK, S){
   
-  KP = exp(p[1] / TK + 
+  KP <- exp(p[1] / TK + 
              p[2] + 
              p[3] * log(TK) + 
              (p[4] / TK + p[5]) * sqrt(S) +
@@ -182,7 +182,7 @@ fn_KP2 <- function(p, TK, S){
 #' @return KP3
 fn_KP3 <- function(p, TK, S){
 
-  KP3 = exp(p[1] / TK + 
+  KP3 <- exp(p[1] / TK + 
         p[2] + 
        (p[3] / TK + p[4]) * sqrt(S) + 
        (p[5] / TK + p[6]) * S)
@@ -198,15 +198,15 @@ fn_KP3 <- function(p, TK, S){
 #' @return KSi
 fn_KSi <- function(p, TK, S){
 
-  Istr = fn_Istr(S) 
-  tmp = exp(p[1] / TK + 
+  Istr <- fn_Istr(S) 
+  tmp <- exp(p[1] / TK + 
         p[2] +
         p[3] * log(TK) +
         (p[4] / TK + p[5]) * Istr ^ 0.5 +
         (p[6] / TK + p[7]) * Istr +
         (p[8] / TK + p[9]) * Istr ^ 2)
 
-  KSi = tmp * (1 - 0.001005 * S)
+  KSi <- tmp * (1 - 0.001005 * S)
   
   return(KSi)
 }
@@ -219,7 +219,7 @@ fn_KSi <- function(p, TK, S){
 #' @return KF
 fn_KF <- function(p, TK, S){
 
-  KF = exp(p[1] / TK + 
+  KF <- exp(p[1] / TK + 
        p[2] + 
        p[3] * sqrt(S))
 
@@ -236,19 +236,19 @@ fn_KF <- function(p, TK, S){
 #' @return Pressure correction factor
 fn_pc <- function(p, P, TC) {
   
-  a0 = p[1] 
-  a1 = p[2] 
-  a2 = p[3] 
-  b0 = p[4]
-  b1 = p[5] 
+  a0 <- p[1] 
+  a1 <- p[2] 
+  a2 <- p[3] 
+  b0 <- p[4]
+  b1 <- p[5] 
   
-  dV = a0 + a1 * TC + a2 * TC ^ 2
+  dV <- a0 + a1 * TC + a2 * TC ^ 2
   
-  dk = (b0 + b1 * TC)
+  dk <- (b0 + b1 * TC)
   
-  RT = 83.1451 * (TC + 273.15)
+  RT <- 83.1451 * (TC + 273.15)
   
-  prescorr = exp((-dV + 0.5 * dk * P) * P / RT)
+  prescorr <- exp((-dV + 0.5 * dk * P) * P / RT)
   
   return(prescorr)
 }   
@@ -261,7 +261,7 @@ fn_pc <- function(p, P, TC) {
 #' @return TS
 calc_TS <- function(S){
 
-  TS = 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
+  TS <- 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
 
   return(TS)
 }
@@ -274,7 +274,7 @@ calc_TS <- function(S){
 #' @return TF
 calc_TF <- function(S){
 
-  TF = 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
+  TF <- 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
 
   return(TF)
 }

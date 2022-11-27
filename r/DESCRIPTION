@@ -1,21 +1,22 @@
 Package: Kgen
 Type: Package
 Title: Parameters for Consistently Calculating Ks for Carbon Calculation
-Version: 0.0.1
+Version: 1.0.1
 Authors@R: 
     person(given = "Dennis",
            family = "Mayk",
            role = c("aut", "cre"),
-           email = "dennis@mayk.eu",
+           email = "dm807@cantab.ac.uk",
            comment = c(ORCID = "0000-0002-5017-1495"))
 Description: Coefficients for consistently calculating and pressure correcting Ks for carbon calculation.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
-    R (>= 3.0)
+    R (>= 4.0)
 Imports:
     rjson (>= 0.2.21),
-    reticulate
+    reticulate (>= 1.26),
+    checkmate
 Suggests:
     rappdirs,
     testthat

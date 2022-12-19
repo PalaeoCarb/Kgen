@@ -1,3 +1,6 @@
+# Select pyAMI version
+pymyami_version <- "2.0a6"
+
 #' Check if OS is Windows
 is_windows <- function() {
   Sys.info()["sysname"] == "Windows"

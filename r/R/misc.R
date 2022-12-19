@@ -68,14 +68,19 @@ pymyami_exists <- function() {
 #' @importFrom reticulate import
 install_pymyami <- function() {
   # Check if miniconda is installed
-  ifelse(mc_exists(), "Miniconda is already installed.", reticulate::install_miniconda())
-
+  if(mc_exists()){
+    "Miniconda is already installed."
+    } else {
+    reticulate::install_miniconda()
+  }
+  
   # Select python environment
   reticulate::use_miniconda("r-reticulate")
 
   # Install required version of pyMyAMI
-  reticulate::py_install(paste0("pymyami==", pymyami_version), envname = "r-reticulate", pip = T)
+  reticulate::py_install(paste0("pymyami==", pymyami_version), pip = TRUE)
 
   # Import pyMyAMI
-  reticulate::import("pymyami")
+  pymyami <- reticulate::import("pymyami")
+  return(pymyami)
 }

@@ -57,7 +57,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   if (!mc_exists() & method != "R_Polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
     install_confirm <- askYesNo("Would you like to install it now?")
-    if (install_confirm == TRUE) {
+    if (install_confirm) {
       install_pymyami()
     } else {
       stop("Closing Kgen.")
@@ -98,12 +98,14 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   }
 
   # Calculate correction factor
-  if (Kcorrect == TRUE) {
+  if (Kcorrect) {
     if (method == "MyAMI") {
+      pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
       K <- K * Fcorr[[k]]
     }
     if (method == "MyAMI_Polynomial") {
+      pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
       K <- K * Fcorr[[k]]
     }
@@ -156,15 +158,18 @@ calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NUL
 
   # Return data.frame
   Ks <- data.frame(t(do.call(rbind, ks_list)))
-
+  colnames(Ks) <- ks
+  
   # Celsius to Kelvin
   TK <- TC + 273.15
 
   # Calculate correction factor with MyAMI
   if (method == "MyAMI") {
+    pymyami <- reticulate::import("pymyami")
     Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
   }
   if (method == "MyAMI_Polynomial") {
+    pymyami <- reticulate::import("pymyami")
     Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
   }
   if (method == "R_Polynomial") {
@@ -187,6 +192,5 @@ calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NUL
     }
   }
 
-  colnames(Ks) <- ks
   return(Ks)
 }

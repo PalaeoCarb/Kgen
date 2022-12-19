@@ -159,7 +159,7 @@ calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NUL
   # Return data.frame
   Ks <- data.frame(t(do.call(rbind, ks_list)))
   colnames(Ks) <- ks
-  
+
   # Celsius to Kelvin
   TK <- TC + 273.15
 

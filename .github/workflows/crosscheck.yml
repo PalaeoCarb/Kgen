@@ -16,7 +16,7 @@ jobs:
         uses: matlab-actions/setup-matlab@v1
       - name: Setup Python venv
         run: |
-          cd matlab/crossheck
+          cd matlab
           python3 -m venv .environment
           source .environment/bin/activate
           pip install -r ./../python/requirements.txt
@@ -25,7 +25,7 @@ jobs:
       - name: Run Matlab script
         uses: matlab-actions/run-command@v1
         with:
-          command: cd 'crosscheck',addpath("./../matlab/"),pyenv('Version','./.environment/bin/python'),gen_matlab
+          command: cd 'crosscheck',addpath("./../matlab/"),pyenv('Version','./../matlab/.environment/bin/python'),gen_matlab
       - uses: actions/checkout@v2
       - name: Set Up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2

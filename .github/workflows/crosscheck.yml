@@ -12,17 +12,21 @@ jobs:
         R: ['4.1.3']
     name: Cross-Check Python, R and Matlab Methods
     steps:
+      - uses: actions/checkout@v2
       - name: Setup Matlab
         uses: matlab-actions/setup-matlab@v1
       - name: Setup Python venv
         run: |
-          pwd
-          ls
+          ls -a .
+          cd matlab
+          python3 -m venv .environment
+          source .environment/bin/activate
+          pip install -r ./../python/requirements.txt
+          deactivate
       - name: Run Matlab script
         uses: matlab-actions/run-command@v1
         with:
           command: cd 'crosscheck',addpath("./../matlab/"),pyenv('Version','./../matlab/.environment/bin/python'),gen_matlab
-      - uses: actions/checkout@v2
       - name: Set Up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:

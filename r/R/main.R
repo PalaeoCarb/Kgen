@@ -1,15 +1,15 @@
 #' Kgen R polynomial function
-#' @importFrom stats poly
+#'
 #' @param TK Temperature (Kelvin)
 #' @param S Salinity (PSU)
 #' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 kgen_poly <- function(S, TK, Mg, Ca) {
   # Create descriptor vector
-  DX <- t(c(TK, log(TK), S, Mg, Ca))
+  dx <- t(c(TK, log(TK), S, Mg, Ca))
 
   # Build poly matrix
-  DY <- cbind(intercept = 1, poly(DX, 3, raw = TRUE))
+  dy <- cbind(intercept = 1, stats::poly(dx, 3, raw = TRUE))
 
   # Sort by index - according to python output
   index <- c(
@@ -18,7 +18,7 @@ kgen_poly <- function(S, TK, Mg, Ca) {
     45, 51, 54, 21, 36, 46, 52, 55, 56
   )
 
-  out <- DY[order(index)]
+  out <- dy[order(index)]
 
   return(out)
 }
@@ -33,18 +33,14 @@ kgen_poly <- function(S, TK, Mg, Ca) {
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
 #' @param Kcorrect TRUE = calculate corrections, FALSE = don't calculate corrections.
-#' @importFrom rjson fromJSON
-#' @importFrom utils askYesNo
 #' @return Specified K at the given conditions
 #' @export
 calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI", Kcorrect = TRUE) {
-  # Match arguments
-  match.arg(k, names(K_fns))
-  match.arg(method, c("R_Polynomial", "MyAMI_Polynomial", "MyAMI"))
-
   # Check input values
   checkmate::assert(
     combine = "and",
+    checkmate::check_choice(k, choices = names(K_fns)),
+    checkmate::check_choice(method, choices = c("R_Polynomial", "MyAMI_Polynomial", "MyAMI")),
     checkmate::check_string(k),
     checkmate::check_logical(Kcorrect),
     checkmate::check_numeric(TC, lower = 0, upper = 40),
@@ -56,7 +52,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Check if miniconda is installed
   if (!mc_exists() & method != "R_Polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
-    install_confirm <- askYesNo("Would you like to install it now?")
+    install_confirm <- utils::askYesNo("Would you like to install it now?")
     if (install_confirm) {
       install_pymyami()
     } else {
@@ -134,8 +130,6 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 #' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to MyAMI).
-#' @importFrom rjson fromJSON
-#' @importFrom utils askYesNo
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Dataframe of specified Ks at the given conditions
 #' @export

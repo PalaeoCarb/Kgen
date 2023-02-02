@@ -1,7 +1,7 @@
 Package: Kgen
 Type: Package
 Title: Parameters for Consistently Calculating Ks for Carbon Calculation
-Version: 1.0.1
+Version: 0.1.0
 Authors@R: 
     person(given = "Dennis",
            family = "Mayk",
@@ -21,4 +21,4 @@ Suggests:
     rappdirs,
     testthat
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3

@@ -102,7 +102,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     }
     if (method == "MyAMI_Polynomial") {
       pymyami <- reticulate::import("pymyami")
-      Fcorr <- as.numeric(pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca))
+      Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
       K <- K * as.numeric(Fcorr[[k]])
     }
     if (method == "R_Polynomial") {
@@ -180,9 +180,9 @@ calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NUL
 
   # Apply correction
   for (k in unique(ks)) {
-    KF <- as.numeric(Fcorr[[k]])
+    KF <- Fcorr[[k]]
     if (!is.null(KF)) {
-      Ks[k] <- Ks[k] * KF
+      Ks[k] <- Ks[k] * as.numeric(KF)
     }
   }
 

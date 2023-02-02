@@ -98,12 +98,12 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (method == "MyAMI") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      K <- K * Fcorr[[k]]
+      K <- K * as.numeric(Fcorr[[k]])
     }
     if (method == "MyAMI_Polynomial") {
       pymyami <- reticulate::import("pymyami")
-      Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      K <- K * Fcorr[[k]]
+      Fcorr <- as.numeric(pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca))
+      K <- K * as.numeric(Fcorr[[k]])
     }
     if (method == "R_Polynomial") {
       # Load polynomial_coefficients.json
@@ -180,7 +180,7 @@ calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NUL
 
   # Apply correction
   for (k in unique(ks)) {
-    KF <- Fcorr[[k]]
+    KF <- as.numeric(Fcorr[[k]])
     if (!is.null(KF)) {
       Ks[k] <- Ks[k] * KF
     }

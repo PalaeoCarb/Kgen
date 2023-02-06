@@ -16,9 +16,10 @@ Depends:
 Imports:
     rjson (>= 0.2.21),
     reticulate (>= 1.26),
-    checkmate
+    rappdirs (>= 0.3.3),
+    checkmate (>= 2.1.0)
 Suggests:
-    rappdirs,
-    testthat
+    testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Config/testthat/edition: 3

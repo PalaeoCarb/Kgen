@@ -52,7 +52,28 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 
   # Pressure correction?
   if (!is.null(P)) {
-    k_value <- calc_pressure_correction(k = k, k_value = k_value, TC = TC, S = S, P = P)
+    # Load K_pressure_correction.json
+    K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
+    K_presscorr_coefs <- K_presscorr_coefs$coefficients
+
+    TS <- calc_TS(S)
+    TF <- calc_TF(S)
+
+    KS_surf <- K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)
+    KS_deep <- KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)
+    KF_surf <- K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)
+    KF_deep <- KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)
+
+    # convert from TOT to SWS before pressure correction
+    tot_to_sws_surface <- (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)
+
+    # convert from SWS to TOT after pressure correction
+    sws_to_tot_deep <- (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)
+
+    pc <- calc_pressure_correction(k = k, TC = TC, P = P)
+
+    check_pc <- ifelse(pc != 0, pc, 1)
+    k_value <- k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep
   }
 
   # Calculate correction factor

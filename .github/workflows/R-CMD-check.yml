@@ -45,17 +45,13 @@ jobs:
 
         - name: Kgen dependencies
           run: |
-            R -e 'remotes::install_deps(dependencies = TRUE, upgrade = FALSE)'
-            R -e 'reticulate::install_miniconda()'
-            R -e 'reticulate::use_miniconda("r-reticulate")'
-            R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
+            install.packages(c("remotes", "rcmdcheck"))
+            remotes::install_deps(dependencies = TRUE, upgrade = "never")
+            reticulate::install_miniconda()
+            reticulate::use_miniconda("r-reticulate")
+            reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)
+          shell: Rscript {0}
           
-        - uses: r-lib/actions/setup-r-dependencies@v2
-          with:
-            extra-packages: any::rcmdcheck
-            needs: check
-
-        - uses: r-lib/actions/check-r-package@v2
-          with:
-            error-on: '"error"'
-            upload-snapshots: true
+        - name: Check
+          run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+          shell: Rscript {0}

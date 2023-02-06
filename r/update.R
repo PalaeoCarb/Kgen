@@ -3,7 +3,7 @@
 
 # Required packages
 # install.packages("devtools")
-# install.packages("rhub")
+# install.packages("gert")
 
 # Check and copy coefficients to "inst/coefficients"
 diff <- system('diff -r --exclude=".*" ../coefficients inst/coefficients')

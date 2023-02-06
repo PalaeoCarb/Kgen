@@ -5,10 +5,10 @@ on:
   pull_request:
     branches: [main, master, develop]
 
-name: R-CMD-check
+name: 'Check K values - R'
     
 jobs:
-    R-CMD-check:
+    my-job:
       runs-on: ${{ matrix.config.os }}
 
       name: ${{ matrix.config.os }} (${{ matrix.config.r }})

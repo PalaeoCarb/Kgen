@@ -1,0 +1,13 @@
+skip_if_no_pymyami <- function() {
+  have_pymyami <- reticulate::py_module_available("pymyami")
+  if (!have_pymyami) {
+    testthat::skip("pymyami not available for testing")
+  }
+}
+
+testthat::test_that("Test that the pressure correction produces expected results...", {
+  exp_val <- rjson::fromJSON(file = system.file("check_values/check_presscorr.json", package = "Kgen"))
+  press_cor <- mapply(function(k) calc_pressure_correction(k = k, TC = exp_val$input_conditions$TC, S = exp_val$input_conditions$S, P = exp_val$input_conditions$P), names(exp_val$check_values))
+
+  testthat::expect_equal(exp_val$check_values, as.list(press_cor), tolerance = 1E-3)
+})

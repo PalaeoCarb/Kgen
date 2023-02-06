@@ -45,7 +45,7 @@ jobs:
 
         - name: Kgen dependencies
           run: |
-            install.packages(c("remotes", "rcmdcheck", "reticulate"))
+            remotes::install_deps(pkgdir = "r/", dependencies = TRUE, upgrade = "never")
             reticulate::install_miniconda()
             reticulate::use_miniconda("r-reticulate")
             reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)

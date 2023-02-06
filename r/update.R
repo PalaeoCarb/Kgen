@@ -29,13 +29,25 @@ if(!identical(dev_checks$warnings, character(0))) stop("At least one warning in 
 if(!identical(dev_checks$notes, character(0))) stop("At least one note in devtools::check")
 
 # Check against CRAN requirements
-devtools::build("r")
-Kgen_tar <- list.files()[grep("*.tar.gz",list.files())]
-rhub::check_for_cran(Kgen_tar, platforms = "macos-highsierra-release-cran") 
+devtools::build()
+Kgen_tar <- list.files("../")[grep("*.tar.gz",list.files("../"))]
+rhub::check_for_cran(paste0("../",Kgen_tar), platforms = "macos-highsierra-release-cran") 
 system(paste('rm ', Kgen_tar))
 
 # Commit
-gert::git_commit_all("auto commit", author = "Dennis Mayk")
+if(nrow(gert::git_status()) < 1) {
+gert::git_commit_all("auto commit")
+}
+
+# Style
+usethis::use_tidy_style()
+
+# Commit + Push
+if(nrow(gert::git_status()) < 1) {
+  gert::git_commit_all("auto commit")
+}
+gert::git_push()
+
 
 
 

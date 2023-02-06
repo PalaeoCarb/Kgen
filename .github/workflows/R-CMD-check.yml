@@ -9,52 +9,52 @@ name: R-CMD-check
     
 jobs:
     R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
+      runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+      name: ${{ matrix.config.os }} (${{ matrix.config.r }})
     
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {os: macos-latest, r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest, r: 'release'}
+      strategy:
+        fail-fast: false
+        matrix:
+          config:
+            - {os: macos-latest, r: 'release'}
+            - {os: windows-latest, r: 'release'}
+            - {os: ubuntu-latest, r: 'release'}
           
       env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      R_KEEP_PKG_SOURCE: yes
+        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        R_KEEP_PKG_SOURCE: yes
           
-    steps:
-      - uses: actions/checkout@v3
+      steps:
+        - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-pandoc@v2
+        - uses: r-lib/actions/setup-pandoc@v2
 
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: ${{ matrix.config.r }}
-          rtools-version: '42'
-          http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
+        - uses: r-lib/actions/setup-r@v2
+          with:
+            r-version: ${{ matrix.config.r }}
+            rtools-version: '42'
+            http-user-agent: ${{ matrix.config.http-user-agent }}
+            use-public-rspm: true
           
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install libcurl4-openssl-dev -y
-          sudo apt-get install curl -y
+        - name: Install Linux dependencies
+          if: runner.os == 'Linux'
+          run: |
+            sudo apt-get install libcurl4-openssl-dev -y
+            sudo apt-get install curl -y
 
-      - name: Kgen dependencies
-        run: |
-          R -e 'reticulate::install_miniconda()'
-          R -e 'reticulate::use_miniconda("r-reticulate")'
-          R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
+        - name: Kgen dependencies
+          run: |
+            R -e 'reticulate::install_miniconda()'
+            R -e 'reticulate::use_miniconda("r-reticulate")'
+            R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
           
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+        - uses: r-lib/actions/setup-r-dependencies@v2
+          with:
+            extra-packages: any::rcmdcheck
+            needs: check
 
-      - uses: r-lib/actions/check-r-package@v2
-        with:
-          error-on: '"error"'
-          upload-snapshots: true
+        - uses: r-lib/actions/check-r-package@v2
+          with:
+            error-on: '"error"'
+            upload-snapshots: true

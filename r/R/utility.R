@@ -32,7 +32,7 @@ calc_pressure_correction <- function(k, TC, P) {
 #' @param S Salinity (PSU)
 #' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
-kgen_poly <- function(S, TK, Mg, Ca) {
+kgen_poly <- function(S, TK, Mg = 0.0528171, Ca = 0.0102821) {
   # Create descriptor vector
   dx <- t(c(TK, log(TK), S, Mg, Ca))
 

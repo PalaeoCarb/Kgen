@@ -115,9 +115,9 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Data.frame of specified Ks at the given conditions
 #' @export
-calc_Ks <- function(ks, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
+calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
-  if (missing(ks)) {
+  if (is.null(ks)) {
     ks <- names(K_fns)
   }
 

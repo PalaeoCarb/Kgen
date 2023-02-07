@@ -18,8 +18,11 @@ settings.json
 # R
 .Rhistory
 .Rprofile
+.Rproj.user
 
 # Darwin (MacOS)
 .DS_Store
 python/build/*
-.Rproj.user
+
+# VSCode
+.vscode

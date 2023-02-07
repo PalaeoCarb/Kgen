@@ -10,6 +10,8 @@ permalink: use_kgen/r
 Documentation to start using Kgen in R.
 {: .fs-6 .fw-300 }
 
+[![CRAN status](https://www.r-pkg.org/badges/version/Kgen)](https://CRAN.R-project.org/package=Kgen)
+[![CRANLOGS downloads](https://cranlogs.r-pkg.org/badges/Kgen)](https://cran.r-project.org/package=Kgen)
 
 ## Installation
 
@@ -22,20 +24,20 @@ This will install Kgen and its dependencies.
 
 ## Getting Started
 
-Two functions are available, `calc_Ks()` for returning all available Ks and `calc_K()` for returning a single K. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems.   
+Thre functions are available, `calc_Ks()` for returning all available Ks, `calc_K()` for returning a single K, and `calc_pressure_correction()` for returning a K-specific pressure correction factor. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems. If you prefer to install r-Miniconda to a specific path on your system, stop the installer and install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/). 
 
 ```R
 library('Kgen')
 
-calc_K(k, TC, S, Mg, Ca, P, MyAMI_calc, run_MyAMI)
-calc_Ks(k_list, TC, S, Mg, Ca, P, MyAMI_calc)
+calc_K(k, TC, S, Mg, Ca, P, method, Kcorrect)
+calc_Ks(ks, TC, S, Mg, Ca, P, method)
 ```
 
 ## Arguments
 
 - **k**: Coefficient to calculate, i.e., K<sub>0</sub>, K<sub>1</sub>, K<sub>2</sub>, K<sub>W</sub>, K<sub>B</sub>, K<sub>S</sub>, K<sub>spA</sub>, K<sub>spC</sub>, K<sub>P1</sub>, K<sub>P2</sub>, K<sub>P3</sub>, K<sub>Si</sub>, or K<sub>F</sub>
 
-- **k_list**: List of coefficients, e.g.,  `list("K0", "K1")`, if no list is defined **k_list** will default to include all coefficients.
+- **ks**: Character vector of coefficients, e.g.,  `c("K0", "K1")`, if NULL, **ks** will default to include all coefficients.
 
 - **TC**: Temperature in degree Celsius
 
@@ -47,14 +49,14 @@ calc_Ks(k_list, TC, S, Mg, Ca, P, MyAMI_calc)
 
 - **P**: Pressure in bar
 
-- **MyAMI_calc**: If set to `TRUE`, Kgen will calculate Mg and Ca correction factors directly using `pymyami`. If set to `FALSE` Kgen will approximate the correction factors using a polynomial approximation in `pymyami`. 
+- **method**: Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI"). If set to `MyAMI`, Kgen will calculate Mg and Ca correction factors directly using `pymyami`. If set to `MyAMI_Polynomial` Kgen will approximate the correction factors using a polynomial approximation in `pymyami`. If set to `R_Polynomial` Kgen will approximate the correction factors using a built in polynomial approximation function. 
 
-- **run_MyAMI**: Option in `calc_K()` specifying if `pymyami` is used to calculate or approximate Mg and Ca correction factors. Defaults to `TRUE` and should not be changed unless you know what you do. 
+- **Kcorrect**: Option in `calc_K()` specifying if `pymyami` is used to calculate or approximate Mg and Ca correction factors. Defaults to `TRUE` and should not be changed by the user. 
 
 The inputs to **TC**, **S**, **Mg**, **Ca**, **Mg**, and **P** may be single numbers or arrays of numbers, but where they are arrays, the shape of the array must be the same. If any value is not specified, it defaults back to 'standard' conditions of 25 °C, 35 PSU, and 0 bar, with Mg and Ca at modern ocean concentrations (0.0528171 and 0.0102821 mol kg<sup>-1</sup>).
 
 ## Details
-For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pymyami` in R upon the first time `calc_K()` or `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. 
+For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pymyami` in R upon the first time `calc_K()` or `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. However, if you prefer to install r-Miniconda to a specific path on your system (not recommended), install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/) before starting Kgen.
 
 Kgen installation and operation example:
 

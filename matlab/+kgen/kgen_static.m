@@ -212,7 +212,10 @@ classdef kgen_static
             if numel(names)==1
                 [Ks.(names(1)),pressure_correction.(names(1)),seawater_correction.(names(1))] = kgen.kgen_static.calculate_K(names(1),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method,polynomial_coefficients);
             else
-                seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
+                seawater_correction = struct();
+                if seawater_correction_method~="None" && seawater_correction_method~=""
+                    seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
+                end
                 for K_index = 1:numel(names)
                     [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium,"None",polynomial_coefficients);
                     if any(string(fieldnames(seawater_correction))==names(K_index))

@@ -13,7 +13,7 @@ tolerance = 1;
 
 %% Modern surface K's
 tolerance = 1e-2;
-K_output = kgen.kgen_static.calculate_all_Ks(temperature,salinity,NaN,NaN,NaN);
+K_output = kgen.kgen_static.calculate_all_Ks(temperature,salinity,NaN,NaN,NaN,"None",NaN);
 K_names = string(fieldnames(K_output));
 
 % Iterate over K's to calculate value + difference from check value
@@ -27,7 +27,7 @@ end
 
 %% Modern deep K's
 tolerance = 1e-3;
-[~,K_pressure_correction,~] = kgen.kgen_static.calculate_all_Ks(temperature,salinity,pressure,NaN,NaN);
+[~,K_pressure_correction,~] = kgen.kgen_static.calculate_all_Ks(temperature,salinity,pressure,NaN,NaN,"None",NaN);
 K_names = string(fieldnames(K_pressure_correction));
 
 % Iterate over K's to calculate value at depth + difference from check value

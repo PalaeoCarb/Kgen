@@ -1,7 +1,7 @@
 
 #' @title Calculate pressure correction factor
 #'
-#' @description Calculate pressure correction factors for a specified equilibrium constant
+#' @description Calculate pressure correction factor for a specified equilibrium constant.
 #'
 #' @author Dennis Mayk
 #'

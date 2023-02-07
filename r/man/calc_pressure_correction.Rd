@@ -14,7 +14,7 @@ calc_pressure_correction(k, TC, P)
 \item{P}{Pressure (Bar)}
 }
 \description{
-Calculate pressure correction factors for a specified equilibrium constant
+Calculate pressure correction factor for a specified equilibrium constant.
 }
 \author{
 Dennis Mayk

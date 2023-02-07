@@ -1,0 +1,31 @@
+skip_if_no_pymyami <- function() {
+  have_pymyami <- reticulate::py_module_available("pymyami")
+  if (!have_pymyami) {
+    testthat::skip("pymyami not available for testing")
+  }
+}
+
+testthat::test_that("Test that R_Polynomial produces expected results...", {
+  exp_val <- rjson::fromJSON(file = system.file("check_values/check_Ks.json", package = "Kgen"))
+  calc_val <- calc_Ks(TC = exp_val$input_conditions$TC, S = exp_val$input_conditions$S, method = "R_Polynomial")
+
+  testthat::expect_equal(exp_val$check_values, as.list(log(calc_val)), tolerance = 1E-3)
+})
+
+testthat::test_that("Test that MyAMI_Polynomial produces expected results...", {
+  skip_if_no_pymyami()
+
+  exp_val <- rjson::fromJSON(file = system.file("check_values/check_Ks.json", package = "Kgen"))
+  calc_val <- calc_Ks(TC = exp_val$input_conditions$TC, S = exp_val$input_conditions$S, method = "MyAMI_Polynomial")
+
+  testthat::expect_equal(exp_val$check_values, as.list(log(calc_val)), tolerance = 1E-3)
+})
+
+testthat::test_that("Test that MyAMI produces expected results...", {
+  skip_if_no_pymyami()
+
+  exp_val <- rjson::fromJSON(file = system.file("check_values/check_Ks.json", package = "Kgen"))
+  calc_val <- calc_Ks(TC = exp_val$input_conditions$TC, S = exp_val$input_conditions$S, method = "MyAMI")
+
+  testthat::expect_equal(exp_val$check_values, as.list(log(calc_val)), tolerance = 1E-3)
+})

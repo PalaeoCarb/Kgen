@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{calc_K}
 \alias{calc_K}
-\title{Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.}
+\title{Calculate equilibrium constant for carbon}
 \usage{
 calc_K(
   k,
@@ -28,7 +28,7 @@ calc_K(
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (default = MyAMI).}
+\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
 
 \item{Kcorrect}{TRUE = calculate corrections, FALSE = don't calculate corrections.}
 }
@@ -37,4 +37,7 @@ Specified K at the given conditions
 }
 \description{
 Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.
+}
+\author{
+Dennis Mayk
 }

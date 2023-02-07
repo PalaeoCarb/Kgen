@@ -185,7 +185,7 @@ classdef kgen_static
             KF_deep = KF_surf .* kgen.kgen_static.calculate_pressure_correction("KF",temperature,pressure);
             
             tot_to_sws_surface = (1+TS./KS_surf)./(1+TS./KS_surf+TF./KF_surf);
-            sws_to_tot_deep = (1+TS./KS_deep+TF./KF_deep)/(1+TS./KS_deep);
+            sws_to_tot_deep = (1+TS./KS_deep+TF./KF_deep)./(1+TS./KS_deep);
 
             pressure_correction = kgen.kgen_static.calculate_pressure_correction(name,temperature,pressure);
 

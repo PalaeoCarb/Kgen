@@ -1,6 +1,6 @@
 ## Kgen Documentation
 
-**Steps to run it locally**
+**Steps to run it locally** <br>
 (1) [Install ruby](https://jekyllrb.com/docs/installation/) <br>
 (2) Download Kgen docs <br>
 (3) Install Jekyll and Bundler `gem install jekyll bundler`<br>

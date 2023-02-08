@@ -10,13 +10,14 @@ if (length(new.packages))
   install.packages(new.packages)
 
 update_pkg <- function() {
-  # Check and copy coefficients to "inst/coefficients"
-  diff <-
-    system('diff -r --exclude=".*" ../coefficients inst/coefficients')
-  if (diff != 0) {
-    system('rsync -av ../coefficients/ inst/coefficients/')
-    message("New coefficient files. Syncing files to inst/coefficients directory.")
-  }
+  # Not needed because this is done by update_pymyami.py
+  # # Check and copy coefficients to "inst/coefficients"
+  # diff <-
+  #   system('diff -r --exclude=".*" ../coefficients inst/coefficients')
+  # if (diff != 0) {
+  #   system('rsync -av ../coefficients/ inst/coefficients/')
+  #   message("New coefficient files. Syncing files to inst/coefficients directory.")
+  # }
   
   # Check and copy check_values to "inst/check_values"
   diff <-

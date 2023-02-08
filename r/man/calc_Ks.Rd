@@ -2,10 +2,10 @@
 % Please edit documentation in R/main.R
 \name{calc_Ks}
 \alias{calc_Ks}
-\title{Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.}
+\title{Calculate multiple equilibrium constants for carbon}
 \usage{
 calc_Ks(
-  k_list,
+  ks,
   TC = 25,
   S = 35,
   Mg = 0.0528171,
@@ -15,23 +15,26 @@ calc_Ks(
 )
 }
 \arguments{
-\item{k_list}{List of Ks to be calculated e.g., list("K0", "K1")}
+\item{ks}{character vectors of Ks to be calculated e.g., c("K0", "K1")}
 
 \item{TC}{Temperature (Celsius)}
 
 \item{S}{Salinity (PSU)}
 
-\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
 
-\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample. Used to correct the Ks using MyAMI.}
+\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
 
 \item{P}{Pressure (Bar) (optional)}
 
-\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (default = MyAMI).}
+\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
 }
 \value{
-Dataframe of specified Ks at the given conditions
+Data.frame of specified Ks at the given conditions
 }
 \description{
 Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.
+}
+\author{
+Dennis Mayk
 }

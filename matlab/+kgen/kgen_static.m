@@ -59,6 +59,12 @@ classdef kgen_static
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
         end
+        function TF = calculate_TF(salinity)
+            TF = 6.7e-5.*salinity./1.80655./18.9984;  % mol/kg-SW
+        end
+        function TS = calculate_TS(salinity)
+            TS = 0.14.*salinity./1.80655./96.062;  % mol/kg-SW
+        end
 
         function K_map = build_K_map()
             K_names = ["K0","K1","K2","KB","KW","KS","KF","KspC","KspA","KP1","KP2","KP3","KSi"];
@@ -171,8 +177,19 @@ classdef kgen_static
             K_function = K_map(name);
             K = K_function(K_coefficients.coefficients.(name),temperature+273.15,salinity);
 
+            TS = kgen.kgen_static.calculate_TS(salinity);
+            TF = kgen.kgen_static.calculate_TF(salinity);
+            KS_surf = kgen.kgen_static.calculate_KS(K_coefficients.coefficients.("KS"),temperature+273.15,salinity);
+            KS_deep = KS_surf .* kgen.kgen_static.calculate_pressure_correction("KS",temperature,pressure);
+            KF_surf = kgen.kgen_static.calculate_KF(K_coefficients.coefficients.("KF"),temperature+273.15,salinity);
+            KF_deep = KF_surf .* kgen.kgen_static.calculate_pressure_correction("KF",temperature,pressure);
+            
+            tot_to_sws_surface = (1+TS./KS_surf)./(1+TS./KS_surf+TF./KF_surf);
+            sws_to_tot_deep = (1+TS./KS_deep+TF./KF_deep)./(1+TS./KS_deep);
+
             pressure_correction = kgen.kgen_static.calculate_pressure_correction(name,temperature,pressure);
-            K = K.*pressure_correction;
+
+            K = K.*tot_to_sws_surface.*pressure_correction.*sws_to_tot_deep;
             
             if seawater_correction_method~="None" && seawater_correction_method~=""
                 seawater_chemistry_correction = kgen.kgen_static.calculate_seawater_correction(name,temperature,pressure,calcium,magnesium,seawater_correction_method,polynomial_coefficients);
@@ -195,7 +212,10 @@ classdef kgen_static
             if numel(names)==1
                 [Ks.(names(1)),pressure_correction.(names(1)),seawater_correction.(names(1))] = kgen.kgen_static.calculate_K(names(1),temperature,salinity,pressure,calcium,magnesium,seawater_correction_method,polynomial_coefficients);
             else
-                seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
+                seawater_correction = struct();
+                if seawater_correction_method~="None" && seawater_correction_method~=""
+                    seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temperature,salinity,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
+                end
                 for K_index = 1:numel(names)
                     [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calculate_K(names(K_index),temperature,salinity,pressure,calcium,magnesium,"None",polynomial_coefficients);
                     if any(string(fieldnames(seawater_correction))==names(K_index))

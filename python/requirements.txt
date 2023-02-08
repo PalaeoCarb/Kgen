@@ -1,2 +1,2 @@
 numpy>=1.21.5
-pymyami
+pymyami>=2.0a4

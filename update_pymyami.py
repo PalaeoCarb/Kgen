@@ -3,6 +3,7 @@ Script that updates all resources and version numbers in Python, R and Matlab to
 """
 import urllib.request
 from glob import glob
+import re
 
 # specify which pymyami version to use throughout Kgen
 pymyami_version = '2.0.1'
@@ -58,14 +59,14 @@ with open('r/R/pymyami.R', 'r+') as f:
 
 actions = glob('.github/workflows/*.yml')
 
-new_install = f'reticulate::py_install("pymyami=={pymyami_version}", envname = "r-reticulate", pip=T)'
+pattern = re.compile(r'(.*)(pymyami==)([0-9.]+)(.*)')
 
 for action in actions:
     with open(action, 'r+') as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
-            if 'reticulate::py_install("pymyami' in line:
-                lines[i] = ' ' * line.find('reticulate') + new_install + '\n'
+            if pattern.match(line):
+                lines[i] = pattern.sub(r'\g<1>\g<2>' + pymyami_version + r'\g<4>', line)
         f.seek(0)
         f.write(''.join(lines))
         f.truncate()

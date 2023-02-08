@@ -53,7 +53,7 @@ jobs:
           R -e 'library("Kgen")'
           R -e 'reticulate::install_miniconda()'
           R -e 'reticulate::use_miniconda("r-reticulate")'
-          R -e 'reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)'
+          R -e 'reticulate::py_install("pymyami==2.0.1", envname = "r-reticulate", pip=T)'
       - name: Running R Kgen
         run: |
           cd crosscheck

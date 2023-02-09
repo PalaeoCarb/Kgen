@@ -28,6 +28,12 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     checkmate::check_numeric(Ca, lower = 0, upper = 0.06)
   )
 
+  KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
+  dat <- data.table::data.table(k, TC, S, Mg, Ca, P)[, rid := .I]
+
+  # Celsius to Kelvin
+  dat[, TK := TC + 273.15]
+
   # Check if miniconda is installed
   if (!mc_exists() & method != "R_Polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
@@ -42,13 +48,10 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Load K_calculation.json
   K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "Kgen"))
   K_coefs <- K_coefs$coefficients
-
-  # Celsius to Kelvin
-  TK <- TC + 273.15
-
   # Select function and run calculation
   K_fn <- K_fns[[k]]
-  k_value <- K_fn(p = K_coefs[[k]], TK = TK, S = S)
+
+  dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S), by = rid]
 
   # Pressure correction?
   if (!is.null(P)) {
@@ -56,24 +59,23 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    TS <- calc_TS(S)
-    TF <- calc_TF(S)
+    dat[, TS := calc_TS(S)]
+    dat[, TF := calc_TF(S)]
 
-    KS_surf <- K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)
-    KS_deep <- KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)
-    KF_surf <- K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)
-    KF_deep <- KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)
+    dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)]
+    dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)]
+    dat[, KF_surf := K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)]
+    dat[, KF_deep := KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)]
 
     # convert from TOT to SWS before pressure correction
-    tot_to_sws_surface <- (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)
+    dat[, tot_to_sws_surface := (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)]
 
     # convert from SWS to TOT after pressure correction
-    sws_to_tot_deep <- (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)
+    dat[, sws_to_tot_deep := (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)]
+    dat[, pc := calc_pressure_correction(k = k, TC = TC, P = P), by = rid]
 
-    pc <- calc_pressure_correction(k = k, TC = TC, P = P)
-
-    check_pc <- ifelse(pc != 0, pc, 1)
-    k_value <- k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep
+    dat[, check_pc := ifelse(pc != 0, pc, 1)]
+    dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
   }
 
   # Calculate correction factor
@@ -81,28 +83,26 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (method == "MyAMI") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      k_value <- k_value * as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
     }
     if (method == "MyAMI_Polynomial") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      k_value <- k_value * as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
     }
     if (method == "R_Polynomial") {
-      # Load polynomial_coefficients.json
-      poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+      # Load Fcorr_approx.json
+      poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
 
       if (k %in% names(poly_coefs)) {
         # Calculate correction factors
-        KF <- sapply(seq_len(length(TK)), function(ii) {
-          poly_coefs[[k]] %*% kgen_poly(S = S[ii], TK = TK[ii], Mg = Mg[ii], Ca = Ca[ii])
-        })
-        k_value <- k_value * KF
+        dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
+        dat[, k_value := k_value * KF]
       }
     }
   }
 
-  return(k_value)
+  return(dat$k_value)
 }
 
 #' @title Calculate multiple equilibrium constants for carbon
@@ -122,7 +122,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   }
 
   # Calculate ks
-  ks_list <- lapply(ks, function(k) {
+  ks_list <- pbapply::pblapply(ks, function(k) {
     calc_K(
       k = k, TC = TC,
       S = S, Mg = Mg,
@@ -149,8 +149,8 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
     Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
   }
   if (method == "R_Polynomial") {
-    # Load polynomial_coefficients.json
-    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+    # Load Fcorr_approx.json
+    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
 
     # Calculate correction factors
     Fcorr <- lapply(names(poly_coefs), function(k) {
@@ -158,8 +158,10 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
         poly_coefs[[k]] %*% kgen_poly(S = S[ii], TK = TK[ii], Mg = Mg[ii], Ca = Ca[ii])
       })
     })
+    
+    names(Fcorr) <- names(poly_coefs)
   }
-
+  
   # Apply correction
   for (k in unique(ks)) {
     KF <- Fcorr[[k]]

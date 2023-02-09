@@ -10,7 +10,7 @@ RDIFF_TOLERANCE = 0.0001  # tolrate max 0.01% difference
 
 class crosscheck(unittest.TestCase):
     def test_polynomial_coefficients(self):
-        with open('../r/inst/coefficients/polynomial_coefficients.json') as f:
+        with open('../r/inst/coefficients/Fcorr_approx.json') as f:
             r_coefs = json.load(f)
             
         with open('../matlab/polynomial_coefficients.json') as f:

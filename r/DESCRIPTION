@@ -17,7 +17,9 @@ Imports:
     rjson (>= 0.2.21),
     reticulate (>= 1.26),
     rappdirs (>= 0.3.3),
-    checkmate (>= 2.1.0)
+    checkmate (>= 2.1.0),
+    data.table,
+    pbapply (>= 1.7.0)
 Suggests:
     testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE)

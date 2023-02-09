@@ -158,9 +158,9 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
         poly_coefs[[k]] %*% kgen_poly(S = S[ii], TK = TK[ii], Mg = Mg[ii], Ca = Ca[ii])
       })
     })
+    
+    names(Fcorr) <- names(poly_coefs)
   }
-  
-  names(Fcorr) <- names(poly_coefs)
   
   # Apply correction
   for (k in unique(ks)) {

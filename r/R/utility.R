@@ -37,7 +37,7 @@ kgen_poly <- function(S, TK, Mg = 0.0528171, Ca = 0.0102821) {
   dx <- t(c(TK, log(TK), S, Mg, Ca))
 
   # Build poly matrix
-  dy <- stats::poly(dx, degree = 3, raw=TRUE)
+  dy <- stats::poly(dx, degree = 3, raw = TRUE)
 
   # Sort by index - according to python output
   out <- c(1, dy[order(-attr(dy, "degree"), colnames(dy), decreasing = TRUE)])

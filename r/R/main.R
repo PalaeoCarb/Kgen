@@ -27,13 +27,13 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     checkmate::check_numeric(Mg, lower = 0, upper = 0.06),
     checkmate::check_numeric(Ca, lower = 0, upper = 0.06)
   )
-  
-  KF <- k_value <- TK <- NULL
+
+  KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- NULL
   dat <- data.table::data.table(k, TC, S, Mg, Ca, P)
 
   # Celsius to Kelvin
   dat[, TK := TC + 273.15]
-  
+
   # Check if miniconda is installed
   if (!mc_exists() & method != "R_Polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
@@ -51,7 +51,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 
   # Select function and run calculation
   K_fn <- K_fns[[k]]
-  
+
   dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S)]
 
   # Pressure correction?
@@ -60,23 +60,22 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    TS <- calc_TS(S)
-    TF <- calc_TF(S)
+    dat[, TS := calc_TS(S)]
+    dat[, TF := calc_TF(S)]
 
-    KS_surf <- K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)
-    KS_deep <- KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)
-    KF_surf <- K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)
-    KF_deep <- KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)
+    dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)]
+    dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)]
+    dat[, KF_surf := K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)]
+    dat[, KF_deep := KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)]
 
     # convert from TOT to SWS before pressure correction
-    tot_to_sws_surface <- (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)
+    dat[, tot_to_sws_surface := (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)]
 
     # convert from SWS to TOT after pressure correction
-    sws_to_tot_deep <- (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)
+    dat[, sws_to_tot_deep := (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)]
+    dat[, pc := calc_pressure_correction(k = k, TC = TC, P = P)]
 
-    pc <- calc_pressure_correction(k = k, TC = TC, P = P)
-
-    check_pc <- ifelse(pc != 0, pc, 1)
+    dat[, check_pc := ifelse(pc != 0, pc, 1)]
     dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
   }
 
@@ -100,7 +99,6 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
         # Calculate correction factors
         dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca)]
         dat[, k_value := k_value * KF]
-        
       }
     }
   }
@@ -123,7 +121,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   if (is.null(ks)) {
     ks <- names(K_fns)
   }
-  
+
   # Calculate ks
   ks_list <- lapply(ks, function(k) {
     calc_K(
@@ -134,14 +132,14 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       Kcorrect = FALSE
     )
   })
-  
+
   # Return data.frame
   Ks <- data.frame(t(do.call(rbind, ks_list)))
   colnames(Ks) <- ks
-  
+
   # Celsius to Kelvin
   TK <- TC + 273.15
-  
+
   # Calculate correction factor with MyAMI
   if (method == "MyAMI") {
     pymyami <- reticulate::import("pymyami")
@@ -154,7 +152,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   if (method == "R_Polynomial") {
     # Load polynomial_coefficients.json
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
-    
+
     # Calculate correction factors
     Fcorr <- lapply(names(poly_coefs), function(k) {
       sapply(seq_len(length(TK)), function(ii) {
@@ -162,7 +160,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       })
     })
   }
-  
+
   # Apply correction
   for (k in unique(ks)) {
     KF <- Fcorr[[k]]
@@ -170,6 +168,6 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       Ks[k] <- Ks[k] * as.numeric(KF)
     }
   }
-  
+
   return(Ks)
 }

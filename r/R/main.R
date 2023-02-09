@@ -29,7 +29,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   )
 
   KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- NULL
-  dat <- data.table::data.table(k, TC, S, Mg, Ca, P)
+  dat <- data.table::data.table(k, TC, S, Mg, Ca, P)[, rid := .I]
 
   # Celsius to Kelvin
   dat[, TK := TC + 273.15]
@@ -48,11 +48,10 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Load K_calculation.json
   K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "Kgen"))
   K_coefs <- K_coefs$coefficients
-
   # Select function and run calculation
   K_fn <- K_fns[[k]]
 
-  dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S)]
+  dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S), by = rid]
 
   # Pressure correction?
   if (!is.null(P)) {
@@ -73,7 +72,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 
     # convert from SWS to TOT after pressure correction
     dat[, sws_to_tot_deep := (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)]
-    dat[, pc := calc_pressure_correction(k = k, TC = TC, P = P)]
+    dat[, pc := calc_pressure_correction(k = k, TC = TC, P = P), by = rid]
 
     dat[, check_pc := ifelse(pc != 0, pc, 1)]
     dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
@@ -84,12 +83,12 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (method == "MyAMI") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      dat[, k_value := k_value * as.numeric(Fcorr[[k]])]
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
     }
     if (method == "MyAMI_Polynomial") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      dat[, k_value := k_value * as.numeric(Fcorr[[k]])]
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
     }
     if (method == "R_Polynomial") {
       # Load polynomial_coefficients.json
@@ -97,7 +96,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 
       if (k %in% names(poly_coefs)) {
         # Calculate correction factors
-        dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca)]
+        dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
         dat[, k_value := k_value * KF]
       }
     }

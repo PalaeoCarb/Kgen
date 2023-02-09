@@ -37,16 +37,10 @@ kgen_poly <- function(S, TK, Mg = 0.0528171, Ca = 0.0102821) {
   dx <- t(c(TK, log(TK), S, Mg, Ca))
 
   # Build poly matrix
-  dy <- cbind(intercept = 1, stats::poly(dx, 3, raw = TRUE))
+  dy <- stats::poly(dx, degree = 3, raw=TRUE)
 
   # Sort by index - according to python output
-  index <- c(
-    1, 2, 7, 22, 3, 8, 23, 12, 27, 37, 4, 9, 24, 13, 28, 38, 16, 31, 41, 47, 5, 10, 25, 14, 29,
-    39, 17, 32, 42, 48, 19, 34, 44, 50, 53, 6, 11, 26, 15, 30, 40, 18, 33, 43, 49, 20, 35,
-    45, 51, 54, 21, 36, 46, 52, 55, 56
-  )
-
-  out <- dy[order(index)]
+  out <- c(1, dy[order(-attr(dy, "degree"), colnames(dy), decreasing = TRUE)])
 
   return(out)
 }

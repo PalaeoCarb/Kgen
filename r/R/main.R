@@ -27,7 +27,13 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     checkmate::check_numeric(Mg, lower = 0, upper = 0.06),
     checkmate::check_numeric(Ca, lower = 0, upper = 0.06)
   )
+  
+  KF <- k_value <- TK <- NULL
+  dat <- data.table::data.table(k, TC, S, Mg, Ca, P)
 
+  # Celsius to Kelvin
+  dat[, TK := TC + 273.15]
+  
   # Check if miniconda is installed
   if (!mc_exists() & method != "R_Polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
@@ -43,12 +49,10 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "Kgen"))
   K_coefs <- K_coefs$coefficients
 
-  # Celsius to Kelvin
-  TK <- TC + 273.15
-
   # Select function and run calculation
   K_fn <- K_fns[[k]]
-  k_value <- K_fn(p = K_coefs[[k]], TK = TK, S = S)
+  
+  dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S)]
 
   # Pressure correction?
   if (!is.null(P)) {
@@ -73,7 +77,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     pc <- calc_pressure_correction(k = k, TC = TC, P = P)
 
     check_pc <- ifelse(pc != 0, pc, 1)
-    k_value <- k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep
+    dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
   }
 
   # Calculate correction factor
@@ -81,12 +85,12 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (method == "MyAMI") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      k_value <- k_value * as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]])]
     }
     if (method == "MyAMI_Polynomial") {
       pymyami <- reticulate::import("pymyami")
       Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      k_value <- k_value * as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * as.numeric(Fcorr[[k]])]
     }
     if (method == "R_Polynomial") {
       # Load polynomial_coefficients.json
@@ -94,15 +98,14 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 
       if (k %in% names(poly_coefs)) {
         # Calculate correction factors
-        KF <- sapply(seq_len(length(TK)), function(ii) {
-          poly_coefs[[k]] %*% kgen_poly(S = S[ii], TK = TK[ii], Mg = Mg[ii], Ca = Ca[ii])
-        })
-        k_value <- k_value * KF
+        dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca)]
+        dat[, k_value := k_value * KF]
+        
       }
     }
   }
 
-  return(k_value)
+  return(dat$k_value)
 }
 
 #' @title Calculate multiple equilibrium constants for carbon
@@ -120,7 +123,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   if (is.null(ks)) {
     ks <- names(K_fns)
   }
-
+  
   # Calculate ks
   ks_list <- lapply(ks, function(k) {
     calc_K(
@@ -131,14 +134,14 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       Kcorrect = FALSE
     )
   })
-
+  
   # Return data.frame
   Ks <- data.frame(t(do.call(rbind, ks_list)))
   colnames(Ks) <- ks
-
+  
   # Celsius to Kelvin
   TK <- TC + 273.15
-
+  
   # Calculate correction factor with MyAMI
   if (method == "MyAMI") {
     pymyami <- reticulate::import("pymyami")
@@ -151,7 +154,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   if (method == "R_Polynomial") {
     # Load polynomial_coefficients.json
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
-
+    
     # Calculate correction factors
     Fcorr <- lapply(names(poly_coefs), function(k) {
       sapply(seq_len(length(TK)), function(ii) {
@@ -159,7 +162,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       })
     })
   }
-
+  
   # Apply correction
   for (k in unique(ks)) {
     KF <- Fcorr[[k]]
@@ -167,6 +170,6 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       Ks[k] <- Ks[k] * as.numeric(KF)
     }
   }
-
+  
   return(Ks)
 }

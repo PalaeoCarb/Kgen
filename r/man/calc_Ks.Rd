@@ -5,7 +5,7 @@
 \title{Calculate multiple equilibrium constants for carbon}
 \usage{
 calc_Ks(
-  ks,
+  ks = NULL,
   TC = 25,
   S = 35,
   Mg = 0.0528171,

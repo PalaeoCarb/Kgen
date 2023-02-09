@@ -79,18 +79,18 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Calculate correction factor
   if (method == "MyAMI") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-    if (k %in% names(names(Fcorr))) {
-      Fcorr <- as.numeric(Fcorr[[k]])
-      dat[, k_value := k_value * Fcorr]
+    Fcorr <- pymyami$calc_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    if (k %in% names(Fcorr)) {
+      KF <- as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * KF]
     }
   }
   if (method == "MyAMI_Polynomial") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-    if (k %in% names(names(Fcorr))) {
-      Fcorr <- as.numeric(Fcorr[[k]])
-      dat[, k_value := k_value * Fcorr]
+    Fcorr <- pymyami$approximate_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    if (k %in% names(Fcorr)) {
+      KF <- as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * KF]
     }
   }
   if (method == "R_Polynomial") {
@@ -98,7 +98,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
       dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
-      dat[, .(k_value * KF)]
+      dat[, k_value := k_value * KF]
     }
   }
 

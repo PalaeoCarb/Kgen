@@ -98,7 +98,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
       dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
-      dat[, k_value := k_value * KF]
+      dat[, .(k_value * KF)]
     }
   }
 

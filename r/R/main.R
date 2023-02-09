@@ -28,7 +28,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     checkmate::check_numeric(Ca, lower = 0, upper = 0.06)
   )
 
-  KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- NULL
+  KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
   dat <- data.table::data.table(k, TC, S, Mg, Ca, P)[, rid := .I]
 
   # Celsius to Kelvin
@@ -91,8 +91,8 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
       dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
     }
     if (method == "R_Polynomial") {
-      # Load polynomial_coefficients.json
-      poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+      # Load Fcorr_approx.json
+      poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
 
       if (k %in% names(poly_coefs)) {
         # Calculate correction factors
@@ -122,7 +122,7 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   }
 
   # Calculate ks
-  ks_list <- lapply(ks, function(k) {
+  ks_list <- pbapply::pblapply(ks, function(k) {
     calc_K(
       k = k, TC = TC,
       S = S, Mg = Mg,
@@ -149,8 +149,8 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
     Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
   }
   if (method == "R_Polynomial") {
-    # Load polynomial_coefficients.json
-    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+    # Load Fcorr_approx.json
+    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
 
     # Calculate correction factors
     Fcorr <- lapply(names(poly_coefs), function(k) {
@@ -159,7 +159,9 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       })
     })
   }
-
+  
+  names(Fcorr) <- names(poly_coefs)
+  
   # Apply correction
   for (k in unique(ks)) {
     KF <- Fcorr[[k]]

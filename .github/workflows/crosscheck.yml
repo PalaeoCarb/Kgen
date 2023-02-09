@@ -63,6 +63,7 @@ jobs:
           reticulate::install_miniconda()
           reticulate::use_miniconda("r-reticulate")
           reticulate::py_install("pymyami", envname = "r-reticulate", pip=T)
+          remotes::install_local("r/")
         shell: Rscript {0}  
           
       - name: Running R Kgen

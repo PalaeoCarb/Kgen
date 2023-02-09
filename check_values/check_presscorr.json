@@ -1,5 +1,5 @@
 {
-    "info": "Pressure correction factors for 300 bar. These values are consistent with parameters present in Table A.11.2 of Zeebe & Wolf-Gladrow (2001), with the exception of KW which was reported there for fresh water. All other values are calculated at an initial starting point and should be used for consistency checks in future.",
+    "info": "Pressure correction factors for 300 bar. These values are consistent with parameters present in Table A.11.2 of Zeebe & Wolf-Gladrow (2001), with the exception of KW which was reported there for fresh water, K0, KSi and KPs which are assumed to be 1 (i.e. no pressure correction). All other values are calculated at an initial starting point and should be used for consistency checks in future.",
     "input_conditions": {
         "S": 35,
         "TC": 25,
@@ -17,6 +17,7 @@
         "KspA": 1.47866,
         "KP1": 1.14852,
         "KP2": 1.27298,
-        "KP3": 1.32217
+        "KP3": 1.32217,
+        "KSi": 1
     }
 }

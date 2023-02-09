@@ -11,8 +11,7 @@ calc_K(
   Mg = 0.0528171,
   Ca = 0.0102821,
   P = NULL,
-  method = "MyAMI",
-  Kcorrect = TRUE
+  method = "MyAMI"
 )
 }
 \arguments{
@@ -29,8 +28,6 @@ calc_K(
 \item{P}{Pressure (Bar) (optional)}
 
 \item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
-
-\item{Kcorrect}{TRUE = calculate corrections, FALSE = don't calculate corrections.}
 }
 \value{
 Specified K at the given conditions

@@ -30,7 +30,7 @@ calc_Ks(
 \item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
 }
 \value{
-Data.frame of specified Ks at the given conditions
+Data.table of specified Ks at the given conditions
 }
 \description{
 Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.

@@ -1,7 +1,7 @@
 Package: Kgen
 Type: Package
 Title: Parameters for Consistently Calculating Ks for Carbon Calculation
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     person(given = "Dennis",
            family = "Mayk",
@@ -18,8 +18,8 @@ Imports:
     reticulate (>= 1.26),
     rappdirs (>= 0.3.3),
     checkmate (>= 2.1.0),
-    data.table,
-    pbapply (>= 1.7.0)
+    pbapply (>= 1.7.0),
+    data.table (>= 1.14.6)
 Suggests:
     testthat (>= 3.0.0)
 Roxygen: list(markdown = TRUE)

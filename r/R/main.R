@@ -11,17 +11,14 @@
 #' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 #' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
-#' @param Kcorrect TRUE = calculate corrections, FALSE = don't calculate corrections.
 #' @return Specified K at the given conditions
-#' @export
-calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI", Kcorrect = TRUE) {
+calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
   # Check input values
   checkmate::assert(
     combine = "and",
     checkmate::check_choice(k, choices = names(K_fns)),
     checkmate::check_choice(method, choices = c("R_Polynomial", "MyAMI_Polynomial", "MyAMI")),
     checkmate::check_string(k),
-    checkmate::check_logical(Kcorrect),
     checkmate::check_numeric(TC, lower = 0, upper = 40),
     checkmate::check_numeric(S, lower = 30, upper = 40),
     checkmate::check_numeric(Mg, lower = 0, upper = 0.06),
@@ -48,6 +45,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Load K_calculation.json
   K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "Kgen"))
   K_coefs <- K_coefs$coefficients
+
   # Select function and run calculation
   K_fn <- K_fns[[k]]
 
@@ -79,26 +77,28 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   }
 
   # Calculate correction factor
-  if (Kcorrect) {
-    if (method == "MyAMI") {
-      pymyami <- reticulate::import("pymyami")
-      Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
+  if (method == "MyAMI") {
+    pymyami <- reticulate::import("pymyami")
+    Fcorr <- pymyami$calc_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    if (k %in% names(Fcorr)) {
+      KF <- as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * KF]
     }
-    if (method == "MyAMI_Polynomial") {
-      pymyami <- reticulate::import("pymyami")
-      Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-      dat[, k_value := k_value * as.numeric(Fcorr[[k]]), by = rid]
+  }
+  if (method == "MyAMI_Polynomial") {
+    pymyami <- reticulate::import("pymyami")
+    Fcorr <- pymyami$approximate_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    if (k %in% names(Fcorr)) {
+      KF <- as.numeric(Fcorr[[k]])
+      dat[, k_value := k_value * KF]
     }
-    if (method == "R_Polynomial") {
-      # Load Fcorr_approx.json
-      poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
-
-      if (k %in% names(poly_coefs)) {
-        # Calculate correction factors
-        dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
-        dat[, k_value := k_value * KF]
-      }
+  }
+  if (method == "R_Polynomial") {
+    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+    if (k %in% names(poly_coefs)) {
+      # Calculate correction factors
+      dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
+      dat[, k_value := k_value * KF]
     }
   }
 
@@ -113,7 +113,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 #'
 #' @inheritParams calc_K
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
-#' @return Data.frame of specified Ks at the given conditions
+#' @return Data.table of specified Ks at the given conditions
 #' @export
 calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
@@ -127,48 +127,13 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
       k = k, TC = TC,
       S = S, Mg = Mg,
       Ca = Ca, P = P,
-      method = method,
-      Kcorrect = FALSE
+      method = method
     )
   })
 
-  # Return data.frame
-  Ks <- data.frame(t(do.call(rbind, ks_list)))
-  colnames(Ks) <- ks
+  # Return data.table
+  ks_value <- data.table::data.table(do.call(cbind, ks_list))
+  names(ks_value) <- ks
 
-  # Celsius to Kelvin
-  TK <- TC + 273.15
-
-  # Calculate correction factor with MyAMI
-  if (method == "MyAMI") {
-    pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$calc_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-  }
-  if (method == "MyAMI_Polynomial") {
-    pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$approximate_Fcorr(Sal = S, TempC = TC, Mg = Mg, Ca = Ca)
-  }
-  if (method == "R_Polynomial") {
-    # Load Fcorr_approx.json
-    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/Fcorr_approx.json", package = "Kgen"))
-
-    # Calculate correction factors
-    Fcorr <- lapply(names(poly_coefs), function(k) {
-      sapply(seq_len(length(TK)), function(ii) {
-        poly_coefs[[k]] %*% kgen_poly(S = S[ii], TK = TK[ii], Mg = Mg[ii], Ca = Ca[ii])
-      })
-    })
-    
-    names(Fcorr) <- names(poly_coefs)
-  }
-  
-  # Apply correction
-  for (k in unique(ks)) {
-    KF <- Fcorr[[k]]
-    if (!is.null(KF)) {
-      Ks[k] <- Ks[k] * as.numeric(KF)
-    }
-  }
-
-  return(Ks)
+  return(ks_value)
 }

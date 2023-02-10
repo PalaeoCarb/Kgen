@@ -1,5 +1,5 @@
 # Select pyMyAMI version
-pymyami_version <- "2.0a6"
+pymyami_version <- "2.0.2"
 
 #' Check if OS is Windows
 is_windows <- function() {

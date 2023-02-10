@@ -3,29 +3,34 @@ Script that updates all resources and version numbers in Python, R and Matlab to
 """
 import urllib.request
 from glob import glob
+import re
 
 # specify which pymyami version to use throughout Kgen
-pymyami_version = '2.0.1'
+pymyami_version = '2.0.2'
 
 # path to file containing polynomial coefficients
 polynomial_coefficient_path = f'https://raw.githubusercontent.com/PalaeoCarb/pymyami/{pymyami_version}/pymyami/parameters/Fcorr_approx.json'
 
+pattern = re.compile(r'(.*)(pymyami==)([0-9.]+)(.*)')
 
 ###########################
 # Python
 ###########################
 
 # update requirements.txt
-with open('python/requirements.txt', 'r+') as f:
-    requires = f.readlines()
+files = ['python/requirements.txt', 'python/setup.cfg']
 
-    for i, req in enumerate(requires):
-        if 'pymyami' in req:
-            requires[i] = f"pymyami=={pymyami_version}\n"
-    
-    f.seek(0)
-    f.write(''.join(requires))
-    f.truncate()
+for file in files:
+    with open(file, 'r+') as f:
+        lines = f.readlines()
+
+        for i, line in enumerate(lines):
+            if pattern.match(line):
+                lines[i] = pattern.sub(r'\g<1>\g<2>' + pymyami_version + r'\g<4>', line)
+        
+        f.seek(0)
+        f.write(''.join(lines))
+        f.truncate()
 
 ###########################
 # Matlab
@@ -58,14 +63,12 @@ with open('r/R/pymyami.R', 'r+') as f:
 
 actions = glob('.github/workflows/*.yml')
 
-new_install = f'reticulate::py_install("pymyami=={pymyami_version}", envname = "r-reticulate", pip=T)'
-
 for action in actions:
     with open(action, 'r+') as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
-            if 'reticulate::py_install("pymyami' in line:
-                lines[i] = ' ' * line.find('reticulate') + new_install + '\n'
+            if pattern.match(line):
+                lines[i] = pattern.sub(r'\g<1>\g<2>' + pymyami_version + r'\g<4>', line)
         f.seek(0)
         f.write(''.join(lines))
         f.truncate()

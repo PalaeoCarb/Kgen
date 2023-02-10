@@ -4,7 +4,7 @@
 \alias{kgen_poly}
 \title{Kgen R polynomial function}
 \usage{
-kgen_poly(S, TK, Mg, Ca)
+kgen_poly(S, TK, Mg = 0.0528171, Ca = 0.0102821)
 }
 \arguments{
 \item{S}{Salinity (PSU)}

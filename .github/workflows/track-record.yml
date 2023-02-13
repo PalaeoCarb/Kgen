@@ -1,14 +1,10 @@
 ---
 name: 'Generate track record'
 
-on: 
-  workflow_dispatch
-  release:
-    types: [released]
-  
+on: [push,workflow_dispatch]
 
 jobs:
-  tests:
+  generate:
     runs-on: ubuntu-latest
     strategy:
       matrix:

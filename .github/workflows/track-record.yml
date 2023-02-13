@@ -25,9 +25,10 @@ jobs:
       - name: 'Run generate track record'
         run: |
           python3 ./track_record/generate_track_record.py
-          ls -a ./track_record/
-      - name: 'Recommit information'
-          uses: stefanzweifel/git-auto-commit-action@v4
-          with:
-            commit_message: Automated update of track_record
-            file_pattern: './track_record/K_track_record.json ./track_record/recent.png'
+      - name: 'Recommit information'  
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Automated update of track_record
+          file_pattern: './track_record/K_track_record.json ./track_record/recent.png'
+        
+

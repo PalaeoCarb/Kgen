@@ -1,7 +1,10 @@
 ---
 name: 'Generate track record'
 
-on: [push,workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   generate:

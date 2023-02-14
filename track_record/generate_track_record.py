@@ -65,6 +65,7 @@ figure,axes = pyplot.subplots(nrows=1)
 axes = [axes]
 
 short_shas = [sha[0:8] for sha in shas]
+k_names = ["K$_{0}^{*}$","K$_{1}^{*}$","K$_{2}^{*}$","K$_{W}^{*}$","K$_{B}^{*}$","K$_{S}^{*}$","K$_{spA}^{*}$","K$_{spC}^{*}$","K$_{P1}^{*}$","K$_{P2}^{*}$","K$_{P3}^{*}$","K$_{Si}^{*}$","K$_{F}^{*}$"]
 
 for K_difference,sha in zip(K_differences,short_shas,strict=True):
     axes[0].plot(numpy.arange(0,len(normaliser["Ks"])),K_difference,marker="o",label=sha)
@@ -72,8 +73,8 @@ for K_difference,sha in zip(K_differences,short_shas,strict=True):
 
 axes[0].set_xlim((0,len(normaliser["Ks"])-1))
 axes[0].set_xticks(numpy.arange(0,len(normaliser["Ks"])))
-axes[0].set_xticklabels(list(normaliser["Ks"].keys()))
-axes[0].set_xlabel("Commit (SHA)")
+axes[0].set_xticklabels(k_names)
+# axes[0].set_xlabel("K*")
 axes[0].set_ylabel("Difference (%)")
 
 pyplot.legend()

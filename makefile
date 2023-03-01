@@ -1,8 +1,7 @@
 .PHONY: test-python, build-python, upload-python, distribute-python, test-crosscheck, pymyami-update
 
 test-python:
-	cd python
-	python -m unittest
+	cd python; python -m unittest
 
 test-crosscheck:
 	cd crosscheck; python gen_python.py; Rscript gen_r.r; python -m unittest crosscheck.py; rm generated_Ks/*.csv

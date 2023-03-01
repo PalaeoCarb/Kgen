@@ -1,4 +1,4 @@
-.PHONY: test-python, build-python, upload-python, distribute-python, test-crosscheck, pymyami-updatse
+.PHONY: test-python, build-python, upload-python, distribute-python, test-crosscheck, pymyami-update
 
 test-python:
 	cd python

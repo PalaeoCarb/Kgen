@@ -7,7 +7,8 @@ TODO: Think about pH scales!
 """
 import numpy as np
 from .coefs import K_coefs, K_presscorr_coefs
-from pymyami import calc_Fcorr, approximate_Fcorr
+from pymyami import calculate_seawater_correction as calc_Fcorr
+from pymyami import approx_seawater_correction as approximate_Fcorr
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters

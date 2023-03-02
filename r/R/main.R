@@ -79,7 +79,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Calculate correction factor
   if (method == "MyAMI") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$calc_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    Fcorr <- pymyami$calculate_seawater_correction(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
     if (k %in% names(Fcorr)) {
       KF <- as.numeric(Fcorr[[k]])
       dat[, k_value := k_value * KF]
@@ -87,7 +87,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   }
   if (method == "MyAMI_Polynomial") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$approximate_Fcorr(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    Fcorr <- pymyami$approximate_seawater_correction(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
     if (k %in% names(Fcorr)) {
       KF <- as.numeric(Fcorr[[k]])
       dat[, k_value := k_value * KF]

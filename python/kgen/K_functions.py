@@ -7,8 +7,7 @@ TODO: Think about pH scales!
 """
 import numpy as np
 from .coefs import K_coefs, K_presscorr_coefs
-from pymyami import calculate_seawater_correction as calc_Fcorr
-from pymyami import approximate_seawater_correction as approximate_Fcorr
+from pymyami import calculate_seawater_correction, approximate_seawater_correction
 
 def fn_K1K2(p, TK, lnTK, S, sqrtS):
     """Calculate K1 or K2 from given parameters
@@ -439,9 +438,9 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
         if Mg is None:
             Mg = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+            Fcorr = calculate_seawater_correction(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
         else:
-            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+            Fcorr = approximate_seawater_correction(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
         if k in Fcorr:
             K *= Fcorr[k]
     
@@ -530,9 +529,9 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, M
         if Mg is None:
             Mg = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calc_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+            Fcorr = calculate_seawater_correction(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
         else:
-            Fcorr = approximate_Fcorr(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
+            Fcorr = approximate_seawater_correction(Sal=Sal, TempC=TempC, Mg=Mg, Ca=Ca)
         for k, f in Fcorr.items():
             if k in Ks:
                 Ks[k] *= f

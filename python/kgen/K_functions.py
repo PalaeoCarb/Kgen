@@ -342,7 +342,7 @@ def prescorr(p, P, TC):
     RT = 83.1451 * (TC + 273.15)
     return np.exp((-dV + 0.5 * dk * P) * P / RT)    
 
-def calc_TS(Sal):
+def calc_ST(Sal):
     """
     Calculate total Sulphur in mol/kg-SW- lifted directly from CO2SYS.m
 
@@ -352,7 +352,7 @@ def calc_TS(Sal):
     return 0.14 * Sal / 1.80655 / 96.062 # mol/kg-SW
 
 
-def calc_TF(Sal):
+def calc_FT(Sal):
     """
     Calculate total Fluorine in mol/kg-SW
 
@@ -361,7 +361,7 @@ def calc_TF(Sal):
     """
     return 6.7e-5 * Sal / 1.80655 / 18.9984 # mol/kg-SW
 
-def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, MyAMI_mode='calculate'):
+def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, ST=None, FT=None, MyAMI_mode='calculate'):
     """
     Calculate a specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -388,10 +388,10 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
         seawater - a salinity correction is then applied to calculate
         the Mg concentration in the sample. Used to correct the Ks
         using MyAMI.
-    TS : array-like
+    ST : array-like
         Total sulphate in mol/kgsw. Calculated from salinity if not
         given.
-    TF : array-like
+    FT : array-like
         Total fluorine in mol/kgsw. Calculated from salinity if not
         given.
     MyAMI_mode : str
@@ -417,18 +417,18 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
     K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
     if Pres is not None:
-        if TF is None:
-            TF = calc_TF(Sal=Sal)
-        if TS is None:
-            TS = calc_TS(Sal=Sal)
+        if FT is None:
+            FT = calc_FT(Sal=Sal)
+        if ST is None:
+            ST = calc_ST(Sal=Sal)
         
         KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
         KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=Pres, TC=TempC)
         KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
         KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=Pres, TC=TempC)
         
-        tot_to_sws_surface = (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)  # convert from TOT to SWS before pressure correction
-        sws_to_tot_deep = (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)  # convert from SWS to TOT after pressure correction
+        tot_to_sws_surface = (1 + ST / KS_surf) / (1 + ST / KS_surf + FT / KF_surf)  # convert from TOT to SWS before pressure correction
+        sws_to_tot_deep = (1 + ST / KS_deep + FT / KF_deep) / (1 + ST / KS_deep)  # convert from SWS to TOT after pressure correction
         
         K *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC) * sws_to_tot_deep
     
@@ -447,7 +447,7 @@ def calc_K(k, TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None,
     return K
 
 
-def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, MyAMI_mode='calculate', K_list=None):
+def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, ST=None, FT=None, MyAMI_mode='calculate', K_list=None):
     """
     Calculate all stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -474,10 +474,10 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, M
         seawater - a salinity correction is then applied to calculate
         the Mg concentration in the sample. Used to correct the Ks
         using MyAMI.
-    TS : array-like
+    ST : array-like
         Total sulphate in mol/kgsw. Calculated from salinity if not
         given.
-    TF : array-like
+    FT : array-like
         Total fluorine in mol/kgsw. Calculated from salinity if not
         given.
     MyAMI_mode : str
@@ -507,18 +507,18 @@ def calc_Ks(TempC=25., Sal=35., Pres=None, Mg=None, Ca=None, TS=None, TF=None, M
         Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
         if Pres is not None:
-            if TF is None:
-                TF = calc_TF(Sal=Sal)
-            if TS is None:
-                TS = calc_TS(Sal=Sal)
+            if FT is None:
+                FT = calc_FT(Sal=Sal)
+            if ST is None:
+                ST = calc_ST(Sal=Sal)
             
             KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
             KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=Pres, TC=TempC)
             KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
             KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=Pres, TC=TempC)
             
-            tot_to_sws_surface = (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)  # convert from TOT to SWS before pressure correction
-            sws_to_tot_deep = (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)  # convert from SWS to TOT after pressure correction
+            tot_to_sws_surface = (1 + ST / KS_surf) / (1 + ST / KS_surf + FT / KF_surf)  # convert from TOT to SWS before pressure correction
+            sws_to_tot_deep = (1 + ST / KS_deep + FT / KF_deep) / (1 + ST / KS_deep)  # convert from SWS to TOT after pressure correction
 
             if k in K_presscorr_coefs:
                 Ks[k] *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=Pres, TC=TempC) * sws_to_tot_deep

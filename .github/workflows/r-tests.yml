@@ -1,9 +1,9 @@
 # Kgen test worflow
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, dev]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, dev]
 
 name: 'Check K values - R'
     

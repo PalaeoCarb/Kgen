@@ -4,14 +4,14 @@
 \alias{fn_KW}
 \title{Calculate KW}
 \usage{
-fn_KW(p, TK, S)
+fn_KW(p, temp_k, sal)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 KW

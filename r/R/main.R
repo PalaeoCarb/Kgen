@@ -5,31 +5,31 @@
 #' @author Dennis Mayk
 #'
 #' @param k K to be calculated
-#' @param TC Temperature (Celsius)
-#' @param S Salinity (PSU)
-#' @param P Pressure (Bar) (optional)
-#' @param Mg Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
-#' @param Ca Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.
+#' @param temp_c Temperature (Celsius)
+#' @param p_bar Pressure (Bar) (optional)
+#' @param sal Salinity
+#' @param magnesium magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param calcium calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
 #' @return Specified K at the given conditions
-calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
+calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, method = "MyAMI") {
   # Check input values
   checkmate::assert(
     combine = "and",
     checkmate::check_choice(k, choices = names(K_fns)),
     checkmate::check_choice(method, choices = c("R_Polynomial", "MyAMI_Polynomial", "MyAMI")),
     checkmate::check_string(k),
-    checkmate::check_numeric(TC, lower = 0, upper = 40),
-    checkmate::check_numeric(S, lower = 30, upper = 40),
-    checkmate::check_numeric(Mg, lower = 0, upper = 0.06),
-    checkmate::check_numeric(Ca, lower = 0, upper = 0.06)
+    checkmate::check_numeric(temp_c, lower = 0, upper = 40),
+    checkmate::check_numeric(sal, lower = 30, upper = 40),
+    checkmate::check_numeric(magnesium, lower = 0, upper = 0.06),
+    checkmate::check_numeric(calcium, lower = 0, upper = 0.06)
   )
 
-  KF <- k_value <- TK <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- TS <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
-  dat <- data.table::data.table(k, TC, S, Mg, Ca, P)[, rid := .I]
+  KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- ST <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
+  dat <- data.table::data.table(k, temp_c, sal, magnesium, calcium, p_bar)[, rid := .I]
 
   # Celsius to Kelvin
-  dat[, TK := TC + 273.15]
+  dat[, temp_k := temp_c + 273.15]
 
   # Check if miniconda is installed
   if (!mc_exists() & method != "R_Polynomial") {
@@ -49,28 +49,28 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Select function and run calculation
   K_fn <- K_fns[[k]]
 
-  dat[, k_value := K_fn(p = K_coefs[[k]], TK = TK, S = S), by = rid]
+  dat[, k_value := K_fn(p = K_coefs[[k]], temp_k = temp_k, sal = sal), by = rid]
 
   # Pressure correction?
-  if (!is.null(P)) {
+  if (!is.null(p_bar)) {
     # Load K_pressure_correction.json
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    dat[, TS := calc_TS(S)]
-    dat[, TF := calc_TF(S)]
+    dat[, ST := calc_ST(sal)]
+    dat[, TF := calc_FT(sal)]
 
-    dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], TK = TK, S = S)]
-    dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], P = P, TC = TC)]
-    dat[, KF_surf := K_fns[["KF"]](p = K_coefs[["KF"]], TK = TK, S = S)]
-    dat[, KF_deep := KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], P = P, TC = TC)]
+    dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]
+    dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]
+    dat[, KF_surf := K_fns[["KF"]](p = K_coefs[["KF"]], temp_k = temp_k, sal = sal)]
+    dat[, KF_deep := KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], p_bar = p_bar, temp_c = temp_c)]
 
     # convert from TOT to SWS before pressure correction
-    dat[, tot_to_sws_surface := (1 + TS / KS_surf) / (1 + TS / KS_surf + TF / KF_surf)]
+    dat[, tot_to_sws_surface := (1 + ST / KS_surf) / (1 + ST / KS_surf + TF / KF_surf)]
 
     # convert from SWS to TOT after pressure correction
-    dat[, sws_to_tot_deep := (1 + TS / KS_deep + TF / KF_deep) / (1 + TS / KS_deep)]
-    dat[, pc := calc_pressure_correction(k = k, TC = TC, P = P), by = rid]
+    dat[, sws_to_tot_deep := (1 + ST / KS_deep + TF / KF_deep) / (1 + ST / KS_deep)]
+    dat[, pc := calc_pressure_correction(k = k, temp_c = temp_c, p_bar = p_bar), by = rid]
 
     dat[, check_pc := ifelse(pc != 0, pc, 1)]
     dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
@@ -79,7 +79,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   # Calculate correction factor
   if (method == "MyAMI") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$calculate_seawater_correction(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    Fcorr <- pymyami$calculate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
     if (k %in% names(Fcorr)) {
       KF <- as.numeric(Fcorr[[k]])
       dat[, k_value := k_value * KF]
@@ -87,7 +87,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
   }
   if (method == "MyAMI_Polynomial") {
     pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$approximate_seawater_correction(Sal = dat$S, TempC = dat$TC, Mg = dat$Mg, Ca = dat$Ca)
+    Fcorr <- pymyami$approximate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
     if (k %in% names(Fcorr)) {
       KF <- as.numeric(Fcorr[[k]])
       dat[, k_value := k_value * KF]
@@ -97,7 +97,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
-      dat[, KF := poly_coefs[[k]] %*% kgen_poly(S = S, TK = TK, Mg = Mg, Ca = Ca), by = rid]
+      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal= sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium), by = rid]
       dat[, k_value := k_value * KF]
     }
   }
@@ -115,7 +115,7 @@ calc_K <- function(k, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL,
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Data.table of specified Ks at the given conditions
 #' @export
-calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, P = NULL, method = "MyAMI") {
+calc_Ks <- function(ks = NULL, temp_c = 25, sal= 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
   if (is.null(ks)) {
     ks <- names(K_fns)
@@ -124,9 +124,9 @@ calc_Ks <- function(ks = NULL, TC = 25, S = 35, Mg = 0.0528171, Ca = 0.0102821, 
   # Calculate ks
   ks_list <- pbapply::pblapply(ks, function(k) {
     calc_K(
-      k = k, TC = TC,
-      S = S, Mg = Mg,
-      Ca = Ca, P = P,
+      k = k, temp_c = temp_c,
+      sal= sal, magnesium = magnesium,
+      calcium = calcium, p_bar = p_bar,
       method = method
     )
   })

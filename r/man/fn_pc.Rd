@@ -6,14 +6,14 @@
 From Millero et al. (2007, doi:10.1021/cr0503557)
 Eqns 38-40}
 \usage{
-fn_pc(p, P, TC)
+fn_pc(p, p_bar, temp_c)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{P}{Pressure}
+\item{p_bar}{Pressure}
 
-\item{TC}{Temperature (Celsius)}
+\item{temp_c}{Temperature (Celsius)}
 }
 \value{
 Pressure correction factor

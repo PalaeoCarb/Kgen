@@ -4,14 +4,14 @@
 \alias{fn_KP2}
 \title{Calculate KP2}
 \usage{
-fn_KP2(p, TK, S)
+fn_KP2(p, temp_k, sal)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 KP2

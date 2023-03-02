@@ -6,10 +6,10 @@ from glob import glob
 import re
 
 # specify which pymyami version to use throughout Kgen
-pymyami_version = '2.0.2'
+pymyami_version = '2.1.0'
 
 # path to file containing polynomial coefficients
-polynomial_coefficient_path = f'https://raw.githubusercontent.com/PalaeoCarb/pymyami/{pymyami_version}/pymyami/parameters/Fcorr_approx.json'
+polynomial_coefficient_path = f'https://raw.githubusercontent.com/PalaeoCarb/pymyami/{pymyami_version}/pymyami/parameters/seawater_correction_approximated.json'
 
 pattern = re.compile(r'(.*)(pymyami==)([0-9.]+)(.*)')
 

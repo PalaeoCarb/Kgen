@@ -440,9 +440,9 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
         if magnesium is None:
             magnesium = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, calcium=calcium)
+            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, calcium=calcium)
+            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         if k in Fcorr:
             K *= Fcorr[k]
     
@@ -531,9 +531,9 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulph
         if magnesium is None:
             magnesium = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, calcium=calcium)
+            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, calcium=calcium)
+            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         for k, f in Fcorr.items():
             if k in Ks:
                 Ks[k] *= f

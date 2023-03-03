@@ -8,11 +8,13 @@
 #' @param temp_c Temperature (Celsius)
 #' @param p_bar Pressure (Bar) (optional)
 #' @param sal Salinity
-#' @param magnesium magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
-#' @param calcium calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param magnesium Magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param calcium Calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param sulphate Sulphate concentration in mol/kgsw. Calculated from salinity if not given.
+#' @param fluorine Fluorine concentration in mol/kgsw. Calculated from salinity if not given.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
 #' @return Specified K at the given conditions
-calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, method = "MyAMI") {
+calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NA_real_, fluorine = NA_real_, method = "MyAMI") {
   # Check input values
   checkmate::assert(
     combine = "and",
@@ -25,8 +27,8 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     checkmate::check_numeric(calcium, lower = 0, upper = 0.06)
   )
 
-  KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- TF <- ST <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
-  dat <- data.table::data.table(k, temp_c, sal, magnesium, calcium, p_bar)[, rid := .I]
+  KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
+  dat <- data.table::data.table(k, temp_c, sal, magnesium, calcium, p_bar)
 
   # Celsius to Kelvin
   dat[, temp_k := temp_c + 273.15]
@@ -49,7 +51,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
   # Select function and run calculation
   K_fn <- K_fns[[k]]
 
-  dat[, k_value := K_fn(p = K_coefs[[k]], temp_k = temp_k, sal = sal), by = rid]
+  dat[, k_value := K_fn(p = K_coefs[[k]], temp_k = temp_k, sal = sal)]
 
   # Pressure correction?
   if (!is.null(p_bar)) {
@@ -57,8 +59,8 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    dat[, ST := calc_ST(sal)]
-    dat[, TF := calc_FT(sal)]
+    dat[, sulphate := data.table::fifelse(is.na(sulphate), yes = calc_sulphate(sal), no = sulphate, na = calc_sulphate(sal))]
+    dat[, fluorine := data.table::fifelse(is.na(fluorine), yes = calc_fluorine(sal), no = fluorine, na = calc_fluorine(sal))]
 
     dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]
     dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]
@@ -66,11 +68,11 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     dat[, KF_deep := KF_surf * fn_pc(p = K_presscorr_coefs[["KF"]], p_bar = p_bar, temp_c = temp_c)]
 
     # convert from TOT to SWS before pressure correction
-    dat[, tot_to_sws_surface := (1 + ST / KS_surf) / (1 + ST / KS_surf + TF / KF_surf)]
+    dat[, tot_to_sws_surface := (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)]
 
     # convert from SWS to TOT after pressure correction
-    dat[, sws_to_tot_deep := (1 + ST / KS_deep + TF / KF_deep) / (1 + ST / KS_deep)]
-    dat[, pc := calc_pressure_correction(k = k, temp_c = temp_c, p_bar = p_bar), by = rid]
+    dat[, sws_to_tot_deep := (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)]
+    dat[, pc := calc_pressure_correction(k = k, temp_c = temp_c, p_bar = p_bar)]
 
     dat[, check_pc := ifelse(pc != 0, pc, 1)]
     dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
@@ -97,7 +99,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
-      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal= sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium), by = rid]
+      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium)]
       dat[, k_value := k_value * KF]
     }
   }
@@ -115,7 +117,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Data.table of specified Ks at the given conditions
 #' @export
-calc_Ks <- function(ks = NULL, temp_c = 25, sal= 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, method = "MyAMI") {
+calc_Ks <- function(ks = NULL, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NA_real_, fluorine = NA_real_, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
   if (is.null(ks)) {
     ks <- names(K_fns)
@@ -124,9 +126,14 @@ calc_Ks <- function(ks = NULL, temp_c = 25, sal= 35, p_bar = NULL, magnesium = 0
   # Calculate ks
   ks_list <- pbapply::pblapply(ks, function(k) {
     calc_K(
-      k = k, temp_c = temp_c,
-      sal= sal, magnesium = magnesium,
-      calcium = calcium, p_bar = p_bar,
+      k = k,
+      temp_c = temp_c,
+      sal = sal,
+      p_bar = p_bar,
+      magnesium = magnesium,
+      calcium = calcium,
+      sulphate = sulphate,
+      fluorine = fluorine,
       method = method
     )
   })

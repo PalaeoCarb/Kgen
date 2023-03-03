@@ -1,4 +1,3 @@
-
 #' @title Calculate pressure correction factor
 #'
 #' @description Calculate pressure correction factor for a specified equilibrium constant.

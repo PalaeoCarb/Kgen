@@ -216,10 +216,10 @@ fn_KF <- function(p, temp_k, sal) {
 #' Eqns 38-40
 #'
 #' @param p Parameters for K calculation
-#' @param p_bar Pressure
 #' @param temp_c Temperature (Celsius)
+#' @param p_bar Pressure
 #' @return Pressure correction factor
-fn_pc <- function(p, p_bar, temp_c) {
+fn_pc <- function(p, temp_c, p_bar) {
   a0 <- p[1]
   a1 <- p[2]
   a2 <- p[3]
@@ -237,28 +237,28 @@ fn_pc <- function(p, p_bar, temp_c) {
   return(prescorr)
 }
 
-#' Calculate ST
+#' Calculate sulphate
 #' From Dickson et al., 2007, Table 2
 #' Note: Sal / 1.80655 = Chlorinity#'
 #'
 #' @param sal Salinity
-#' @return TS
-calc_ST <- function(sal) {
-  ST <- 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
+#' @return sulphate
+calc_sulphate <- function(sal) {
+  sulphate <- 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
 
-  return(ST)
+  return(sulphate)
 }
 
-#' Calculate FT
+#' Calculate fluorine
 #' From Dickson et al., 2007, Table 2
 #' Note: Sal / 1.80655 = Chlorinity
 #'
 #' @param sal Salinity
-#' @return TF
-calc_FT <- function(sal) {
-  FT <- 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
+#' @return fluorine
+calc_fluorine <- function(sal) {
+  fluorine <- 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-  return(FT)
+  return(fluorine)
 }
 
 #' List of all functions

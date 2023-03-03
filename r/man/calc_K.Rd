@@ -11,6 +11,8 @@ calc_K(
   p_bar = NULL,
   magnesium = 0.0528171,
   calcium = 0.0102821,
+  sulphate = NA_real_,
+  fluorine = NA_real_,
   method = "MyAMI"
 )
 }
@@ -23,9 +25,13 @@ calc_K(
 
 \item{p_bar}{Pressure (Bar) (optional)}
 
-\item{magnesium}{magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+\item{magnesium}{Magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
-\item{calcium}{calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+\item{calcium}{Calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+
+\item{sulphate}{Sulphate concentration in mol/kgsw. Calculated from salinity if not given.}
+
+\item{fluorine}{Fluorine concentration in mol/kgsw. Calculated from salinity if not given.}
 
 \item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
 }

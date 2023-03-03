@@ -11,8 +11,8 @@ calc_K(
   p_bar = NULL,
   magnesium = 0.0528171,
   calcium = 0.0102821,
-  sulphate = NA_real_,
-  fluorine = NA_real_,
+  sulphate = NULL,
+  fluorine = NULL,
   method = "MyAMI"
 )
 }

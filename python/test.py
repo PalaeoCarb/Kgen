@@ -66,7 +66,7 @@ class checkKValues(unittest.TestCase):
         S = check['input_conditions']['S']
         TC = check['input_conditions']['TC']
 
-        calc = calc_Ks(TempC=TC, Sal=S)
+        calc = calc_Ks(temp_c=TC, sal=S)
 
         for k in calc:
             check_val = check['check_values'][k]

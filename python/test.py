@@ -1,7 +1,16 @@
 import unittest
 import json
+import os
 import numpy as np
 from kgen.K_functions import K_fns, prescorr, calc_Ks
+
+# boilerplate to deal with file paths
+cwd = os.getcwd()
+
+if 'setup.py' in os.listdir(cwd):
+    dir = '..'
+else:
+    dir = '.'
 
 class checkKValues(unittest.TestCase):
     """
@@ -9,10 +18,10 @@ class checkKValues(unittest.TestCase):
     """
 
     def test_Ks(self):
-        with open("../coefficients/K_calculation.json") as f:
+        with open(dir + "/coefficients/K_calculation.json") as f:
             coefs = json.load(f)
 
-        with open("../check_values/check_Ks.json") as f:
+        with open(dir + "/check_values/check_Ks.json") as f:
             check = json.load(f)
 
         S = check['input_conditions']['S']
@@ -33,10 +42,10 @@ class checkKValues(unittest.TestCase):
         """
         Test pressure correction coefficients on K values.
         """
-        with open('../coefficients/K_pressure_correction.json') as f:
+        with open(dir + '/coefficients/K_pressure_correction.json') as f:
             pcoefs = json.load(f)
 
-        with open("../check_values/check_presscorr.json") as f:
+        with open(dir + "/check_values/check_presscorr.json") as f:
             check = json.load(f)
 
         S = check['input_conditions']['S']
@@ -52,12 +61,12 @@ class checkKValues(unittest.TestCase):
                 self.assertAlmostEqual(pF, checkval, msg=f'{k}: {pF}', places=5)
 
     def test_boilerplate(self):
-        with open("../check_values/check_Ks.json") as f:
+        with open(dir + "/check_values/check_Ks.json") as f:
             check = json.load(f)
         S = check['input_conditions']['S']
         TC = check['input_conditions']['TC']
 
-        calc = calc_Ks(TempC=TC, Sal=S)
+        calc = calc_Ks(temp_c=TC, sal=S)
 
         for k in calc:
             check_val = check['check_values'][k]

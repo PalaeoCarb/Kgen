@@ -4,16 +4,16 @@
 \alias{kgen_poly}
 \title{Kgen R polynomial function}
 \usage{
-kgen_poly(S, TK, Mg = 0.0528171, Ca = 0.0102821)
+kgen_poly(sal, temp_k, magnesium = 0.0528171, calcium = 0.0102821)
 }
 \arguments{
-\item{S}{Salinity (PSU)}
+\item{sal}{Salinity (PSU)}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
+\item{magnesium}{magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
-\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
+\item{calcium}{calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 }
 \description{
 Kgen R polynomial function

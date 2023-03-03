@@ -4,14 +4,14 @@
 \alias{fn_KB}
 \title{Calculate KB}
 \usage{
-fn_KB(p, TK, S)
+fn_KB(p, temp_k, sal)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 KB

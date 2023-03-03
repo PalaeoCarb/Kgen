@@ -6,26 +6,32 @@
 \usage{
 calc_Ks(
   ks = NULL,
-  TC = 25,
-  S = 35,
-  Mg = 0.0528171,
-  Ca = 0.0102821,
-  P = NULL,
+  temp_c = 25,
+  sal = 35,
+  p_bar = NULL,
+  magnesium = 0.0528171,
+  calcium = 0.0102821,
+  sulphate = NA_real_,
+  fluorine = NA_real_,
   method = "MyAMI"
 )
 }
 \arguments{
 \item{ks}{character vectors of Ks to be calculated e.g., c("K0", "K1")}
 
-\item{TC}{Temperature (Celsius)}
+\item{temp_c}{Temperature (Celsius)}
 
-\item{S}{Salinity (PSU)}
+\item{sal}{Salinity}
 
-\item{Mg}{Mg concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average Mg concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
+\item{p_bar}{Pressure (Bar) (optional)}
 
-\item{Ca}{Ca concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average Ca concentration in seawater - a salinity correction is then applied to calculate the Mg concentration in the sample.}
+\item{magnesium}{Magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
-\item{P}{Pressure (Bar) (optional)}
+\item{calcium}{Calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+
+\item{sulphate}{Sulphate concentration in mol/kgsw. Calculated from salinity if not given.}
+
+\item{fluorine}{Fluorine concentration in mol/kgsw. Calculated from salinity if not given.}
 
 \item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
 }

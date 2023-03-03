@@ -2,7 +2,8 @@
   packageStartupMessage(
     "Kgen v",
     utils::packageDescription("Kgen",
-                              fields = "Version"),
+      fields = "Version"
+    ),
     ifelse(
       pymyami_exists(),
       paste0(" // pyMyAMI v", pymyami_version),

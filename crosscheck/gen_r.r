@@ -2,19 +2,23 @@
 test_df <- read.csv("test_conditions.csv")
 
 # 2. Calculate and approximate Ks
-Ks_calc <- Kgen::calc_Ks(TC = test_df$TempC,
-                    S = test_df$Sal,
-                    P = test_df$Pres,
-                   Mg = test_df$Mg,
-                   Ca = test_df$Ca,
-                   method = "MyAMI")
+Ks_calc <- Kgen::calc_Ks(
+  temp_c = test_df$temp_c,
+  sal = test_df$sal,
+  p_bar = test_df$p_bar,
+  magnesium = test_df$magnesium,
+  calcium = test_df$calcium,
+  method = "MyAMI"
+)
 
-Ks_approx <- Kgen::calc_Ks(TC = test_df$TempC,
-                   S = test_df$Sal,
-                   P = test_df$Pres,
-                   Mg = test_df$Mg,
-                   Ca = test_df$Ca,
-                   method = "R_Polynomial")
+Ks_approx <- Kgen::calc_Ks(
+  temp_c = test_df$temp_c,
+  sal = test_df$sal,
+  p_bar = test_df$p_bar,
+  magnesium = test_df$magnesium,
+  calcium = test_df$calcium,
+  method = "R_Polynomial"
+)
 
 # 3. Save outputs to ./generated_Ks as r_{calculated, approximated}.csv
 write.csv(Ks_calc, "generated_Ks/r_calculated.csv", row.names = F)

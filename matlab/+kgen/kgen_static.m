@@ -55,7 +55,7 @@ classdef kgen_static
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KP3 = exp(coefficients(1)./t + coefficients(2) + sqrt(s).*(coefficients(3)./t + coefficients(4)) + s.*(coefficients(5)./t + coefficients(6)));
         end
-        function KSi = calc_KSi(coefficients,t,s)        
+        function KSi = calc_KSi(coefficients,t,s)
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
         end

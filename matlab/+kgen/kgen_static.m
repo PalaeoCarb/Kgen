@@ -153,7 +153,7 @@ classdef kgen_static
             magnesium(isnan(magnesium)) = 0.0528171;
         end
 
-        function [K,pressure_correction,seawater_chemistry_correction] = calc_K(name,temp_c,sal,p_bar,calcium,magnesium,seawater_correction_method,polynomial_coefficients)
+        function [K,pressure_correction,seawater_chemistry_correction] = calc_K(name,temp_c,sal,p_bar,magnesium,calcium,seawater_correction_method,polynomial_coefficients)
             if nargin<6
                 seawater_correction_method = "MyAMI";
             end
@@ -192,7 +192,7 @@ classdef kgen_static
             K = K.*tot_to_sws_surface.*pressure_correction.*sws_to_tot_deep;
             
             if seawater_correction_method~="None" && seawater_correction_method~=""
-                seawater_chemistry_correction = kgen.kgen_static.calculate_seawater_correction(name,temp_c,p_bar,calcium,magnesium,seawater_correction_method,polynomial_coefficients);
+                seawater_chemistry_correction = kgen.kgen_static.calculate_seawater_correction(name,temp_c,p_bar,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
                 K = K.*seawater_chemistry_correction';
             else
                 seawater_chemistry_correction = NaN;
@@ -217,7 +217,7 @@ classdef kgen_static
                     seawater_correction = kgen.kgen_static.calculate_seawater_correction(names,temp_c,sal,magnesium,calcium,seawater_correction_method,polynomial_coefficients);
                 end
                 for K_index = 1:numel(names)
-                    [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calc_K(names(K_index),temp_c,sal,p_bar,calcium,magnesium,"None",polynomial_coefficients);
+                    [Ks.(names(K_index)),pressure_correction.(names(K_index)),~] = kgen.kgen_static.calc_K(names(K_index),temp_c,sal,p_bar,magnesium,calcium,"None",polynomial_coefficients);
                     if any(string(fieldnames(seawater_correction))==names(K_index))
                         seawater_correction.(names(K_index)) = double(seawater_correction.(names(K_index)));
                         Ks.(names(K_index)) = Ks.(names(K_index)).*seawater_correction.(names(K_index));

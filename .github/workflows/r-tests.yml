@@ -1,9 +1,9 @@
 # Kgen test worflow
 on:
   push:
-    branches: [main, master, develop]
+    branches: [main, dev]
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, dev]
 
 name: 'Check K values - R'
     
@@ -49,7 +49,7 @@ jobs:
             remotes::install_deps(pkgdir = "r/", dependencies = TRUE, upgrade = "never")
             reticulate::install_miniconda()
             reticulate::use_miniconda("r-reticulate")
-            reticulate::py_install("pymyami==2.0.2", envname = "r-reticulate", pip=T)
+            reticulate::py_install("pymyami==2.1.0", envname = "r-reticulate", pip=T)
           shell: Rscript {0}
           
         - name: Check

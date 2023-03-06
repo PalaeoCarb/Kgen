@@ -17,11 +17,11 @@ class crosscheck(unittest.TestCase):
             matlab_coefs = json.load(f)
             
         with self.subTest(msg=f'Checking MATLAB polynomial coefficients'):
-            for k, ref in pymyami.approximate.FCORR_COEFS.items():
+            for k, ref in pymyami.approximate.SEAWATER_CORRECTION_COEFS.items():
                 self.assertIsNone(np.testing.assert_equal(ref, matlab_coefs[k]), msg=f'\nMATLAB polynomial coefficients differ for {k}')
         
         with self.subTest(msg=f'Checking R polynomial coefficients'):
-            for k, ref in pymyami.approximate.FCORR_COEFS.items():
+            for k, ref in pymyami.approximate.SEAWATER_CORRECTION_COEFS.items():
                 self.assertIsNone(np.testing.assert_equal(ref, r_coefs[k]), msg=f'\nR polynomial coefficients differ for {k}')
 
     def test_all(self):

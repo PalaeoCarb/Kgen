@@ -122,7 +122,7 @@ classdef kgen_static
                 local_mg = numpy.array(mg);
                 local_ca = numpy.array(ca);
 
-                seawater_correction = struct(pymyami.approximate_Fcorr(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
+                seawater_correction = struct(pymyami.approximate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
                 for name = string(fieldnames(seawater_correction))'
                     seawater_correction.(name) = double(seawater_correction.(name))';
                 end
@@ -135,7 +135,7 @@ classdef kgen_static
                 local_mg = numpy.array(mg);
                 local_ca = numpy.array(ca);
 
-                seawater_correction = struct(pymyami.calc_Fcorr(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
+                seawater_correction = struct(pymyami.calculate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
                 for name = string(fieldnames(seawater_correction))'
                     seawater_correction.(name) = double(seawater_correction.(name))';
                 end

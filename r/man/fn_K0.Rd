@@ -4,14 +4,14 @@
 \alias{fn_K0}
 \title{Calculate K0}
 \usage{
-fn_K0(p, TK, S)
+fn_K0(p, temp_k, sal)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 K0

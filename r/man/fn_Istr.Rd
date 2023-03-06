@@ -4,10 +4,10 @@
 \alias{fn_Istr}
 \title{Ionic strength after Dickson (1990a); see Dickson et al. (2007)}
 \usage{
-fn_Istr(S)
+fn_Istr(sal)
 }
 \arguments{
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 Ionic strength

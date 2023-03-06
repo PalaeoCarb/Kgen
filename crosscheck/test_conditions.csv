@@ -1,4 +1,4 @@
-TempC,Sal,Pres,Mg,Ca
+temp_c,sal,p_bar,magnesium,calcium
 0.0,30.0,0.0,0.0,0.0
 0.0,30.0,0.0,0.0,0.02
 0.0,30.0,0.0,0.0,0.04

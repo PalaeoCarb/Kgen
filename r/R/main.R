@@ -58,8 +58,13 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    dat[, sulphate := ifelse(is.null(sulphate), calc_sulphate(sal), sulphate)]
-    dat[, fluorine := ifelse(is.null(fluorine), calc_fluorine(sal), fluorine)]
+    if (is.null(sulphate)) {
+      dat[, sulphate := calc_sulphate(sal = sal)]
+    }
+
+    if (is.null(sulphate)) {
+      dat[, fluorine := calc_fluorine(sal = sal)]
+    }
 
     dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]
     dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]

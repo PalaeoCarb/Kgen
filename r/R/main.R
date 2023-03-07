@@ -60,10 +60,14 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 
     if (is.null(sulphate)) {
       dat[, sulphate := calc_sulphate(sal = sal)]
+    } else {
+      dat[is.na(sulphate), sulphate := calc_sulphate(sal = sal)]
     }
 
-    if (is.null(sulphate)) {
+    if (is.null(fluorine)) {
       dat[, fluorine := calc_fluorine(sal = sal)]
+    } else {
+      dat[is.na(fluorine), fluorine := calc_fluorine(sal = sal)]
     }
 
     dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]

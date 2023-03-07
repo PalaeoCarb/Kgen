@@ -59,11 +59,11 @@ classdef kgen_static
             i = kgen.kgen_static.calculate_ionic_strength(s);
             KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
         end
-        function TF = calculate_TF(salinity)
-            TF = 6.7e-5.*salinity./1.80655./18.9984;  % mol/kg-SW
+        function fluorine = calc_fluorine(sal)
+            fluorine = ((6.7e-5*sal)/1.80655)/18.9984;  % mol/kg-SW
         end
-        function TS = calculate_TS(salinity)
-            TS = 0.14.*salinity./1.80655./96.062;  % mol/kg-SW
+        function sulphate = calc_sulphate(sal)
+            sulphate = ((0.14*sal)/1.80655)/96.062;  % mol/kg-SW
         end
 
         function K_map = build_K_map()
@@ -177,15 +177,15 @@ classdef kgen_static
             K_function = K_map(name);
             K = K_function(K_coefficients.coefficients.(name),temp_c+273.15,sal);
 
-            TS = kgen.kgen_static.calculate_TS(sal);
-            TF = kgen.kgen_static.calculate_TF(sal);
+            sulphate = kgen.kgen_static.calc_sulphate(sal);
+            fluorine = kgen.kgen_static.calc_fluorine(sal);
             KS_surf = kgen.kgen_static.calc_KS(K_coefficients.coefficients.("KS"),temp_c+273.15,sal);
             KS_deep = KS_surf .* kgen.kgen_static.calculate_pressure_correction("KS",temp_c,p_bar);
             KF_surf = kgen.kgen_static.calc_KF(K_coefficients.coefficients.("KF"),temp_c+273.15,sal);
             KF_deep = KF_surf .* kgen.kgen_static.calculate_pressure_correction("KF",temp_c,p_bar);
             
-            tot_to_sws_surface = (1+TS./KS_surf)./(1+TS./KS_surf+TF./KF_surf);
-            sws_to_tot_deep = (1+TS./KS_deep+TF./KF_deep)./(1+TS./KS_deep);
+            tot_to_sws_surface = (1+sulphate./KS_surf)./(1+sulphate./KS_surf+fluorine./KF_surf);
+            sws_to_tot_deep = (1+sulphate./KS_deep+fluorine./KF_deep)./(1+sulphate./KS_deep);
 
             pressure_correction = kgen.kgen_static.calculate_pressure_correction(name,temp_c,p_bar);
 

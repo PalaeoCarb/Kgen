@@ -14,12 +14,12 @@
 #' @param fluorine Fluorine concentration in mol/kgsw. Calculated from salinity if not given.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
 #' @return Specified K at the given conditions
-calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NA_real_, fluorine = NA_real_, method = "MyAMI") {
+calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
   # Check input values
   checkmate::assert(
     combine = "and",
     checkmate::check_choice(k, choices = names(K_fns)),
-    checkmate::check_choice(method, choices = c("R_Polynomial", "MyAMI_Polynomial", "MyAMI")),
+    checkmate::check_choice(tolower(method), choices = c("r_polynomial", "myami_polynomial", "myami")),
     checkmate::check_string(k),
     checkmate::check_numeric(temp_c, lower = 0, upper = 40),
     checkmate::check_numeric(sal, lower = 30, upper = 40),
@@ -27,14 +27,14 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     checkmate::check_numeric(calcium, lower = 0, upper = 0.06)
   )
 
-  KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- rid <- NULL
-  dat <- data.table::data.table(k, temp_c, sal, magnesium, calcium, p_bar)
+  KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <- check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- row_id <- NULL
+  dat <- data.table::data.table(temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine)
 
   # Celsius to Kelvin
   dat[, temp_k := temp_c + 273.15]
 
   # Check if miniconda is installed
-  if (!mc_exists() & method != "R_Polynomial") {
+  if (!mc_exists() & tolower(method) != "r_polynomial") {
     print("Kgen requires r-Miniconda which appears to not exist on your system.")
     install_confirm <- utils::askYesNo("Would you like to install it now?")
     if (install_confirm) {
@@ -50,7 +50,6 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 
   # Select function and run calculation
   K_fn <- K_fns[[k]]
-
   dat[, k_value := K_fn(p = K_coefs[[k]], temp_k = temp_k, sal = sal)]
 
   # Pressure correction?
@@ -59,8 +58,17 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-    dat[, sulphate := data.table::fifelse(is.na(sulphate), yes = calc_sulphate(sal), no = sulphate, na = calc_sulphate(sal))]
-    dat[, fluorine := data.table::fifelse(is.na(fluorine), yes = calc_fluorine(sal), no = fluorine, na = calc_fluorine(sal))]
+    if (is.null(sulphate)) {
+      dat[, sulphate := calc_sulphate(sal = sal)]
+    } else {
+      dat[is.na(sulphate), sulphate := calc_sulphate(sal = sal)]
+    }
+
+    if (is.null(fluorine)) {
+      dat[, fluorine := calc_fluorine(sal = sal)]
+    } else {
+      dat[is.na(fluorine), fluorine := calc_fluorine(sal = sal)]
+    }
 
     dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]
     dat[, KS_deep := KS_surf * fn_pc(p = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]
@@ -79,7 +87,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
   }
 
   # Calculate correction factor
-  if (method == "MyAMI") {
+  if (tolower(method) == "myami") {
     pymyami <- reticulate::import("pymyami")
     Fcorr <- pymyami$calculate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
     if (k %in% names(Fcorr)) {
@@ -87,7 +95,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
       dat[, k_value := k_value * KF]
     }
   }
-  if (method == "MyAMI_Polynomial") {
+  if (tolower(method) == "myami_polynomial") {
     pymyami <- reticulate::import("pymyami")
     Fcorr <- pymyami$approximate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
     if (k %in% names(Fcorr)) {
@@ -95,11 +103,12 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
       dat[, k_value := k_value * KF]
     }
   }
-  if (method == "R_Polynomial") {
+  if (tolower(method) == "r_polynomial") {
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
-      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium)]
+      dat[, row_id := .I]
+      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium), by = row_id]
       dat[, k_value := k_value * KF]
     }
   }
@@ -117,7 +126,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Data.table of specified Ks at the given conditions
 #' @export
-calc_Ks <- function(ks = NULL, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NA_real_, fluorine = NA_real_, method = "MyAMI") {
+calc_Ks <- function(ks = NULL, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
   if (is.null(ks)) {
     ks <- names(K_fns)

@@ -11,8 +11,7 @@
 calc_pressure_correction <- function(k, temp_c, p_bar) {
   checkmate::assert(
     combine = "and",
-    checkmate::check_choice(k, choices = names(K_fns)),
-    checkmate::check_string(k),
+    checkmate::check_character(k),
     checkmate::check_numeric(temp_c, lower = 0, upper = 40)
   )
 

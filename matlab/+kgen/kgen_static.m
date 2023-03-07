@@ -60,10 +60,10 @@ classdef kgen_static
             KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
         end
         function fluorine = calc_fluorine(sal)
-            fluorine = ((6.7e-5*sal)/1.80655)/18.9984;  % mol/kg-SW
+            fluorine = sal*(1.952125747e-6);  % mol/kg-SW
         end
         function sulphate = calc_sulphate(sal)
-            sulphate = ((0.14*sal)/1.80655)/96.062;  % mol/kg-SW
+            sulphate = sal*(8.067266895e-4);  % mol/kg-SW
         end
 
         function K_map = build_K_map()

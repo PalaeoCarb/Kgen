@@ -36,9 +36,8 @@ Do nothing
 
 ### R
 
-Update `Version` in `DESCRIPTION`
-
-run `devtools::submit_cran()` (must be run by project maintainer only)
+- [ ] Update `Version` in `DESCRIPTION`
+- [ ] run `devtools::submit_cran()` (must be run by project maintainer only)
 
 ## When pymyami is updated 
 

@@ -29,7 +29,9 @@ What needs doing?
 
 ### R
 
-How to update package and upload to CRAN?
+Update `Version` in `DESCRIPTION`
+
+run `devtools::submit_cran()` (must be run by project maintainer only)
 
 ## When pymyami is updated 
 

@@ -6,9 +6,9 @@
 
 crosscheck = readtable("./../crosscheck/test_conditions.csv");
 
-[kgen_full,pressure_full,seawater_full] = kgen.kgen_static.calculate_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.calcium,crosscheck.magnesium,"MyAMI");
-kgen_python = kgen.kgen_static.calculate_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.calcium,crosscheck.magnesium,"MyAMI_Polynomial");
-kgen_matlab = kgen.kgen_static.calculate_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.calcium,crosscheck.magnesium,"Matlab_Polynomial");
+[kgen_full,pressure_full,seawater_full] = kgen.kgen_static.calc_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.magnesium,crosscheck.calcium,"MyAMI");
+kgen_python = kgen.kgen_static.calc_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.magnesium,crosscheck.calcium,"MyAMI_Polynomial");
+kgen_matlab = kgen.kgen_static.calc_all_Ks(crosscheck.temp_c,crosscheck.sal,crosscheck.p_bar,crosscheck.magnesium,crosscheck.calcium,"Matlab_Polynomial");
 
 for name = string(fieldnames(kgen_full))'
     kgen_full_vs_python.(name) = kgen_full.(name)-kgen_python.(name);

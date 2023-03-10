@@ -17,7 +17,7 @@ calcium = 40/1e3 # mol/kg ((mmol/kg)/1000)
 magnesium = 20/1e3 # mol/kg ((mmol/kg)/1000)
 
 # Do the calculation using Kgen
-Ks_calculated = kgen.calc_Ks(TempC=temperature,Sal=salinity,Pres=pressure,Mg=magnesium,Ca=calcium)
+Ks_calculated = kgen.calc_Ks(temp_c=temperature,sal=salinity,p_bar=pressure,magnesium=magnesium,calcium=calcium)
 
 # Load the track record
 # Or make a new one - most of the time this will be irrelevant but just in case we restart the track record

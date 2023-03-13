@@ -26,13 +26,15 @@ Should follow X.Y.Z, where X and Y are cross-platform major and minor releases, 
 
 ### Python
 
-Update `VERSION` in `kgen/__init__.py`.
-
-run `make distribute python`
+- [ ] Update `VERSION` in `kgen/__init__.py`
+- [ ] run `make distribute python`
 
 ### matlab
 
-Do nothing
+- [ ] Follow the instruction [here](https://www.mathworks.com/help/matlab/matlab_prog/create-and-share-custom-matlab-toolboxes.html)
+- [ ] Update the package number
+- [ ] Submit to the [Matlab file exchange](https://uk.mathworks.com/matlabcentral/fileexchange/126170-kgen)
+
 
 ### R
 

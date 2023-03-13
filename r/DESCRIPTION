@@ -1,7 +1,7 @@
 Package: Kgen
 Type: Package
 Title: Parameters for Consistently Calculating Ks for Carbon Calculation
-Version: 0.1.3
+Version: 0.2.0
 Authors@R: 
     person(given = "Dennis",
            family = "Mayk",

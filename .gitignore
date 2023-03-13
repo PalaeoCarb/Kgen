@@ -5,6 +5,8 @@
 
 # ignore temporary matlab files
 *.asv
+matlab/*.prj
+*.mltbx
 
 # ignore anything marked 'dev
 dev*

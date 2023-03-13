@@ -24,39 +24,40 @@ This will install Kgen and its dependencies.
 
 ## Getting Started
 
-Thre functions are available, `calc_Ks()` for returning all available Ks, `calc_K()` for returning a single K, and `calc_pressure_correction()` for returning a K-specific pressure correction factor. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems. If you prefer to install r-Miniconda to a specific path on your system, stop the installer and install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/). 
+Two functions are exported, `calc_Ks()` for returning all available Ks, and `calc_pressure_correction()` for returning a K-specific pressure correction factor. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems. If you prefer to install r-Miniconda to a specific path on your system, stop the installer and install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/). 
 
 ```R
 library('Kgen')
 
-calc_K(k, TC, S, Mg, Ca, P, method, Kcorrect)
-calc_Ks(ks, TC, S, Mg, Ca, P, method)
+calc_Ks(ks, temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine, method)
+
+calc_pressure_correction(k, temp_c, p_bar)
 ```
 
 ## Arguments
 
-- **k**: Coefficient to calculate, i.e., K<sub>0</sub>, K<sub>1</sub>, K<sub>2</sub>, K<sub>W</sub>, K<sub>B</sub>, K<sub>S</sub>, K<sub>spA</sub>, K<sub>spC</sub>, K<sub>P1</sub>, K<sub>P2</sub>, K<sub>P3</sub>, K<sub>Si</sub>, or K<sub>F</sub>
+- **ks**: Character vector of coefficients, i.e., K<sub>0</sub>, K<sub>1</sub>, K<sub>2</sub>, K<sub>W</sub>, K<sub>B</sub>, K<sub>S</sub>, K<sub>spA</sub>, K<sub>spC</sub>, K<sub>P1</sub>, K<sub>P2</sub>, K<sub>P3</sub>, K<sub>Si</sub>, and K<sub>F</sub> if `NULL` all coefficients will be calculated.
 
-- **ks**: Character vector of coefficients, e.g.,  `c("K0", "K1")`, if NULL, **ks** will default to include all coefficients.
+- **temp_c**: Temperature in degree Celsius
 
-- **TC**: Temperature in degree Celsius
+- **sal**: Salinity
 
-- **S**: Salinity in PSU
+- **p_bar**: Pressure in bar
 
-- **Mg**: Magnesium concentration in mol kg<sup>-1</sup> 
+- **magnesium**: Magnesium concentration in mol kg<sup>-1</sup> 
 
-- **Ca**: Calcium concentration in mol kg<sup>-1</sup> 
+- **calcium**: Calcium concentration in mol kg<sup>-1</sup> 
 
-- **P**: Pressure in bar
+- **sulphate**: Sulphate concentration in mol/kgsw. Calculated from salinity if not given.
+- 
+- **fluorine**: Fluorine concentration in mol/kgsw. Calculated from salinity if not given.
 
 - **method**: Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI"). If set to `MyAMI`, Kgen will calculate Mg and Ca correction factors directly using `pymyami`. If set to `MyAMI_Polynomial` Kgen will approximate the correction factors using a polynomial approximation in `pymyami`. If set to `R_Polynomial` Kgen will approximate the correction factors using a built in polynomial approximation function. 
 
-- **Kcorrect**: Option in `calc_K()` specifying if `pymyami` is used to calculate or approximate Mg and Ca correction factors. Defaults to `TRUE` and should not be changed by the user. 
-
-The inputs to **TC**, **S**, **Mg**, **Ca**, **Mg**, and **P** may be single numbers or arrays of numbers, but where they are arrays, the shape of the array must be the same. If any value is not specified, it defaults back to 'standard' conditions of 25 °C, 35 PSU, and 0 bar, with Mg and Ca at modern ocean concentrations (0.0528171 and 0.0102821 mol kg<sup>-1</sup>).
+The inputs to **temp_c**, **p_bar**, **sal**, **magnesium**, **calcium**, **sulphate**, and **fluorine** may be single numbers or numeric vectors, but where they are vectors, the lengt of the vectors must be the same. If any value is not specified, it defaults back to 'standard' conditions of temp_c = 25 °C, sal = 35, and p_bar = 0 bar, with Mg and Ca at modern ocean concentrations (0.0528171 and 0.0102821 mol kg<sup>-1</sup>).
 
 ## Details
-For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pymyami` in R upon the first time `calc_K()` or `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. However, if you prefer to install r-Miniconda to a specific path on your system (not recommended), install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/) before starting Kgen.
+For ease of use, Kgen will automatically install an `r-Miniconda` version in an isolated namespace location, required to run `pymyami` in R upon the first time `calc_Ks()`is called. This installation requires minimum disk space (~400 MB) and will not interfere with other Python versions on the operating system. However, if you prefer to install r-Miniconda to a specific path on your system (not recommended), install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/) before starting Kgen. When updated to a newer package version, Kgen ay ask the user to also perform a version update of pymyami. This is done to ensure that the version of pymyami remains constant between Kgen in R, Python, and Matlab.
 
 Kgen installation and operation example:
 
@@ -68,7 +69,7 @@ Kgen installation and operation example:
 > library('Kgen')
 
 # Test coefficient calculation using default values
-> calc_K('K0')
+> calc_Ks('K0')
 
 [1] "Kgen requires r-Miniconda, which appears to not exist on your system."
 Would you like to install it now? (Yes/no/abbrechen) 
@@ -76,7 +77,7 @@ Would you like to install it now? (Yes/no/abbrechen)
 # Confirm installation
 > yes
 
-> calc_K('K0')
+> calc_Ks('K0')
 [1] 0.02839188
 ```
 

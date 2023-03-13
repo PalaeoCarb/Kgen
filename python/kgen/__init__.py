@@ -1,3 +1,3 @@
 from .K_functions import calc_K, calc_Ks
 
-VERSION = "0.0.4-dev"
+VERSION = "0.2.0"

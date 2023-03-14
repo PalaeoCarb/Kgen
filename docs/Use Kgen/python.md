@@ -13,10 +13,16 @@ Documentation to start using Kgen in Python.
 
 ## Installation
 
+<div align="right">
+<a href="https://badge.fury.io/py/kgen"><img src="https://badge.fury.io/py/kgen.svg" alt="PyPI version" height="18"></a>
+</div>
+
 Kgen is available for installation from the PyPI package manager:
+
 ```bash
 pip install Kgen
 ```
+
 This will install Kgen and its dependencies, including `pymyami`.
 
 ## Getting Started

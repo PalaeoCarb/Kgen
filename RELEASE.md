@@ -15,6 +15,7 @@ Should follow X.Y.Z, where X and Y are cross-platform major and minor releases, 
 2. Push a GitHub tag incrementing the appropriate level (i.e. `X.Y+1.0` or `X+1.Y.0`)
 3. On GitHub, create a release linked to this tag, and add a description of the changes made.
 4. Follow the instructions below to update the package for the language that has changed.
+5. Describe important changes in the `HISTORY.md` file.
 
 ### Bug Fix Procedure
 

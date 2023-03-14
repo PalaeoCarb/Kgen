@@ -342,7 +342,7 @@ def prescorr(p, P, TC):
     RT = 83.1451 * (TC + 273.15)
     return np.exp((-dV + 0.5 * dk * P) * P / RT)    
 
-def calc_ST(sal):
+def calc_sulphate(sal):
     """
     Calculate total Sulphur in mol/kg-SW- lifted directly from CO2SYS.m
 
@@ -352,7 +352,7 @@ def calc_ST(sal):
     return 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
 
 
-def calc_FT(sal):
+def calc_fluorine(sal):
     """
     Calculate total Fluorine in mol/kg-SW
 
@@ -361,7 +361,7 @@ def calc_FT(sal):
     """
     return 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-def calc_K(k, temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=None, MyAMI_mode='calculate'):
+def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
     Calculate a specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -370,28 +370,30 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=Non
 
     Parameters
     ----------
+    k : string
+        The name of the K you want to calculate, e.g. 'K1'
     temp_c : array-like
         Temperature in Celcius
     sal : array-like
         Salinity in PSU
     p_bar : array-like
         Pressure in bar
-    Mg : array-like
-        Mg concentration in mol/kgsw. If None, modern is assumed
-        (0.0528171). Should be the *average* Mg concentration in
+    magnesium : array-like
+        magnesium concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* magnesium concentration in
         seawater - a salinity correction is then applied to calculate
-        the Mg concentration in the sample. Used to correct the Ks
+        the magnesium concentration in the sample. Used to correct the Ks
         using MyAMI.
-    Ca : array-like
-        Ca concentration in mol/kgsw. If None, modern is assumed
-        (0.0102821). Should be the *average* Ca concentration in
+    calcium : array-like
+        calcium concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* calcium concentration in
         seawater - a salinity correction is then applied to calculate
-        the Mg concentration in the sample. Used to correct the Ks
+        the magnesium concentration in the sample. Used to correct the Ks
         using MyAMI.
-    ST : array-like
+    sulphate : array-like
         Total sulphate in mol/kgsw. Calculated from salinity if not
         given.
-    FT : array-like
+    fluorine : array-like
         Total fluorine in mol/kgsw. Calculated from salinity if not
         given.
     MyAMI_mode : str
@@ -417,37 +419,37 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=Non
     K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
     if p_bar is not None:
-        if FT is None:
-            FT = calc_FT(sal=sal)
-        if ST is None:
-            ST = calc_ST(sal=sal)
+        if fluorine is None:
+            fluorine = calc_fluorine(sal=sal)
+        if sulphate is None:
+            sulphate = calc_sulphate(sal=sal)
         
         KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
         KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
         KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
         KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
         
-        tot_to_sws_surface = (1 + ST / KS_surf) / (1 + ST / KS_surf + FT / KF_surf)  # convert from TOT to SWS before pressure correction
-        sws_to_tot_deep = (1 + ST / KS_deep + FT / KF_deep) / (1 + ST / KS_deep)  # convert from SWS to TOT after pressure correction
+        tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
+        sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
         
         K *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
     
-    if Mg is not None or Ca is not None:
-        if Ca is None:
-            Ca = 0.0102821
-        if Mg is None:
-            Mg = 0.0528171
+    if magnesium is not None or calcium is not None:
+        if calcium is None:
+            calcium = 0.0102821
+        if magnesium is None:
+            magnesium = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=Mg, Ca=Ca)
+            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=Mg, Ca=Ca)
+            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         if k in Fcorr:
             K *= Fcorr[k]
     
     return K
 
 
-def calc_Ks(temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=None, MyAMI_mode='calculate', K_list=None):
+def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate', K_list=None):
     """
     Calculate all stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -462,22 +464,22 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=None,
         Salinity in PSU
     p_bar : array-like
         Pressure in bar
-    Mg : array-like
-        Mg concentration in mol/kgsw. If None, modern is assumed
-        (0.0528171). Should be the *average* Mg concentration in
+    magnesium : array-like
+        Magnesium concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* magnesium concentration in
         seawater - a salinity correction is then applied to calculate
-        the Mg concentration in the sample. Used to correct the Ks
+        the magnesium concentration in the sample. Used to correct the Ks
         using MyAMI.
-    Ca : array-like
-        Ca concentration in mol/kgsw. If None, modern is assumed
-        (0.0102821). Should be the *average* Ca concentration in
+    calcium : array-like
+        Calcium concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* calcium concentration in
         seawater - a salinity correction is then applied to calculate
-        the Mg concentration in the sample. Used to correct the Ks
+        the magnesium concentration in the sample. Used to correct the Ks
         using MyAMI.
-    ST : array-like
+    sulphate : array-like
         Total sulphate in mol/kgsw. Calculated from salinity if not
         given.
-    FT : array-like
+    fluorine : array-like
         Total fluorine in mol/kgsw. Calculated from salinity if not
         given.
     MyAMI_mode : str
@@ -507,31 +509,31 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, Mg=None, Ca=None, ST=None, FT=None,
         Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
         if p_bar is not None:
-            if FT is None:
-                FT = calc_FT(sal=sal)
-            if ST is None:
-                ST = calc_ST(sal=sal)
+            if fluorine is None:
+                fluorine = calc_fluorine(sal=sal)
+            if sulphate is None:
+                sulphate = calc_sulphate(sal=sal)
             
             KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
             KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
             KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
             KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
             
-            tot_to_sws_surface = (1 + ST / KS_surf) / (1 + ST / KS_surf + FT / KF_surf)  # convert from TOT to SWS before pressure correction
-            sws_to_tot_deep = (1 + ST / KS_deep + FT / KF_deep) / (1 + ST / KS_deep)  # convert from SWS to TOT after pressure correction
+            tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
+            sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
 
             if k in K_presscorr_coefs:
                 Ks[k] *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
     
-    if Mg is not None or Ca is not None:
-        if Ca is None:
-            Ca = 0.0102821
-        if Mg is None:
-            Mg = 0.0528171
+    if magnesium is not None or calcium is not None:
+        if calcium is None:
+            calcium = 0.0102821
+        if magnesium is None:
+            magnesium = 0.0528171
         if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=Mg, Ca=Ca)
+            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=Mg, Ca=Ca)
+            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         for k, f in Fcorr.items():
             if k in Ks:
                 Ks[k] *= f

@@ -1,9 +1,9 @@
 #' Ionic strength after Dickson (1990a); see Dickson et al. (2007)
 #'
-#' @param S Salinity
+#' @param sal Salinity
 #' @return Ionic strength
-fn_Istr <- function(S) {
-  Istr <- 19.924 * S / (1000 - 1.005 * S)
+fn_Istr <- function(sal) {
+  Istr <- 19.924 * sal / (1000 - 1.005 * sal)
 
   return(Istr)
 }
@@ -11,15 +11,15 @@ fn_Istr <- function(S) {
 #' Calculate K1
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return K1
-fn_K1 <- function(p, TK, S) {
+fn_K1 <- function(p, temp_k, sal) {
   K1 <- 10^(p[1] +
-    p[2] / TK +
-    p[3] * log(TK) +
-    p[4] * S +
-    p[5] * S^2)
+    p[2] / temp_k +
+    p[3] * log(temp_k) +
+    p[4] * sal +
+    p[5] * sal^2)
 
   return(K1)
 }
@@ -27,15 +27,15 @@ fn_K1 <- function(p, TK, S) {
 #' Calculate K2
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return K2
-fn_K2 <- function(p, TK, S) {
+fn_K2 <- function(p, temp_k, sal) {
   K2 <- 10^(p[1] +
-    p[2] / TK +
-    p[3] * log(TK) +
-    p[4] * S +
-    p[5] * S^2)
+    p[2] / temp_k +
+    p[3] * log(temp_k) +
+    p[4] * sal +
+    p[5] * sal^2)
 
   return(K2)
 }
@@ -43,15 +43,15 @@ fn_K2 <- function(p, TK, S) {
 #' Calculate KW
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KW
-fn_KW <- function(p, TK, S) {
+fn_KW <- function(p, temp_k, sal) {
   KW <- exp(p[1] +
-    p[2] / TK +
-    p[3] * log(TK) +
-    (p[4] / TK + p[5] + p[6] * log(TK)) * sqrt(S) +
-    p[7] * S)
+    p[2] / temp_k +
+    p[3] * log(temp_k) +
+    (p[4] / temp_k + p[5] + p[6] * log(temp_k)) * sqrt(sal) +
+    p[7] * sal)
 
   return(KW)
 }
@@ -59,20 +59,20 @@ fn_KW <- function(p, TK, S) {
 #' Calculate KB
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KB
-fn_KB <- function(p, TK, S) {
+fn_KB <- function(p, temp_k, sal) {
   KB <- exp((p[1] +
-    p[2] * sqrt(S) +
-    p[3] * S) +
+    p[2] * sqrt(sal) +
+    p[3] * sal) +
     (p[4] +
-      p[5] * sqrt(S) +
-      p[6] * S +
-      p[7] * S * sqrt(S) +
-      p[8] * S * S) / TK +
-    (p[9] + p[10] * sqrt(S) + p[11] * S) * log(TK) + +
-      p[12] * sqrt(S) * TK)
+      p[5] * sqrt(sal) +
+      p[6] * sal +
+      p[7] * sal * sqrt(sal) +
+      p[8] * sal * sal) / temp_k +
+    (p[9] + p[10] * sqrt(sal) + p[11] * sal) * log(temp_k) + +
+      p[12] * sqrt(sal) * temp_k)
 
   return(KB)
 }
@@ -80,14 +80,14 @@ fn_KB <- function(p, TK, S) {
 #' Calculate K0
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return K0
-fn_K0 <- function(p, TK, S) {
+fn_K0 <- function(p, temp_k, sal) {
   K0 <- exp(p[1] +
-    p[2] * 100 / TK +
-    p[3] * log(TK / 100) +
-    S * (p[4] + p[5] * TK / 100 + p[6] * (TK / 100) * (TK / 100)))
+    p[2] * 100 / temp_k +
+    p[3] * log(temp_k / 100) +
+    sal * (p[4] + p[5] * temp_k / 100 + p[6] * (temp_k / 100) * (temp_k / 100)))
 
   return(K0)
 }
@@ -95,19 +95,19 @@ fn_K0 <- function(p, TK, S) {
 #' Calculate KS
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KS
-fn_KS <- function(p, TK, S) {
-  Istr <- fn_Istr(S)
+fn_KS <- function(p, temp_k, sal) {
+  Istr <- fn_Istr(sal)
   KS <- exp(p[1] +
-    p[2] / TK +
-    p[3] * log(TK) +
-    sqrt(Istr) * (p[4] / TK + p[5] + p[6] * log(TK)) +
-    Istr * (p[7] / TK + p[8] + p[9] * log(TK)) +
-    p[10] / TK * Istr * sqrt(Istr) +
-    p[11] / TK * Istr^2 +
-    log(1 - 0.001005 * S))
+    p[2] / temp_k +
+    p[3] * log(temp_k) +
+    sqrt(Istr) * (p[4] / temp_k + p[5] + p[6] * log(temp_k)) +
+    Istr * (p[7] / temp_k + p[8] + p[9] * log(temp_k)) +
+    p[10] / temp_k * Istr * sqrt(Istr) +
+    p[11] / temp_k * Istr^2 +
+    log(1 - 0.001005 * sal))
 
   return(KS)
 }
@@ -115,17 +115,17 @@ fn_KS <- function(p, TK, S) {
 #' Calculate Ksp
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return Ksp
-fn_Ksp <- function(p, TK, S) {
+fn_Ksp <- function(p, temp_k, sal) {
   Ksp <- 10^(p[1] +
-    p[2] * TK +
-    p[3] / TK +
-    p[4] * log10(TK) +
-    (p[5] + p[6] * TK + p[7] / TK) * sqrt(S) +
-    p[8] * S +
-    p[9] * S * sqrt(S))
+    p[2] * temp_k +
+    p[3] / temp_k +
+    p[4] * log10(temp_k) +
+    (p[5] + p[6] * temp_k + p[7] / temp_k) * sqrt(sal) +
+    p[8] * sal +
+    p[9] * sal * sqrt(sal))
 
   return(Ksp)
 }
@@ -133,15 +133,15 @@ fn_Ksp <- function(p, TK, S) {
 #' Calculate KP1
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KP1
-fn_KP1 <- function(p, TK, S) {
-  KP <- exp(p[1] / TK +
+fn_KP1 <- function(p, temp_k, sal) {
+  KP <- exp(p[1] / temp_k +
     p[2] +
-    p[3] * log(TK) +
-    (p[4] / TK + p[5]) * sqrt(S) +
-    (p[6] / TK + p[7]) * S)
+    p[3] * log(temp_k) +
+    (p[4] / temp_k + p[5]) * sqrt(sal) +
+    (p[6] / temp_k + p[7]) * sal)
 
   return(KP)
 }
@@ -149,15 +149,15 @@ fn_KP1 <- function(p, TK, S) {
 #' Calculate KP2
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KP2
-fn_KP2 <- function(p, TK, S) {
-  KP <- exp(p[1] / TK +
+fn_KP2 <- function(p, temp_k, sal) {
+  KP <- exp(p[1] / temp_k +
     p[2] +
-    p[3] * log(TK) +
-    (p[4] / TK + p[5]) * sqrt(S) +
-    (p[6] / TK + p[7]) * S)
+    p[3] * log(temp_k) +
+    (p[4] / temp_k + p[5]) * sqrt(sal) +
+    (p[6] / temp_k + p[7]) * sal)
 
   return(KP)
 }
@@ -165,14 +165,14 @@ fn_KP2 <- function(p, TK, S) {
 #' Calculate KP3
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KP3
-fn_KP3 <- function(p, TK, S) {
-  KP3 <- exp(p[1] / TK +
+fn_KP3 <- function(p, temp_k, sal) {
+  KP3 <- exp(p[1] / temp_k +
     p[2] +
-    (p[3] / TK + p[4]) * sqrt(S) +
-    (p[5] / TK + p[6]) * S)
+    (p[3] / temp_k + p[4]) * sqrt(sal) +
+    (p[5] / temp_k + p[6]) * sal)
 
   return(KP3)
 }
@@ -180,19 +180,19 @@ fn_KP3 <- function(p, TK, S) {
 #' Calculate KSi
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KSi
-fn_KSi <- function(p, TK, S) {
-  Istr <- fn_Istr(S)
-  tmp <- exp(p[1] / TK +
+fn_KSi <- function(p, temp_k, sal) {
+  Istr <- fn_Istr(sal)
+  tmp <- exp(p[1] / temp_k +
     p[2] +
-    p[3] * log(TK) +
-    (p[4] / TK + p[5]) * Istr^0.5 +
-    (p[6] / TK + p[7]) * Istr +
-    (p[8] / TK + p[9]) * Istr^2)
+    p[3] * log(temp_k) +
+    (p[4] / temp_k + p[5]) * Istr^0.5 +
+    (p[6] / temp_k + p[7]) * Istr +
+    (p[8] / temp_k + p[9]) * Istr^2)
 
-  KSi <- tmp * (1 - 0.001005 * S)
+  KSi <- tmp * (1 - 0.001005 * sal)
 
   return(KSi)
 }
@@ -200,13 +200,13 @@ fn_KSi <- function(p, TK, S) {
 #' Calculate KF
 #'
 #' @param p Parameters for K calculation
-#' @param TK Temperature (Kelvin)
-#' @param S Salinity
+#' @param temp_k Temperature (Kelvin)
+#' @param sal Salinity
 #' @return KF
-fn_KF <- function(p, TK, S) {
-  KF <- exp(p[1] / TK +
+fn_KF <- function(p, temp_k, sal) {
+  KF <- exp(p[1] / temp_k +
     p[2] +
-    p[3] * sqrt(S))
+    p[3] * sqrt(sal))
 
   return(KF)
 }
@@ -216,49 +216,49 @@ fn_KF <- function(p, TK, S) {
 #' Eqns 38-40
 #'
 #' @param p Parameters for K calculation
-#' @param P Pressure
-#' @param TC Temperature (Celsius)
+#' @param temp_c Temperature (Celsius)
+#' @param p_bar Pressure
 #' @return Pressure correction factor
-fn_pc <- function(p, P, TC) {
+fn_pc <- function(p, temp_c, p_bar) {
   a0 <- p[1]
   a1 <- p[2]
   a2 <- p[3]
   b0 <- p[4]
   b1 <- p[5]
 
-  dV <- a0 + a1 * TC + a2 * TC^2
+  dV <- a0 + a1 * temp_c + a2 * temp_c^2
 
-  dk <- (b0 + b1 * TC)
+  dk <- (b0 + b1 * temp_c)
 
-  RT <- 83.1451 * (TC + 273.15)
+  RT <- 83.1451 * (temp_c + 273.15)
 
-  prescorr <- exp((-dV + 0.5 * dk * P) * P / RT)
+  prescorr <- exp((-dV + 0.5 * dk * p_bar) * p_bar / RT)
 
   return(prescorr)
 }
 
-#' Calculate TS
+#' Calculate sulphate
 #' From Dickson et al., 2007, Table 2
 #' Note: Sal / 1.80655 = Chlorinity#'
 #'
-#' @param S Salinity
-#' @return TS
-calc_TS <- function(S) {
-  TS <- 0.14 * S / 1.80655 / 96.062 # mol/kg-SW
+#' @param sal Salinity
+#' @return sulphate
+calc_sulphate <- function(sal) {
+  sulphate <- 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
 
-  return(TS)
+  return(sulphate)
 }
 
-#' Calculate TF
+#' Calculate fluorine
 #' From Dickson et al., 2007, Table 2
 #' Note: Sal / 1.80655 = Chlorinity
 #'
-#' @param S Salinity
-#' @return TF
-calc_TF <- function(S) {
-  TF <- 6.7e-5 * S / 1.80655 / 18.9984 # mol/kg-SW
+#' @param sal Salinity
+#' @return fluorine
+calc_fluorine <- function(sal) {
+  fluorine <- 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-  return(TF)
+  return(fluorine)
 }
 
 #' List of all functions

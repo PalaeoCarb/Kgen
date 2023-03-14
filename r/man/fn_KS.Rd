@@ -4,14 +4,14 @@
 \alias{fn_KS}
 \title{Calculate KS}
 \usage{
-fn_KS(p, TK, S)
+fn_KS(p, temp_k, sal)
 }
 \arguments{
 \item{p}{Parameters for K calculation}
 
-\item{TK}{Temperature (Kelvin)}
+\item{temp_k}{Temperature (Kelvin)}
 
-\item{S}{Salinity}
+\item{sal}{Salinity}
 }
 \value{
 KS

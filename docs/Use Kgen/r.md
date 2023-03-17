@@ -10,13 +10,13 @@ permalink: use_kgen/r
 Documentation to start using Kgen in R.
 {: .fs-6 .fw-300 }
 
-[![CRAN status](https://www.r-pkg.org/badges/version/Kgen)](https://CRAN.R-project.org/package=Kgen)
-[![CRANLOGS downloads](https://cranlogs.r-pkg.org/badges/Kgen)](https://cran.r-project.org/package=Kgen)
+[![CRAN status](https://www.r-pkg.org/badges/version/kgen)](https://CRAN.R-project.org/package=kgen)
+[![CRANLOGS downloads](https://cranlogs.r-pkg.org/badges/kgen)](https://cran.r-project.org/package=kgen)
 
 ## Installation
 
 Kgen is available for installation from CRAN:
-`install.packages('Kgen')`
+`install.packages('kgen')`
 or directly from Github using remotes/devtools: 
 `devtools::install_github('PalaeoCarb/Kgen/r')`
 
@@ -27,7 +27,7 @@ This will install Kgen and its dependencies.
 Two functions are exported, `calc_Ks()` for returning all available Ks, and `calc_pressure_correction()` for returning a K-specific pressure correction factor. To allow for the best possible cross-compatibility between languages, Kgen for R relies on `pymyami` to calculate [Mg] and [Ca] correction factors. Upon first use, Kgen will ask to automatically install a local version of `r-Miniconda` along with `pymyami`. This step should not require more than 5 minutes on modern systems. If you prefer to install r-Miniconda to a specific path on your system, stop the installer and install r-Miniconda manually using [reticulate](https://rstudio.github.io/reticulate/). 
 
 ```R
-library('Kgen')
+library('kgen')
 
 calc_Ks(ks, temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine, method)
 
@@ -63,10 +63,10 @@ Kgen installation and operation example:
 
 ```R
 # Recommended installation through CRAN
-> install.packages('Kgen')
+> install.packages('kgen')
 
 # Load library
-> library('Kgen')
+> library('kgen')
 
 # Test coefficient calculation using default values
 > calc_Ks('K0')

@@ -13,6 +13,9 @@ calc_pressure_correction(k, temp_c, p_bar)
 
 \item{p_bar}{Pressure (Bar)}
 }
+\value{
+pressure correction factor
+}
 \description{
 Calculate pressure correction factor for a specified equilibrium constant.
 }

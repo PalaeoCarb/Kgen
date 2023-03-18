@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{calc_K}
 \alias{calc_K}
-\title{Calculate equilibrium constant for carbon}
+\title{Calculate a single equilibrium constant}
 \usage{
 calc_K(
   k,
@@ -39,7 +39,7 @@ calc_K(
 Specified K at the given conditions
 }
 \description{
-Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.
+Calculate a specified stoichiometric equilibrium constant at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 }
 \author{
 Dennis Mayk

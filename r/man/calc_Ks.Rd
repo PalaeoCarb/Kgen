@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{calc_Ks}
 \alias{calc_Ks}
-\title{Calculate multiple equilibrium constants for carbon}
+\title{Calculate equilibrium constants for seawater}
 \usage{
 calc_Ks(
   ks = NULL,
@@ -39,7 +39,7 @@ calc_Ks(
 Data.table of specified Ks at the given conditions
 }
 \description{
-Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.
+Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 }
 \author{
 Dennis Mayk

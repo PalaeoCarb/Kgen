@@ -1,6 +1,6 @@
-#' @title Calculate equilibrium constant for carbon
+#' @title Calculate a single equilibrium constant
 #'
-#' @description Calculate a specified stoichiometric equilibrium constant at given temperature, salinity and pressure.
+#' @description Calculate a specified stoichiometric equilibrium constant at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 #'
 #' @author Dennis Mayk
 #'
@@ -35,7 +35,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 
   # Check if miniconda is installed
   if (!mc_exists() & tolower(method) != "r_polynomial") {
-    print("Kgen requires r-Miniconda which appears to not exist on your system.")
+    warning("Kgen requires r-Miniconda which appears to not exist on your system.")
     install_confirm <- utils::askYesNo("Would you like to install it now?")
     if (install_confirm) {
       install_pymyami()
@@ -45,7 +45,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
   }
 
   # Load K_calculation.json
-  K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "Kgen"))
+  K_coefs <- rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "kgen"))
   K_coefs <- K_coefs$coefficients
 
   # Select function and run calculation
@@ -55,7 +55,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
   # Pressure correction?
   if (!is.null(p_bar)) {
     # Load K_pressure_correction.json
-    K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
+    K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "kgen"))
     K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
     if (is.null(sulphate)) {
@@ -104,7 +104,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     }
   }
   if (tolower(method) == "r_polynomial") {
-    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "Kgen"))
+    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "kgen"))
     if (k %in% names(poly_coefs)) {
       # Calculate correction factors
       dat[, row_id := .I]
@@ -116,9 +116,9 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
   return(dat$k_value)
 }
 
-#' @title Calculate multiple equilibrium constants for carbon
+#' @title Calculate equilibrium constants for seawater
 #'
-#' @description Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity and pressure.
+#' @description Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 #'
 #' @author Dennis Mayk
 #'

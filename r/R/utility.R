@@ -7,6 +7,7 @@
 #' @param k K to be calculated
 #' @param temp_c Temperature (Celsius)
 #' @param p_bar Pressure (Bar)
+#' @return pressure correction factor
 #' @export
 calc_pressure_correction <- function(k, temp_c, p_bar) {
   checkmate::assert(
@@ -16,7 +17,7 @@ calc_pressure_correction <- function(k, temp_c, p_bar) {
   )
 
   # Load K_pressure_correction.json
-  K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "Kgen"))
+  K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "kgen"))
   K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
   out <- fn_pc(p = K_presscorr_coefs[[k]], p_bar = p_bar, temp_c = temp_c)

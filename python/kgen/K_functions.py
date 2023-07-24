@@ -361,9 +361,9 @@ def calc_fluorine(sal):
     """
     return 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calculate_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
-    Calculate a specified stoichiometric equilibrium constants at given
+    Calculate a specified stoichiometric equilibrium constant at given
     temperature, salinity and pressure.
 
     TODO: document pH scales.
@@ -408,15 +408,15 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
     array-like
         The specified K at the given conditions.
     """
-    if k not in K_fns:
-        raise ValueError(f'{k} is not valid. Should be one of {K_fns.keys}')
+    if K not in K_fns:
+        raise ValueError(f'{K} is not valid. Should be one of {K_fns.keys}')
     
     TK = temp_c + 273.15
     lnTK = np.log(TK)
     S = sal
     sqrtS = S**0.5
 
-    K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+    K = K_fns[K](p=K_coefs[K], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
 
     if p_bar is not None:
         if fluorine is None:
@@ -432,7 +432,7 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
         tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
         sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
         
-        K *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
+        K *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[K], P=p_bar, TC=temp_c) * sws_to_tot_deep
     
     if magnesium is not None or calcium is not None:
         if calcium is None:
@@ -443,21 +443,22 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
             Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
         else:
             Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        if k in Fcorr:
-            K *= Fcorr[k]
+        if K in Fcorr:
+            K *= Fcorr[K]
     
     return K
 
-
-def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate', K_list=None):
+def calculate_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
-    Calculate all stoichiometric equilibrium constants at given
+    Calculate specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
 
     TODO: document pH scales.
 
     Parameters
     ----------
+    K_list : array-like
+        List of Ks to calculate
     temp_c : array-like
         Temperature in Celcius
     sal : array-like
@@ -488,8 +489,6 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulph
         factor for the Ks. In the latter, a polynomial function is
         used to approximate the correction factor. The latter is faster,
         though marginally less accurate.
-    K_list : array-like
-        List of Ks to calculate. If None, all are calculated
 
     Returns
     -------
@@ -538,4 +537,55 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulph
             if k in Ks:
                 Ks[k] *= f
     
+    return Ks
+
+def calculate_all_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+    """
+    Calculate all stoichiometric equilibrium constants at given
+    temperature, salinity and pressure.
+
+    TODO: document pH scales.
+
+    Parameters
+    ----------
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
+        Salinity in PSU
+    p_bar : array-like
+        Pressure in bar
+    magnesium : array-like
+        Magnesium concentration in mol/kgsw. If None, modern is assumed
+        (0.0528171). Should be the *average* magnesium concentration in
+        seawater - a salinity correction is then applied to calculate
+        the magnesium concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    calcium : array-like
+        Calcium concentration in mol/kgsw. If None, modern is assumed
+        (0.0102821). Should be the *average* calcium concentration in
+        seawater - a salinity correction is then applied to calculate
+        the magnesium concentration in the sample. Used to correct the Ks
+        using MyAMI.
+    sulphate : array-like
+        Total sulphate in mol/kgsw. Calculated from salinity if not
+        given.
+    fluorine : array-like
+        Total fluorine in mol/kgsw. Calculated from salinity if not
+        given.
+    MyAMI_mode : str
+        Either 'calculate' or 'approximate'. In the former case,
+        the full MyAMI model is run to calculate the correction
+        factor for the Ks. In the latter, a polynomial function is
+        used to approximate the correction factor. The latter is faster,
+        though marginally less accurate.
+
+    Returns
+    -------
+    dict
+        Containing calculated Ks.
+    """
+    K_list = K_fns.keys()
+    Ks = calculate_Ks(K_list, temp_c=temp_c, sal=sal, p_bar=p_bar, magnesium=magnesium, calcium=calcium, sulphate=sulphate, fluorine=fluorine, MyAMI_mode=MyAMI_mode)
+
+
     return Ks

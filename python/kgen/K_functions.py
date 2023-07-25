@@ -18,12 +18,8 @@ def calc_K1K2(coefficients, temp_k, sal):
         coefficients for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------
@@ -52,8 +48,6 @@ def calc_KW(coefficients, temp_k, sal):
         natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
         
     Returns
     -------
@@ -77,12 +71,8 @@ def calc_KB(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
         
     Returns
     -------
@@ -111,12 +101,8 @@ def calc_K0(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
             
     Returns
     -------
@@ -154,12 +140,8 @@ def calc_Ksp(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------
@@ -189,12 +171,8 @@ def calc_KP(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------
@@ -219,12 +197,8 @@ def calc_KP3(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------
@@ -248,12 +222,8 @@ def calc_KSi(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------
@@ -281,12 +251,8 @@ def calc_KF(coefficients, temp_k, sal):
         parameters for K calculation
     temp_k : array-like
         Temperature in Kelvin
-    np.log(temp_k) : array-like
-        natural log of temperature in kelvin
     sal : arry-like
         Salinity
-    np.sqrt(sal) : array-like
-        square root of salinity
 
     Returns
     -------

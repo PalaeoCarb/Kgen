@@ -281,8 +281,8 @@ K_fns = {
     "KF": calc_KF
 }    
 
-def prescorr(coefficients, pres_bar, temp_c):
-    """Calculate pressore correction factor for thermodynamic Ks.
+def calc_pressure_correction(coefficients, pres_bar, temp_c):
+    """Calculate pressure correction factor for thermodynamic Ks.
 
     From Millero et al (2007, doi:10.1021/cr0503557)
     Eqns 38-40
@@ -297,7 +297,7 @@ def prescorr(coefficients, pres_bar, temp_c):
         parameters to calculate pressure correction factors (Kcorr).
     TC : array-like
         Temperature in Celcius
-    sal : arry-like
+    sal : array-like
         Salinity
     """
     a0, a1, a2, b0, b1 = coefficients
@@ -305,6 +305,35 @@ def prescorr(coefficients, pres_bar, temp_c):
     dk = (b0 + b1 * temp_c)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (temp_c + 273.15)
     return np.exp((-dV + 0.5 * dk * pres_bar) * pres_bar / RT)    
+
+def calc_seawater_correction(ks, temp_k, sal, magnesium, calcium, MyAMI_mode='calculate'):
+    """Calculate seawater correction factor for thermodynamic Ks.
+
+    Wrapper for pymyami functionality
+
+    Parameters
+    ----------
+    ks : array-like
+        list of strings for names of K's
+    temp_k : array-like
+        Temperature in Kelvin
+    sal : array-like
+        Salinity
+    magnesium : array-like
+        Magnesium concentration in mol/kg
+    calcium : array-like
+        Calcium concentration in mol/kg
+    MyAMI_mode : str
+        Either 'calculate' for full MyAMI or 'approximate' for polynomial approximation
+    """
+    temp_c = temp_k-273.15
+    if MyAMI_mode == 'calculate':
+        seawater_correction = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
+    elif MyAMI_mode == 'approximate':
+        seawater_correction = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
+    else:
+        raise(ValueError("Unknown MyAMI_mode - must be 'calculate' or 'approximate'"))
+    return {seawater_correction[name] for name in ks}
 
 def calc_ionic_strength(sal):
     return 19.924 * sal / (1000 - 1.005 * sal)
@@ -317,7 +346,6 @@ def calc_sulphate(sal):
     Note: sal / 1.80655 = Chlorinity
     """
     return 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
-
 
 def calc_fluorine(sal):
     """
@@ -390,26 +418,24 @@ def calc_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
             sulphate = calc_sulphate(sal=sal)
         
         KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_k=temp_k, sal=sal)
-        KS_deep = KS_surf * prescorr(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
+        KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
         KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_k=temp_k, sal=sal)
-        KF_deep = KF_surf * prescorr(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
+        KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
         
         tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
         sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
         
-        K *= tot_to_sws_surface * prescorr(coefficients=K_presscorr_coefs[K], P=p_bar, TC=temp_c) * sws_to_tot_deep
+        K *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], P=p_bar, TC=temp_c) * sws_to_tot_deep
     
     if magnesium is not None or calcium is not None:
         if calcium is None:
             calcium = 0.0102821
         if magnesium is None:
             magnesium = 0.0528171
-        if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        if K in Fcorr:
-            K *= Fcorr[K]
+        
+        seawater_correction = calc_seawater_correction(K, temp_k=temp_k, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
+        if K in seawater_correction:
+            K *= seawater_correction[K]
     
     return K
 
@@ -476,26 +502,25 @@ def calc_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=Non
                 sulphate = calc_sulphate(sal=sal)
             
             KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_k=temp_k, sal=sal)
-            KS_deep = KS_surf * prescorr(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
+            KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
             KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_k=temp_k, sal=sal)
-            KF_deep = KF_surf * prescorr(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
+            KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
             
             tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
             sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
 
             if k in K_presscorr_coefs:
-                Ks[k] *= tot_to_sws_surface * prescorr(coefficients=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
+                Ks[k] *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
     
     if magnesium is not None or calcium is not None:
         if calcium is None:
             calcium = 0.0102821
         if magnesium is None:
             magnesium = 0.0528171
-        if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        for k, f in Fcorr.items():
+        
+        seawater_correction = calc_seawater_correction(K_list, temp_k=temp_k, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
+        
+        for k, f in seawater_correction.items():
             if k in Ks:
                 Ks[k] *= f
     

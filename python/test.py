@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 import numpy as np
-from kgen.K_functions import K_fns, prescorr, calc_all_Ks
+from kgen.K_functions import K_fns, calc_pressure_correction, calc_all_Ks
 
 # boilerplate to deal with file paths
 cwd = os.getcwd()
@@ -52,7 +52,7 @@ class checkKValues(unittest.TestCase):
         
         for k, p in pcoefs['coefficients'].items():
             if k in check['check_values']:            
-                pF = prescorr(p, pres_bar=pres_bar, temp_c=temp_c)
+                pF = calc_pressure_correction(p, pres_bar=pres_bar, temp_c=temp_c)
 
                 checkval = check['check_values'][k]
             

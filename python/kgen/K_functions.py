@@ -281,7 +281,7 @@ K_fns = {
     "KF": calc_KF
 }    
 
-def calc_pressure_correction(coefficients, pres_bar, temp_c):
+def calc_pressure_correction(coefficients, p_bar, temp_c):
     """Calculate pressure correction factor for thermodynamic Ks.
 
     From Millero et al (2007, doi:10.1021/cr0503557)
@@ -304,7 +304,7 @@ def calc_pressure_correction(coefficients, pres_bar, temp_c):
     dV = a0 + a1 * temp_c + a2 * temp_c ** 2
     dk = (b0 + b1 * temp_c)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (temp_c + 273.15)
-    return np.exp((-dV + 0.5 * dk * pres_bar) * pres_bar / RT)    
+    return np.exp((-dV + 0.5 * dk * p_bar) * p_bar / RT)    
 
 def calc_seawater_correction(ks, temp_k, sal, magnesium, calcium, MyAMI_mode='calculate'):
     """Calculate seawater correction factor for thermodynamic Ks.
@@ -333,7 +333,8 @@ def calc_seawater_correction(ks, temp_k, sal, magnesium, calcium, MyAMI_mode='ca
         seawater_correction = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
     else:
         raise(ValueError("Unknown MyAMI_mode - must be 'calculate' or 'approximate'"))
-    return {seawater_correction[name] for name in ks}
+    
+    return {name:seawater_correction[name] for name in ks if name in seawater_correction}
 
 def calc_ionic_strength(sal):
     return 19.924 * sal / (1000 - 1.005 * sal)
@@ -418,14 +419,14 @@ def calc_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
             sulphate = calc_sulphate(sal=sal)
         
         KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_k=temp_k, sal=sal)
-        KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
+        KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
         KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_k=temp_k, sal=sal)
-        KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
+        KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], p_bar=p_bar, temp_c=temp_c)
         
         tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
         sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
         
-        K *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], P=p_bar, TC=temp_c) * sws_to_tot_deep
+        K *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
     
     if magnesium is not None or calcium is not None:
         if calcium is None:
@@ -502,15 +503,15 @@ def calc_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=Non
                 sulphate = calc_sulphate(sal=sal)
             
             KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_k=temp_k, sal=sal)
-            KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
+            KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
             KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_k=temp_k, sal=sal)
-            KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
+            KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], p_bar=p_bar, temp_c=temp_c)
             
             tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
             sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
 
             if k in K_presscorr_coefs:
-                Ks[k] *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
+                Ks[k] *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[k], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
     
     if magnesium is not None or calcium is not None:
         if calcium is None:

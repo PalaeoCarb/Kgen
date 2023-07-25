@@ -14,6 +14,7 @@
 #' @param fluorine Fluorine concentration in mol/kgsw. Calculated from salinity if not given.
 #' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
 #' @return Specified K at the given conditions
+#' @export
 calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
   # Check input values
   checkmate::assert(
@@ -118,7 +119,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 
 #' @title Calculate equilibrium constants for seawater
 #'
-#' @description Wrapper to calculate multiple stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
+#' @description Wrapper to calculate specified stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 #'
 #' @author Dennis Mayk
 #'
@@ -126,7 +127,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 #' @param ks character vectors of Ks to be calculated e.g., c("K0", "K1")
 #' @return Data.table of specified Ks at the given conditions
 #' @export
-calc_Ks <- function(ks = NULL, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
+calc_Ks <- function(ks, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
   # Check if ks is supplied, use K_fns as default
   if (is.null(ks)) {
     ks <- names(K_fns)
@@ -152,4 +153,27 @@ calc_Ks <- function(ks = NULL, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 
   names(ks_value) <- ks
 
   return(ks_value)
+}
+
+#' @title Calculate equilibrium constants for seawater
+#'
+#' @description Wrapper to calculate all stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
+#'
+#' @author Ross Whiteford
+#'
+#' @param temp_c Temperature (Celsius)
+#' @param p_bar Pressure (Bar) (optional)
+#' @param sal Salinity
+#' @param magnesium Magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param calcium Calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.
+#' @param sulphate Sulphate concentration in mol/kgsw. Calculated from salinity if not given.
+#' @param fluorine Fluorine concentration in mol/kgsw. Calculated from salinity if not given.
+#' @param method Options: `R_Polynomial`, `MyAMI_Polynomial` , `MyAMI` (defaults to "MyAMI").
+#' @return Data.table of specified Ks at the given conditions
+#' @export
+calc_all_Ks <- function(temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
+  k_names <- names(K_fns)
+  ks <- calc_Ks(ks = k_names, temp_c = temp_c, sal = sal, p_bar = p_bar, magnesium = magnesium, calcium = calcium, sulphate = sulphate, fluorine = fluorine, method = method)
+  
+  return(ks)
 }

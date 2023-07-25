@@ -2,7 +2,7 @@
 #'
 #' @param sal Salinity
 #' @return Ionic strength
-fn_Istr <- function(sal) {
+calc_ionic_strength <- function(sal) {
   Istr <- 19.924 * sal / (1000 - 1.005 * sal)
 
   return(Istr)
@@ -14,7 +14,7 @@ fn_Istr <- function(sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return K1
-fn_K1 <- function(p, temp_k, sal) {
+calc_K1 <- function(p, temp_k, sal) {
   K1 <- 10^(p[1] +
     p[2] / temp_k +
     p[3] * log(temp_k) +
@@ -30,7 +30,7 @@ fn_K1 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return K2
-fn_K2 <- function(p, temp_k, sal) {
+calc_K2 <- function(p, temp_k, sal) {
   K2 <- 10^(p[1] +
     p[2] / temp_k +
     p[3] * log(temp_k) +
@@ -46,7 +46,7 @@ fn_K2 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KW
-fn_KW <- function(p, temp_k, sal) {
+calc_KW <- function(p, temp_k, sal) {
   KW <- exp(p[1] +
     p[2] / temp_k +
     p[3] * log(temp_k) +
@@ -62,7 +62,7 @@ fn_KW <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KB
-fn_KB <- function(p, temp_k, sal) {
+calc_KB <- function(p, temp_k, sal) {
   KB <- exp((p[1] +
     p[2] * sqrt(sal) +
     p[3] * sal) +
@@ -83,7 +83,7 @@ fn_KB <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return K0
-fn_K0 <- function(p, temp_k, sal) {
+calc_K0 <- function(p, temp_k, sal) {
   K0 <- exp(p[1] +
     p[2] * 100 / temp_k +
     p[3] * log(temp_k / 100) +
@@ -98,8 +98,8 @@ fn_K0 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KS
-fn_KS <- function(p, temp_k, sal) {
-  Istr <- fn_Istr(sal)
+calc_KS <- function(p, temp_k, sal) {
+  Istr <- calc_ionic_strength(sal)
   KS <- exp(p[1] +
     p[2] / temp_k +
     p[3] * log(temp_k) +
@@ -118,7 +118,7 @@ fn_KS <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return Ksp
-fn_Ksp <- function(p, temp_k, sal) {
+calc_Ksp <- function(p, temp_k, sal) {
   Ksp <- 10^(p[1] +
     p[2] * temp_k +
     p[3] / temp_k +
@@ -136,7 +136,7 @@ fn_Ksp <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KP1
-fn_KP1 <- function(p, temp_k, sal) {
+calc_KP1 <- function(p, temp_k, sal) {
   KP <- exp(p[1] / temp_k +
     p[2] +
     p[3] * log(temp_k) +
@@ -152,7 +152,7 @@ fn_KP1 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KP2
-fn_KP2 <- function(p, temp_k, sal) {
+calc_KP2 <- function(p, temp_k, sal) {
   KP <- exp(p[1] / temp_k +
     p[2] +
     p[3] * log(temp_k) +
@@ -168,7 +168,7 @@ fn_KP2 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KP3
-fn_KP3 <- function(p, temp_k, sal) {
+calc_KP3 <- function(p, temp_k, sal) {
   KP3 <- exp(p[1] / temp_k +
     p[2] +
     (p[3] / temp_k + p[4]) * sqrt(sal) +
@@ -183,8 +183,8 @@ fn_KP3 <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KSi
-fn_KSi <- function(p, temp_k, sal) {
-  Istr <- fn_Istr(sal)
+calc_KSi <- function(p, temp_k, sal) {
+  Istr <- calc_ionic_strength(sal)
   tmp <- exp(p[1] / temp_k +
     p[2] +
     p[3] * log(temp_k) +
@@ -203,7 +203,7 @@ fn_KSi <- function(p, temp_k, sal) {
 #' @param temp_k Temperature (Kelvin)
 #' @param sal Salinity
 #' @return KF
-fn_KF <- function(p, temp_k, sal) {
+calc_KF <- function(p, temp_k, sal) {
   KF <- exp(p[1] / temp_k +
     p[2] +
     p[3] * sqrt(sal))
@@ -219,7 +219,7 @@ fn_KF <- function(p, temp_k, sal) {
 #' @param temp_c Temperature (Celsius)
 #' @param p_bar Pressure
 #' @return Pressure correction factor
-fn_pc <- function(p, temp_c, p_bar) {
+calc_pc <- function(p, temp_c, p_bar) {
   a0 <- p[1]
   a1 <- p[2]
   a2 <- p[3]
@@ -263,17 +263,17 @@ calc_fluorine <- function(sal) {
 
 #' List of all functions
 K_fns <- list(
-  K0 = fn_K0,
-  K1 = fn_K1,
-  K2 = fn_K2,
-  KW = fn_KW,
-  KB = fn_KB,
-  KS = fn_KS,
-  KspA = fn_Ksp,
-  KspC = fn_Ksp,
-  KP1 = fn_KP1,
-  KP2 = fn_KP2,
-  KP3 = fn_KP3,
-  KSi = fn_KSi,
-  KF = fn_KF
+  K0 = calc_K0,
+  K1 = calc_K1,
+  K2 = calc_K2,
+  KW = calc_KW,
+  KB = calc_KB,
+  KS = calc_KS,
+  KspA = calc_Ksp,
+  KspC = calc_Ksp,
+  KP1 = calc_KP1,
+  KP2 = calc_KP2,
+  KP3 = calc_KP3,
+  KSi = calc_KSi,
+  KF = calc_KF
 )

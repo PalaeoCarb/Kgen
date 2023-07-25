@@ -103,7 +103,7 @@ classdef kgen_static
                         combination_subset = combination_array(combination_array(:,2)>=combination_array(:,1) & combination_array(:,3)>=combination_array(:,2),:);
                         linear_index = dot(repmat(6.^[2,1,0],size(combination_subset,1),1),combination_subset-1,2)+1;
 
-                        conditions = [ones(numel(temp_k),1),temp_k+273.15,log(temp_k+273.15),sal,mg,ca];
+                        conditions = [ones(numel(temp_k),1),temp_k+273.15,log(temp_k+273.15),sal,magnesium,calcium];
                         condition_matrix = reshape(conditions,[numel(temp_k),number_of_parameters,1,1]).*reshape(conditions,[numel(temp_k),1,number_of_parameters,1]).*reshape(conditions,[numel(temp_k),1,1,number_of_parameters]);
                         condition_extracted = condition_matrix(:,linear_index);
         

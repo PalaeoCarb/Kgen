@@ -131,9 +131,7 @@ def calc_K0(coefficients, temp_k, sal):
     )
 
 def calc_KS(coefficients, temp_k, sal):
-    Istr = (
-        19.924 * sal / (1000 - 1.005 * sal)
-    )
+    Istr = calc_ionic_strength(sal)
     # Ionic strength after Dickson 1990a; see Dickson et al 2007
     
     return np.exp(
@@ -263,7 +261,7 @@ def calc_KSi(coefficients, temp_k, sal):
         KSi on XXXXX pH scale.
     """
 
-    Istr = 19.924 * sal / (1000 - 1.005 * sal)
+    Istr = calc_ionic_strength(sal)
 
     return np.exp(
         coefficients[0] / temp_k + 
@@ -341,6 +339,9 @@ def prescorr(coefficients, pres_bar, temp_c):
     dk = (b0 + b1 * temp_c)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
     RT = 83.1451 * (temp_c + 273.15)
     return np.exp((-dV + 0.5 * dk * pres_bar) * pres_bar / RT)    
+
+def calc_ionic_strength(sal):
+    return 19.924 * sal / (1000 - 1.005 * sal)
 
 def calc_sulphate(sal):
     """

@@ -361,7 +361,7 @@ def calc_fluorine(sal):
     """
     return 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-def calculate_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calc_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
     Calculate a specified stoichiometric equilibrium constant at given
     temperature, salinity and pressure.
@@ -448,7 +448,7 @@ def calculate_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None
     
     return K
 
-def calculate_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calc_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
     Calculate specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -539,7 +539,7 @@ def calculate_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calciu
     
     return Ks
 
-def calculate_all_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calc_all_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
     Calculate all stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -585,7 +585,7 @@ def calculate_all_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=No
         Containing calculated Ks.
     """
     K_list = K_fns.keys()
-    Ks = calculate_Ks(K_list, temp_c=temp_c, sal=sal, p_bar=p_bar, magnesium=magnesium, calcium=calcium, sulphate=sulphate, fluorine=fluorine, MyAMI_mode=MyAMI_mode)
+    Ks = calc_Ks(K_list, temp_c=temp_c, sal=sal, p_bar=p_bar, magnesium=magnesium, calcium=calcium, sulphate=sulphate, fluorine=fluorine, MyAMI_mode=MyAMI_mode)
 
 
     return Ks

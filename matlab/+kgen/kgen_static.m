@@ -7,57 +7,57 @@ classdef kgen_static
         function ionic_strength = calc_ionic_strength(salinity)
             ionic_strength = (19.924.*salinity)./(1000-1.005.*salinity);
         end
-        function K0 = calc_K0(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            K0 = exp(coefficients(1) + (100*coefficients(2))./t + coefficients(3).*log(t./100) + s.*(coefficients(4) + (coefficients(5).*t)./100 + coefficients(6).*(t./100).^2));
+        function K0 = calc_K0(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            K0 = exp(coefficients(1) + (100*coefficients(2))./temp_k + coefficients(3).*log(temp_k./100) + sal.*(coefficients(4) + (coefficients(5).*temp_k)./100 + coefficients(6).*(temp_k./100).^2));
         end
-        function K1 = calc_K1(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            K1 = 10.^(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + coefficients(4).*s + coefficients(5).*s.^2);
+        function K1 = calc_K1(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            K1 = 10.^(coefficients(1) + coefficients(2)./temp_k + coefficients(3).*log(temp_k) + coefficients(4).*sal + coefficients(5).*sal.^2);
         end
-        function K2 = calc_K2(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            K2 = 10.^(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + coefficients(4).*s + coefficients(5).*s.^2);
+        function K2 = calc_K2(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            K2 = 10.^(coefficients(1) + coefficients(2)./temp_k + coefficients(3).*log(temp_k) + coefficients(4).*sal + coefficients(5).*sal.^2);
         end
-        function KB = calc_KB(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KB = exp(coefficients(1) + coefficients(2).*sqrt(s) + coefficients(3).*s + (1./t).*(coefficients(4) + coefficients(5).*sqrt(s) + coefficients(6).*s + coefficients(7).*s.^1.5 + coefficients(8).*s.^2) + log(t).*(coefficients(9) + coefficients(10).*sqrt(s) + coefficients(11).*s) + coefficients(12).*t.*sqrt(s));
+        function KB = calc_KB(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KB = exp(coefficients(1) + coefficients(2).*sqrt(sal) + coefficients(3).*sal + (1./temp_k).*(coefficients(4) + coefficients(5).*sqrt(sal) + coefficients(6).*sal + coefficients(7).*sal.^1.5 + coefficients(8).*sal.^2) + log(temp_k).*(coefficients(9) + coefficients(10).*sqrt(sal) + coefficients(11).*sal) + coefficients(12).*temp_k.*sqrt(sal));
         end
-        function KW = calc_KW(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KW = exp(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + sqrt(s).*(coefficients(4)./t + coefficients(5) + coefficients(6).*log(t)) + coefficients(7).*s);
+        function KW = calc_KW(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KW = exp(coefficients(1) + coefficients(2)./temp_k + coefficients(3).*log(temp_k) + sqrt(sal).*(coefficients(4)./temp_k + coefficients(5) + coefficients(6).*log(temp_k)) + coefficients(7).*sal);
         end
-        function KS = calc_KS(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KS = exp(coefficients(1) + coefficients(2)./t + coefficients(3).*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5) + coefficients(6).*log(t)) + i.*(coefficients(7)./t + coefficients(8) + coefficients(9).*log(t)) + (coefficients(10).*i.^1.5)./t + (coefficients(11).*i.^2)./t + log(1-0.001005*s));
+        function KS = calc_KS(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KS = exp(coefficients(1) + coefficients(2)./temp_k + coefficients(3).*log(temp_k) + sqrt(i).*(coefficients(4)./temp_k + coefficients(5) + coefficients(6).*log(temp_k)) + i.*(coefficients(7)./temp_k + coefficients(8) + coefficients(9).*log(temp_k)) + (coefficients(10).*i.^1.5)./temp_k + (coefficients(11).*i.^2)./temp_k + log(1-0.001005*sal));
         end
-        function KF = calc_KF(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KF = exp(coefficients(1)./t + coefficients(2) + coefficients(3).*sqrt(s));
+        function KF = calc_KF(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KF = exp(coefficients(1)./temp_k + coefficients(2) + coefficients(3).*sqrt(sal));
         end
-        function KspC = calc_KspC(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KspC = 10.^(coefficients(1) + coefficients(2).*t + coefficients(3)./t + coefficients(4).*log10(t) + sqrt(s).*(coefficients(5) + coefficients(6).*t + coefficients(7)./t) + coefficients(8).*s + coefficients(9).*s.^1.5);
+        function KspC = calc_KspC(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KspC = 10.^(coefficients(1) + coefficients(2).*temp_k + coefficients(3)./temp_k + coefficients(4).*log10(temp_k) + sqrt(sal).*(coefficients(5) + coefficients(6).*temp_k + coefficients(7)./temp_k) + coefficients(8).*sal + coefficients(9).*sal.^1.5);
         end
-        function KspA = calc_KspA(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KspA = 10.^(coefficients(1) + coefficients(2).*t + coefficients(3)./t + coefficients(4).*log10(t) + sqrt(s).*(coefficients(5) + coefficients(6).*t + coefficients(7)./t) + coefficients(8).*s + coefficients(9).*s.^1.5);
+        function KspA = calc_KspA(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KspA = 10.^(coefficients(1) + coefficients(2).*temp_k + coefficients(3)./temp_k + coefficients(4).*log10(temp_k) + sqrt(sal).*(coefficients(5) + coefficients(6).*temp_k + coefficients(7)./temp_k) + coefficients(8).*sal + coefficients(9).*sal.^1.5);
         end
-        function KP1 = calc_KP1(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KP1 = exp(coefficients(1)./t + coefficients(2) + coefficients(3).*log(t) + sqrt(s).*(coefficients(4)./t + coefficients(5)) + s.*(coefficients(6)./t + coefficients(7)));
+        function KP1 = calc_KP1(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KP1 = exp(coefficients(1)./temp_k + coefficients(2) + coefficients(3).*log(temp_k) + sqrt(sal).*(coefficients(4)./temp_k + coefficients(5)) + sal.*(coefficients(6)./temp_k + coefficients(7)));
         end
-        function KP2 = calc_KP2(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KP2 = exp(coefficients(1)./t + coefficients(2) + coefficients(3).*log(t) + sqrt(s).*(coefficients(4)./t + coefficients(5)) + s.*(coefficients(6)./t + coefficients(7)));
+        function KP2 = calc_KP2(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KP2 = exp(coefficients(1)./temp_k + coefficients(2) + coefficients(3).*log(temp_k) + sqrt(sal).*(coefficients(4)./temp_k + coefficients(5)) + sal.*(coefficients(6)./temp_k + coefficients(7)));
         end
-        function KP3 = calc_KP3(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KP3 = exp(coefficients(1)./t + coefficients(2) + sqrt(s).*(coefficients(3)./t + coefficients(4)) + s.*(coefficients(5)./t + coefficients(6)));
+        function KP3 = calc_KP3(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KP3 = exp(coefficients(1)./temp_k + coefficients(2) + sqrt(sal).*(coefficients(3)./temp_k + coefficients(4)) + sal.*(coefficients(5)./temp_k + coefficients(6)));
         end
-        function KSi = calc_KSi(coefficients,t,s)
-            i = kgen.kgen_static.calc_ionic_strength(s);
-            KSi = exp(coefficients(1)./t + coefficients(2) + coefficients(3)*log(t) + sqrt(i).*(coefficients(4)./t + coefficients(5)) + i.*(coefficients(6)./t + coefficients(7)) + (i.^2).*(coefficients(8)./t + coefficients(9)) + log(1-0.001005*s));
+        function KSi = calc_KSi(coefficients,temp_k,sal)
+            i = kgen.kgen_static.calc_ionic_strength(sal);
+            KSi = exp(coefficients(1)./temp_k + coefficients(2) + coefficients(3)*log(temp_k) + sqrt(i).*(coefficients(4)./temp_k + coefficients(5)) + i.*(coefficients(6)./temp_k + coefficients(7)) + (i.^2).*(coefficients(8)./temp_k + coefficients(9)) + log(1-0.001005*sal));
         end
         function fluorine = calc_fluorine(sal)
             fluorine = sal*(1.952125747e-6);  % mol/kg-SW
@@ -72,18 +72,18 @@ classdef kgen_static
             K_map = containers.Map(K_names,K_functions);
         end
 
-        function pressure_correction = calc_pressure_correction(name,t,p)
+        function pressure_correction = calc_pressure_correction(name,temp_k,p)
             K_pressure_coefficients = jsondecode(fileread("./../coefficients/K_pressure_correction.json"));
             fundamental_constants = jsondecode(fileread("./../coefficients/fundamental_constants.json"));
 
             coefficients = K_pressure_coefficients.coefficients.(name);
             rp = fundamental_constants.coefficients.R_P;
 
-            deltaV = coefficients(1) + coefficients(2).*t + coefficients(3).*t.^2;
-            deltaK = coefficients(4) + coefficients(5).*t;
-            pressure_correction = exp(-(deltaV./(rp*(t+273.15))).*p + (0.5.*deltaK./(rp.*(t+273.15))).*p.^2);
+            deltaV = coefficients(1) + coefficients(2).*temp_k + coefficients(3).*temp_k.^2;
+            deltaK = coefficients(4) + coefficients(5).*temp_k;
+            pressure_correction = exp(-(deltaV./(rp*(temp_k+273.15))).*p + (0.5.*deltaK./(rp.*(temp_k+273.15))).*p.^2);
         end
-        function seawater_correction = calc_seawater_correction(names,t,s,mg,ca,method,polynomial_coefficients)
+        function seawater_correction = calc_seawater_correction(names,temp_k,sal,mg,ca,method,polynomial_coefficients)
             if nargin<6
                 method = "MyAMI";
             end
@@ -103,13 +103,13 @@ classdef kgen_static
                         combination_subset = combination_array(combination_array(:,2)>=combination_array(:,1) & combination_array(:,3)>=combination_array(:,2),:);
                         linear_index = dot(repmat(6.^[2,1,0],size(combination_subset,1),1),combination_subset-1,2)+1;
 
-                        conditions = [ones(numel(t),1),t+273.15,log(t+273.15),s,mg,ca];
-                        condition_matrix = reshape(conditions,[numel(t),number_of_parameters,1,1]).*reshape(conditions,[numel(t),1,number_of_parameters,1]).*reshape(conditions,[numel(t),1,1,number_of_parameters]);
+                        conditions = [ones(numel(temp_k),1),temp_k+273.15,log(temp_k+273.15),sal,mg,ca];
+                        condition_matrix = reshape(conditions,[numel(temp_k),number_of_parameters,1,1]).*reshape(conditions,[numel(temp_k),1,number_of_parameters,1]).*reshape(conditions,[numel(temp_k),1,1,number_of_parameters]);
                         condition_extracted = condition_matrix(:,linear_index);
         
-                        seawater_correction.(name) = dot(condition_extracted,repmat(polynomial_coefficients.(name)',numel(t),1),2);
+                        seawater_correction.(name) = dot(condition_extracted,repmat(polynomial_coefficients.(name)',numel(temp_k),1),2);
                     else
-                        seawater_correction.(name) = ones(numel(t),1);
+                        seawater_correction.(name) = ones(numel(temp_k),1);
                     end
                 end
             elseif method=="MyAMI_Polynomial"
@@ -117,8 +117,8 @@ classdef kgen_static
                 pymyami = py.importlib.import_module("pymyami");
                 pymyami = py.importlib.reload(pymyami);
 
-                local_t = numpy.array(t);
-                local_s = numpy.array(s);
+                local_t = numpy.array(temp_k);
+                local_s = numpy.array(sal);
                 local_mg = numpy.array(mg);
                 local_ca = numpy.array(ca);
 
@@ -130,8 +130,8 @@ classdef kgen_static
                 numpy = py.importlib.import_module("numpy");
                 pymyami = py.importlib.import_module("pymyami");
 
-                local_t = numpy.array(t);
-                local_s = numpy.array(s);
+                local_t = numpy.array(temp_k);
+                local_s = numpy.array(sal);
                 local_mg = numpy.array(mg);
                 local_ca = numpy.array(ca);
 

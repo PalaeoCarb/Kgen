@@ -83,7 +83,7 @@ classdef kgen_static
             deltaK = coefficients(4) + coefficients(5).*temp_k;
             pressure_correction = exp(-(deltaV./(rp*(temp_k+273.15))).*p + (0.5.*deltaK./(rp.*(temp_k+273.15))).*p.^2);
         end
-        function seawater_correction = calc_seawater_correction(names,temp_k,sal,mg,ca,method,polynomial_coefficients)
+        function seawater_correction = calc_seawater_correction(names,temp_k,sal,magnesium,calcium,method,polynomial_coefficients)
             if nargin<6
                 method = "MyAMI";
             end
@@ -119,8 +119,8 @@ classdef kgen_static
 
                 local_t = numpy.array(temp_k);
                 local_s = numpy.array(sal);
-                local_mg = numpy.array(mg);
-                local_ca = numpy.array(ca);
+                local_mg = numpy.array(magnesium);
+                local_ca = numpy.array(calcium);
 
                 seawater_correction = struct(pymyami.approximate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
                 for name = string(fieldnames(seawater_correction))'
@@ -132,8 +132,8 @@ classdef kgen_static
 
                 local_t = numpy.array(temp_k);
                 local_s = numpy.array(sal);
-                local_mg = numpy.array(mg);
-                local_ca = numpy.array(ca);
+                local_mg = numpy.array(magnesium);
+                local_ca = numpy.array(calcium);
 
                 seawater_correction = struct(pymyami.calc_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
                 for name = string(fieldnames(seawater_correction))'

@@ -24,14 +24,12 @@ class checkKValues(unittest.TestCase):
         with open(dir + "/check_values/check_Ks.json") as f:
             check = json.load(f)
 
-        S = check['input_conditions']['S']
-        TK = check['input_conditions']['TC'] + 273.15
-        lnTK = np.log(TK)
-        sqrtS = np.sqrt(S)
+        sal = check['input_conditions']['S']
+        temp_k = check['input_conditions']['TC'] + 273.15
 
 
         for k, p in coefs['coefficients'].items():
-            K = K_fns[k](p, TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
+            K = K_fns[k](p, temp_k=temp_k, sal=sal)
 
             check_val = check['check_values'][k]
             sigfig = len(str(check_val).rstrip('0').split('.')[1])  # determine significant figures of check value
@@ -48,13 +46,13 @@ class checkKValues(unittest.TestCase):
         with open(dir + "/check_values/check_presscorr.json") as f:
             check = json.load(f)
 
-        S = check['input_conditions']['S']
-        P = check['input_conditions']['P']
-        TC = check['input_conditions']['TC']
+        sal = check['input_conditions']['S']
+        pres_bar = check['input_conditions']['P']
+        temp_c = check['input_conditions']['TC']
         
         for k, p in pcoefs['coefficients'].items():
             if k in check['check_values']:            
-                pF = prescorr(p, P=P, TC=TC)
+                pF = prescorr(p, pres_bar=pres_bar, temp_c=temp_c)
 
                 checkval = check['check_values'][k]
             

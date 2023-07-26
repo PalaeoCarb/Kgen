@@ -20,7 +20,7 @@ calc_pressure_correction <- function(k, temp_c, p_bar) {
   K_presscorr_coefs <- rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "kgen"))
   K_presscorr_coefs <- K_presscorr_coefs$coefficients
 
-  out <- calc_pc(p = K_presscorr_coefs[[k]], p_bar = p_bar, temp_c = temp_c)
+  out <- calc_pc(coefficients = K_presscorr_coefs[[k]], p_bar = p_bar, temp_c = temp_c)
 
   return(out)
 }

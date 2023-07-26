@@ -51,7 +51,7 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 
   # Select function and run calculation
   K_fn <- K_fns[[k]]
-  dat[, k_value := K_fn(p = K_coefs[[k]], temp_k = temp_k, sal = sal)]
+  dat[, k_value := K_fn(coefficients = K_coefs[[k]], temp_c = temp_c, sal = sal)]
 
   # Pressure correction?
   if (!is.null(p_bar)) {
@@ -71,10 +71,10 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
       dat[is.na(fluorine), fluorine := calc_fluorine(sal = sal)]
     }
 
-    dat[, KS_surf := K_fns[["KS"]](p = K_coefs[["KS"]], temp_k = temp_k, sal = sal)]
-    dat[, KS_deep := KS_surf * calc_pc(p = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]
-    dat[, KF_surf := K_fns[["KF"]](p = K_coefs[["KF"]], temp_k = temp_k, sal = sal)]
-    dat[, KF_deep := KF_surf * calc_pc(p = K_presscorr_coefs[["KF"]], p_bar = p_bar, temp_c = temp_c)]
+    dat[, KS_surf := K_fns[["KS"]](coefficients = K_coefs[["KS"]], temp_c = temp_c, sal = sal)]
+    dat[, KS_deep := KS_surf * calc_pc(coefficients = K_presscorr_coefs[["KS"]], p_bar = p_bar, temp_c = temp_c)]
+    dat[, KF_surf := K_fns[["KF"]](coefficients = K_coefs[["KF"]], temp_c = temp_c, sal = sal)]
+    dat[, KF_deep := KF_surf * calc_pc(coefficients = K_presscorr_coefs[["KF"]], p_bar = p_bar, temp_c = temp_c)]
 
     # convert from TOT to SWS before pressure correction
     dat[, tot_to_sws_surface := (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)]
@@ -104,11 +104,6 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
 #' @return Data.table of specified Ks at the given conditions
 #' @export
 calc_Ks <- function(ks, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171, calcium = 0.0102821, sulphate = NULL, fluorine = NULL, method = "MyAMI") {
-  # Check if ks is supplied, use K_fns as default
-  if (is.null(ks)) {
-    ks <- names(K_fns)
-  }
-
   # Calculate ks
   ks_list <- pbapply::pblapply(ks, function(k) {
     calc_K(

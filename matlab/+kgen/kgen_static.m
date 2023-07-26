@@ -183,6 +183,7 @@ classdef kgen_static
             
             assert(numel(name)==1,"Should have one value for name - did you mean calc_Ks?")
             assert(all(temp_c>=0) && all(temp_c<40),"Temperature only valid between 0 and 40C")
+            assert(all(p_bar>=0),"Pressure must be greater than 0bar")
             assert(all(sal>=30) && all(sal<=40),"Salinity only valid between 30 and 40")
             assert(all(calcium>=0) && all(calcium<=0.06) && all(magnesium>=0) && all(magnesium<=0.06),"Calcium and magnesium concentration only valid between 0 and 0.06 mol/kg")
 

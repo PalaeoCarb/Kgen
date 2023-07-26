@@ -25,11 +25,11 @@ class checkKValues(unittest.TestCase):
             check = json.load(f)
 
         sal = check['input_conditions']['S']
-        temp_k = check['input_conditions']['TC'] + 273.15
+        temp_c = check['input_conditions']['TC']
 
 
         for k, p in coefs['coefficients'].items():
-            K = K_fns[k](p, temp_k=temp_k, sal=sal)
+            K = K_fns[k](p, temp_c=temp_c, sal=sal)
 
             check_val = check['check_values'][k]
             sigfig = len(str(check_val).rstrip('0').split('.')[1])  # determine significant figures of check value
@@ -47,12 +47,12 @@ class checkKValues(unittest.TestCase):
             check = json.load(f)
 
         sal = check['input_conditions']['S']
-        pres_bar = check['input_conditions']['P']
+        p_bar = check['input_conditions']['P']
         temp_c = check['input_conditions']['TC']
         
         for k, p in pcoefs['coefficients'].items():
             if k in check['check_values']:            
-                pF = calc_pressure_correction(p, pres_bar=pres_bar, temp_c=temp_c)
+                pF = calc_pressure_correction(p, p_bar=p_bar, temp_c=temp_c)
 
                 checkval = check['check_values'][k]
             

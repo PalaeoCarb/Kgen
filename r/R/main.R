@@ -87,32 +87,8 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
   }
 
-  # Calculate correction factor
-  if (tolower(method) == "myami") {
-    pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$calculate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
-    if (k %in% names(Fcorr)) {
-      KF <- as.numeric(Fcorr[[k]])
-      dat[, k_value := k_value * KF]
-    }
-  }
-  if (tolower(method) == "myami_polynomial") {
-    pymyami <- reticulate::import("pymyami")
-    Fcorr <- pymyami$approximate_seawater_correction(Sal = dat$sal, TempC = dat$temp_c, Mg = dat$magnesium, Ca = dat$calcium)
-    if (k %in% names(Fcorr)) {
-      KF <- as.numeric(Fcorr[[k]])
-      dat[, k_value := k_value * KF]
-    }
-  }
-  if (tolower(method) == "r_polynomial") {
-    poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "kgen"))
-    if (k %in% names(poly_coefs)) {
-      # Calculate correction factors
-      dat[, row_id := .I]
-      dat[, KF := poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_k, magnesium = magnesium, calcium = calcium), by = row_id]
-      dat[, k_value := k_value * KF]
-    }
-  }
+  seawater_correction <- calc_seawater_correction(k=k, sal = sal, temp_c = temp_c, calcium = calcium, magnesium = magnesium)
+  dat[, k_value := k_value*seawater_correction]
 
   return(dat$k_value)
 }

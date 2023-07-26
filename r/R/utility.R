@@ -69,8 +69,7 @@ calc_seawater_correction <- function(k, sal, temp_c, magnesium = 0.0528171, calc
   }
   if (k %in% names(seawater_correction)) {
     return(as.numeric(seawater_correction[[k]]))
-  }
-  else {
+  } else {
     return(1)
   }
 }

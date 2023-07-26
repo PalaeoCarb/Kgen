@@ -65,7 +65,7 @@ calc_seawater_correction <- function(k, sal, temp_c, magnesium = 0.0528171, calc
   }
   else if (tolower(method) == "r_polynomial") {
     poly_coefs <- rjson::fromJSON(file = system.file("coefficients/polynomial_coefficients.json", package = "kgen"))
-    seawater_correction <- poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_c+273.15, magnesium = magnesium, calcium = calcium)
+    seawater_correction <- list(k=poly_coefs[[k]] %*% kgen_poly(sal = sal, temp_k = temp_c+273.15, magnesium = magnesium, calcium = calcium))
   }
   if (k %in% names(seawater_correction)) {
     return(as.numeric(seawater_correction[[k]]))

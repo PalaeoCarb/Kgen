@@ -77,10 +77,10 @@ calc_K <- function(k, temp_c = 25, sal = 35, p_bar = NULL, magnesium = 0.0528171
     dat[, KF_deep := KF_surf * calc_pc(coefficients = K_presscorr_coefs[["KF"]], p_bar = p_bar, temp_c = temp_c)]
 
     # convert from TOT to SWS before pressure correction
-    dat[, tot_to_sws_surface := (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)]
+    dat[, tot_to_sws_surface := (1 + sulphate / KS_surf + fluorine / KF_surf) / (1 + sulphate / KS_surf)]
 
     # convert from SWS to TOT after pressure correction
-    dat[, sws_to_tot_deep := (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)]
+    dat[, sws_to_tot_deep := (1 + sulphate / KS_deep) / (1 + sulphate / KS_deep + fluorine / KF_deep)]
     dat[, pc := calc_pressure_correction(k = k, temp_c = temp_c, p_bar = p_bar)]
 
     dat[, check_pc := ifelse(pc != 0, pc, 1)]

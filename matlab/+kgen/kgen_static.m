@@ -202,8 +202,8 @@ classdef kgen_static
             KF_surf = kgen.kgen_static.calc_KF(K_coefficients.coefficients.("KF"),temp_c,sal);
             KF_deep = KF_surf .* kgen.kgen_static.calc_pressure_correction("KF",temp_c,p_bar);
             
-            tot_to_sws_surface = (1+sulphate./KS_surf)./(1+sulphate./KS_surf+fluorine./KF_surf);
-            sws_to_tot_deep = (1+sulphate./KS_deep+fluorine./KF_deep)./(1+sulphate./KS_deep);
+            tot_to_sws_surface = (1+sulphate./KS_surf+fluorine./KF_surf)./(1+sulphate./KS_surf);
+            sws_to_tot_deep = (1+sulphate./KS_deep)./(1+sulphate./KS_deep+fluorine./KF_deep);
 
             pressure_correction = kgen.kgen_static.calc_pressure_correction(name,temp_c,p_bar);
 

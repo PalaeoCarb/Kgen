@@ -449,8 +449,8 @@ def calc_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
         KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_c=temp_c, sal=sal)
         KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], p_bar=p_bar, temp_c=temp_c)
         
-        tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
-        sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
+        tot_to_sws_surface = (1 + sulphate / KS_surf + fluorine / KF_surf) / (1 + sulphate / KS_surf)  # convert from TOT to SWS before pressure correction
+        sws_to_tot_deep = (1 + sulphate / KS_deep) / (1 + sulphate / KS_deep + fluorine / KF_deep)  # convert from SWS to TOT after pressure correction
         
         K *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
     

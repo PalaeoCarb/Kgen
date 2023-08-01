@@ -34,7 +34,7 @@ calc_K <-
       checkmate::check_numeric(magnesium, lower = 0, upper = 0.06),
       checkmate::check_numeric(calcium, lower = 0, upper = 0.06)
     )
-    
+
     KF <-
       k_value <-
       temp_k <-
@@ -46,10 +46,10 @@ calc_K <-
       pc <- sws_to_tot_deep <- tot_to_sws_surface <- row_id <- NULL
     dat <-
       data.table::data.table(temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine)
-    
+
     # Celsius to Kelvin
     dat[, temp_k := temp_c + 273.15]
-    
+
     # Check if miniconda is installed
     if (!mc_exists() & tolower(method) != "r_polynomial") {
       warning("Kgen requires r-Miniconda which appears to not exist on your system.")
@@ -61,63 +61,71 @@ calc_K <-
         stop("Closing Kgen.")
       }
     }
-    
+
     # Load K_calculation.json
     K_coefs <-
       rjson::fromJSON(file = system.file("coefficients/K_calculation.json", package = "kgen"))
     K_coefs <- K_coefs$coefficients
-    
+
     # Select function and run calculation
     K_fn <- K_fns[[k]]
-    dat[, k_value := K_fn(coefficients = K_coefs[[k]],
-                          temp_c = temp_c,
-                          sal = sal)]
-    
+    dat[, k_value := K_fn(
+      coefficients = K_coefs[[k]],
+      temp_c = temp_c,
+      sal = sal
+    )]
+
     # Pressure correction?
     if (!is.null(p_bar)) {
       # Load K_pressure_correction.json
       K_presscorr_coefs <-
         rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "kgen"))
       K_presscorr_coefs <- K_presscorr_coefs$coefficients
-      
+
       if (is.null(sulphate)) {
         dat[, sulphate := calc_sulphate(sal = sal)]
       } else {
         dat[is.na(sulphate), sulphate := calc_sulphate(sal = sal)]
       }
-      
+
       if (is.null(fluorine)) {
         dat[, fluorine := calc_fluorine(sal = sal)]
       } else {
         dat[is.na(fluorine), fluorine := calc_fluorine(sal = sal)]
       }
-      
+
       dat[, KS_surf := K_fns[["KS"]](coefficients = K_coefs[["KS"]],
-                                     temp_c = temp_c,
-                                     sal = sal)]
-      dat[, KS_deep := KS_surf * calc_pc(coefficients = K_presscorr_coefs[["KS"]],
-                                         p_bar = p_bar,
-                                         temp_c = temp_c)]
+        temp_c = temp_c,
+        sal = sal)]
+      dat[, KS_deep := KS_surf * calc_pc(
+        coefficients = K_presscorr_coefs[["KS"]],
+        p_bar = p_bar,
+        temp_c = temp_c
+      )]
       dat[, KF_surf := K_fns[["KF"]](coefficients = K_coefs[["KF"]],
-                                     temp_c = temp_c,
-                                     sal = sal)]
-      dat[, KF_deep := KF_surf * calc_pc(coefficients = K_presscorr_coefs[["KF"]],
-                                         p_bar = p_bar,
-                                         temp_c = temp_c)]
-      
+        temp_c = temp_c,
+        sal = sal)]
+      dat[, KF_deep := KF_surf * calc_pc(
+        coefficients = K_presscorr_coefs[["KF"]],
+        p_bar = p_bar,
+        temp_c = temp_c
+      )]
+
       # convert from TOT to SWS before pressure correction
       dat[, tot_to_sws_surface := (1 + sulphate / KS_surf + fluorine / KF_surf) / (1 + sulphate / KS_surf)]
-      
+
       # convert from SWS to TOT after pressure correction
       dat[, sws_to_tot_deep := (1 + sulphate / KS_deep) / (1 + sulphate / KS_deep + fluorine / KF_deep)]
-      dat[, pc := calc_pressure_correction(k = k,
-                                           temp_c = temp_c,
-                                           p_bar = p_bar)]
-      
+      dat[, pc := calc_pressure_correction(
+        k = k,
+        temp_c = temp_c,
+        p_bar = p_bar
+      )]
+
       dat[, check_pc := data.table::fifelse(pc != 0, pc, 1)]
       dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
     }
-    
+
     seawater_correction <-
       calc_seawater_correction(
         k = k,
@@ -128,7 +136,7 @@ calc_K <-
         method = method
       )
     dat[, k_value := k_value * seawater_correction]
-    
+
     return(dat$k_value)
   }
 
@@ -156,7 +164,7 @@ calc_Ks <-
     if (is.null(ks)) {
       ks <- names(K_fns)
     }
-    
+
     # Calculate ks
     ks_list <- pbapply::pblapply(ks, function(k) {
       calc_K(
@@ -171,11 +179,11 @@ calc_Ks <-
         method = method
       )
     })
-    
+
     # Return data.table
     ks_value <- data.table::data.table(do.call(cbind, ks_list))
     names(ks_value) <- ks
-    
+
     return(ks_value)
   }
 

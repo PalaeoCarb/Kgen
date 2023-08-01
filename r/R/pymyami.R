@@ -62,9 +62,9 @@ pymyami_exists <- function() {
 }
 
 #' @title Install MyAMI from pypi
-#' 
+#'
 #' @description Function to install pymyami in a default location.
-#' 
+#'
 #' @export
 install_pymyami <- function() {
   # Check if miniconda is installed

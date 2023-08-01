@@ -15,17 +15,19 @@ calc_pressure_correction <- function(k, temp_c, p_bar) {
     checkmate::check_character(k),
     checkmate::check_numeric(temp_c, lower = 0, upper = 40)
   )
-  
+
   # Load K_pressure_correction.json
   K_presscorr_coefs <-
     rjson::fromJSON(file = system.file("coefficients/K_pressure_correction.json", package = "kgen"))
   K_presscorr_coefs <- K_presscorr_coefs$coefficients
-  
+
   out <-
-    calc_pc(coefficients = K_presscorr_coefs[[k]],
-          p_bar = p_bar,
-          temp_c = temp_c)
-  
+    calc_pc(
+      coefficients = K_presscorr_coefs[[k]],
+      p_bar = p_bar,
+      temp_c = temp_c
+    )
+
   return(out)
 }
 
@@ -42,17 +44,17 @@ kgen_poly <-
            magnesium = 0.0528171,
            calcium = 0.0102821) {
     temp_k <- temp_c + 273.15
-    
+
     # Create descriptor vector
     dx <- t(c(temp_k, log(temp_k), sal, magnesium, calcium))
-    
+
     # Build poly matrix
     dy <- stats::poly(dx, degree = 3, raw = TRUE)
-    
+
     # Sort by index - according to python output
     out <-
       c(1, dy[order(-attr(dy, "degree"), colnames(dy), decreasing = TRUE)])
-    
+
     return(out)
   }
 
@@ -73,8 +75,9 @@ calc_seawater_correction <-
            calcium = 0.0102821,
            method = "r_polynomial") {
     checkmate::assert_choice(tolower(method),
-                             choices = c('myami', 'myami_polynomial', 'r_polynomial'))
-    
+      choices = c("myami", "myami_polynomial", "r_polynomial")
+    )
+
     # Calculate correction factor
     if (tolower(method) == "myami") {
       pymyami <- reticulate::import("pymyami")
@@ -112,7 +115,7 @@ calc_seawater_correction <-
         names(seawater_correction) <- k
       }
     }
-    
+
     if (k %in% names(seawater_correction)) {
       return(seawater_correction[[k]])
     } else {

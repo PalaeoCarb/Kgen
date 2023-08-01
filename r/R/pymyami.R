@@ -1,22 +1,22 @@
 # Select pyMyAMI version
 pymyami_version <- "2.1.0"
 
-#' Check if OS is Windows
+#' @title Check if OS is Windows
 is_windows <- function() {
   Sys.info()["sysname"] == "Windows"
 }
 
-#' Check if OS is OSX
+#' @title Check if OS is OSX
 is_osx <- function() {
   Sys.info()["sysname"] == "Darwin"
 }
 
-#' Check if OS is Linux
+#' @title Check if OS is Linux
 is_linux <- function() {
   Sys.info()["sysname"] == "Linux"
 }
 
-#' Get miniconda default path
+#' @title Get miniconda default path
 miniconda_path_default <- function() {
   if (is_osx()) {
     # on macOS, use different path for arm64 miniconda
@@ -34,12 +34,12 @@ miniconda_path_default <- function() {
   file.path(root, "r-miniconda")
 }
 
-#' Get miniconda path
+#' @title Get miniconda path
 miniconda_path <- function() {
   Sys.getenv("RETICULATE_MINICONDA_PATH", unset = miniconda_path_default())
 }
 
-#' Check if miniconda is installed
+#' @title Check if miniconda is installed
 #'
 #' @param path Path to miniconda
 miniconda_conda <- function(path = miniconda_path()) {
@@ -47,7 +47,7 @@ miniconda_conda <- function(path = miniconda_path()) {
   file.path(path, exe)
 }
 
-#' Check if miniconda exists
+#' @title Check if miniconda exists
 #'
 #' @param path Path to miniconda
 mc_exists <- function(path = miniconda_path()) {
@@ -55,15 +55,17 @@ mc_exists <- function(path = miniconda_path()) {
   file.exists(conda)
 }
 
-#' Check if pymyami is installed
-#'
+#' @title Check if pymyami is installed
 pymyami_exists <- function() {
   check_version <- reticulate::py_list_packages()
   ifelse(paste0("pymyami=", pymyami_version) %in% check_version$requirement, TRUE, FALSE)
 }
 
-#' Install MyAMI from pypi
-#'
+#' @title Install MyAMI from pypi
+#' 
+#' @description Function to install pymyami in a default location.
+#' 
+#' @export
 install_pymyami <- function() {
   # Check if miniconda is installed
   if (mc_exists()) {

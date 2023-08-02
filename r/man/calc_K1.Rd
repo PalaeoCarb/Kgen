@@ -4,12 +4,12 @@
 \alias{calc_K1}
 \title{Calculate K1}
 \usage{
-calc_K1(p, temp_k, sal)
+calc_K1(coefficients, temp_c, sal)
 }
 \arguments{
-\item{p}{Parameters for K calculation}
+\item{coefficients}{Coefficients for K calculation}
 
-\item{temp_k}{Temperature (Kelvin)}
+\item{temp_c}{Temperature (Celcius)}
 
 \item{sal}{Salinity}
 }

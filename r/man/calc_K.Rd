@@ -2,6 +2,8 @@
 % Please edit documentation in R/main.R
 \name{calc_K}
 \alias{calc_K}
+\alias{calc_Ks}
+\alias{calc_all_Ks}
 \title{Calculate a single equilibrium constant}
 \usage{
 calc_K(
@@ -13,34 +15,70 @@ calc_K(
   calcium = 0.0102821,
   sulphate = NULL,
   fluorine = NULL,
-  method = "MyAMI"
+  method = "r_polynomial"
+)
+
+calc_Ks(
+  ks = NULL,
+  temp_c = 25,
+  sal = 35,
+  p_bar = NULL,
+  magnesium = 0.0528171,
+  calcium = 0.0102821,
+  sulphate = NULL,
+  fluorine = NULL,
+  method = "r_polynomial"
+)
+
+calc_all_Ks(
+  temp_c = 25,
+  sal = 35,
+  p_bar = NULL,
+  magnesium = 0.0528171,
+  calcium = 0.0102821,
+  sulphate = NULL,
+  fluorine = NULL,
+  method = "r_polynomial"
 )
 }
 \arguments{
 \item{k}{K to be calculated}
 
-\item{temp_c}{Temperature (Celsius)}
+\item{temp_c}{Temperature (Celcius)}
 
 \item{sal}{Salinity}
 
 \item{p_bar}{Pressure (Bar) (optional)}
 
-\item{magnesium}{Magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+\item{magnesium}{magnesium concentration in mol/kgsw. If None, modern is assumed (0.0528171). Should be the average magnesium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
-\item{calcium}{Calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
+\item{calcium}{calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
 \item{sulphate}{Sulphate concentration in mol/kgsw. Calculated from salinity if not given.}
 
 \item{fluorine}{Fluorine concentration in mol/kgsw. Calculated from salinity if not given.}
 
-\item{method}{Options: \code{R_Polynomial}, \code{MyAMI_Polynomial} , \code{MyAMI} (defaults to "MyAMI").}
+\item{method}{string describing method which should be either 'myami', 'myami_polynomial', or 'r_polynomial' (Default: 'r_polynomial').}
+
+\item{ks}{character vectors of Ks to be calculated e.g., c("K0", "K1") (Default: NULL, calculate all Ks)}
 }
 \value{
-Specified K at the given conditions
+\strong{A single} K at given conditions
+
+Data.table of \strong{multiple} Ks at given conditions
+
+Data.table of \strong{all} Ks at given conditions
 }
 \description{
-Calculate a specified stoichiometric equilibrium constant at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
+Calculate \strong{a single} specified stoichiometric equilibrium constant at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 }
+\section{Functions}{
+\itemize{
+\item \code{calc_Ks()}: Wrapper to calculate \strong{multiple} stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
+
+\item \code{calc_all_Ks()}: Wrapper to calculate \strong{all} stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
+
+}}
 \author{
 Dennis Mayk
 }

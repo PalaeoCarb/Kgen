@@ -2,9 +2,7 @@
 % Please edit documentation in R/K_functions.R
 \name{calc_sulphate}
 \alias{calc_sulphate}
-\title{Calculate sulphate
-From Dickson et al., 2007, Table 2
-Note: Sal / 1.80655 = Chlorinity#'}
+\title{Calculate sulphate}
 \usage{
 calc_sulphate(sal)
 }
@@ -16,6 +14,7 @@ sulphate
 }
 \description{
 Calculate sulphate
-From Dickson et al., 2007, Table 2
-Note: Sal / 1.80655 = Chlorinity#'
+}
+\references{
+From Dickson et al., 2007, Table 2, Note: Sal / 1.80655 = Chlorinity
 }

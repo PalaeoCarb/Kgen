@@ -10,11 +10,13 @@ calc_seawater_correction(
   temp_c,
   magnesium = 0.0528171,
   calcium = 0.0102821,
-  method = "myami"
+  method = "r_polynomial"
 )
 }
 \arguments{
-\item{sal}{Salinity (PSU)}
+\item{k}{K to be calculated}
+
+\item{sal}{Salinity}
 
 \item{temp_c}{Temperature (Celcius)}
 
@@ -22,11 +24,14 @@ calc_seawater_correction(
 
 \item{calcium}{calcium concentration in mol/kgsw. If None, modern is assumed (0.0102821). Should be the average calcium concentration in seawater - a salinity correction is then applied to calculate the magnesium concentration in the sample.}
 
-\item{method}{string describing method which should be either 'myami', 'myami_polynomial', or 'r_polynomial'.}
+\item{method}{string describing method which should be either 'myami', 'myami_polynomial', or 'r_polynomial' (Default: 'r_polynomial').}
 }
 \value{
-seawater correction factor
+list of seawater correction factors
 }
 \description{
 Kgen seawater composition correction function
+}
+\author{
+Dennis Mayk
 }

@@ -4,12 +4,12 @@
 \alias{calc_KB}
 \title{Calculate KB}
 \usage{
-calc_KB(p, temp_k, sal)
+calc_KB(coefficients, temp_c, sal)
 }
 \arguments{
-\item{p}{Parameters for K calculation}
+\item{coefficients}{Coefficients for K calculation}
 
-\item{temp_k}{Temperature (Kelvin)}
+\item{temp_c}{Temperature (Celcius)}
 
 \item{sal}{Salinity}
 }

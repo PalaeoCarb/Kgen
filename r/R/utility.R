@@ -105,13 +105,14 @@ calc_seawater_correction <-
       # Calculate correction factors
       seawater_correction <- NULL
       if (k %in% names(poly_coefs)) {
-        seawater_correction <-
+        seawater_correction <- list(sapply(seq_along(sal), function(ii) {
           poly_coefs[[k]] %*% kgen_poly(
-            sal = sal,
-            temp_c = temp_c,
-            magnesium = magnesium,
-            calcium = calcium
+            sal = sal[ii],
+            temp_c = temp_c[ii],
+            magnesium = magnesium[ii],
+            calcium = calcium[ii]
           )
+        }, simplify = TRUE))
         names(seawater_correction) <- k
       }
     }

@@ -35,18 +35,11 @@ calc_K <-
       checkmate::check_numeric(calcium, lower = 0, upper = 0.06)
     )
 
-    KF <-
-      k_value <-
-      temp_k <-
-      KF_deep <-
-      KF_surf <-
-      KS_deep <-
-      KS_surf <-
-      check_pc <-
-      pc <- sws_to_tot_deep <- tot_to_sws_surface <- row_id <- NULL
-    dat <-
-      data.table::data.table(temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine)
-
+    KF <- k_value <- temp_k <- KF_deep <- KF_surf <- KS_deep <- KS_surf <-
+    check_pc <- pc <- sws_to_tot_deep <- tot_to_sws_surface <- row_id <- NULL
+    
+    dat <- data.table::data.table(temp_c, sal, p_bar, magnesium, calcium, sulphate, fluorine)
+    
     # Celsius to Kelvin
     dat[, temp_k := temp_c + 273.15]
 
@@ -133,7 +126,7 @@ calc_K <-
       calcium = calcium,
       magnesium = magnesium,
       method = method
-    ), by = seq_len(nrow(dat))]
+    )]
 
     dat[, k_value := k_value * seawater_correction]
 

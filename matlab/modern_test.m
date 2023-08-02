@@ -5,7 +5,6 @@ pressure_check_values = jsondecode(fileread("./../check_values/check_presscorr.j
 
 temperature = check_values.input_conditions.TC;
 salinity = check_values.input_conditions.S;
-ionic_strength = (19.924.*salinity)./(1000-1.005.*salinity); % see Dickson 2007
 
 pressure = pressure_check_values.input_conditions.P;
 

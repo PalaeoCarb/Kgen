@@ -126,15 +126,15 @@ calc_K <-
       dat[, k_value := k_value * tot_to_sws_surface * check_pc * sws_to_tot_deep]
     }
 
-    seawater_correction <-
-      calc_seawater_correction(
-        k = k,
-        sal = sal,
-        temp_c = temp_c,
-        calcium = calcium,
-        magnesium = magnesium,
-        method = method
-      )
+    dat[, seawater_correction := calc_seawater_correction(
+      k = k,
+      sal = sal,
+      temp_c = temp_c,
+      calcium = calcium,
+      magnesium = magnesium,
+      method = method
+    ), by = seq_len(nrow(dat))]
+
     dat[, k_value := k_value * seawater_correction]
 
     return(dat$k_value)

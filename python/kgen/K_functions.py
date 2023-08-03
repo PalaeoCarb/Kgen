@@ -466,7 +466,7 @@ def calc_K(K, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
     
     return K
 
-def calc_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calc_Ks(K_list=K_fns.keys(), temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
     Calculate specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
@@ -549,55 +549,4 @@ def calc_Ks(K_list, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=Non
             if k in Ks:
                 Ks[k] *= f
     
-    return Ks
-
-def calc_all_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
-    """
-    Calculate all stoichiometric equilibrium constants at given
-    temperature, salinity and pressure.
-
-    TODO: document pH scales.
-
-    Parameters
-    ----------
-    temp_c : array-like
-        Temperature in Celcius
-    sal : array-like
-        Salinity in PSU
-    p_bar : array-like
-        Pressure in bar
-    magnesium : array-like
-        Magnesium concentration in mol/kgsw. If None, modern is assumed
-        (0.0528171). Should be the *average* magnesium concentration in
-        seawater - a salinity correction is then applied to calculate
-        the magnesium concentration in the sample. Used to correct the Ks
-        using MyAMI.
-    calcium : array-like
-        Calcium concentration in mol/kgsw. If None, modern is assumed
-        (0.0102821). Should be the *average* calcium concentration in
-        seawater - a salinity correction is then applied to calculate
-        the magnesium concentration in the sample. Used to correct the Ks
-        using MyAMI.
-    sulphate : array-like
-        Total sulphate in mol/kgsw. Calculated from salinity if not
-        given.
-    fluorine : array-like
-        Total fluorine in mol/kgsw. Calculated from salinity if not
-        given.
-    MyAMI_mode : str
-        Either 'calculate' or 'approximate'. In the former case,
-        the full MyAMI model is run to calculate the correction
-        factor for the Ks. In the latter, a polynomial function is
-        used to approximate the correction factor. The latter is faster,
-        though marginally less accurate.
-
-    Returns
-    -------
-    dict
-        Containing calculated Ks.
-    """
-    K_list = K_fns.keys()
-    Ks = calc_Ks(K_list, temp_c=temp_c, sal=sal, p_bar=p_bar, magnesium=magnesium, calcium=calcium, sulphate=sulphate, fluorine=fluorine, MyAMI_mode=MyAMI_mode)
-
-
     return Ks

@@ -10,8 +10,8 @@ test_df = pd.read_csv('./test_conditions.csv')
 test_dict = {k: np.array(v) for k,v in test_df.to_dict(orient='list').items()}
 
 # 2. Run kgen using those inputs
-Ks_calc = kgen.calc_all_Ks(**test_dict, MyAMI_mode='calculate')
-Ks_approx = kgen.calc_all_Ks(**test_dict, MyAMI_mode='approximate')
+Ks_calc = kgen.calc_Ks(**test_dict, MyAMI_mode='calculate')
+Ks_approx = kgen.calc_Ks(**test_dict, MyAMI_mode='approximate')
 
 # 3. Save inputs to ./generated_Ks as python_{calculated, approximated}.csv
 Ks_calc_df = pd.DataFrame.from_dict(Ks_calc)

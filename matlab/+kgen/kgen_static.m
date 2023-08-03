@@ -140,27 +140,29 @@ classdef kgen_static
                 inputs.magnesium double = kgen.kgen_static.assume_magnesium()
                 inputs.calcium double = kgen.kgen_static.assume_calcium()
                 inputs.seawater_correction_method = "MyAMI"
+                inputs.polynomial_coefficients = jsondecode(fileread("polynomial_coefficients.json"));
             end
 
             temp_k = inputs.temp_c+273.15;
 
             if inputs.seawater_correction_method=="Matlab_Polynomial"     
-                seawater_correction_names = string(fieldnames(polynomial_coefficients));
+                seawater_correction_names = string(fieldnames(inputs.polynomial_coefficients));
                 number_of_parameters = 6;
-                for name = names
+                seawater_correction_output = containers.Map();
+                for name = inputs.names
                     if any(seawater_correction_names==name)
                         [x,y,z] = meshgrid(1:number_of_parameters,1:number_of_parameters,1:number_of_parameters);
                         combination_array = unique([x(:),y(:),z(:)],"rows");
                         combination_subset = combination_array(combination_array(:,2)>=combination_array(:,1) & combination_array(:,3)>=combination_array(:,2),:);
                         linear_index = dot(repmat(6.^[2,1,0],size(combination_subset,1),1),combination_subset-1,2)+1;
 
-                        conditions = [ones(numel(temp_k),1),temp_k,log(temp_k),sal,magnesium,calcium];
+                        conditions = [ones(numel(temp_k),1),temp_k,log(temp_k),inputs.sal,inputs.magnesium,inputs.calcium];
                         condition_matrix = reshape(conditions,[numel(temp_k),number_of_parameters,1,1]).*reshape(conditions,[numel(temp_k),1,number_of_parameters,1]).*reshape(conditions,[numel(temp_k),1,1,number_of_parameters]);
                         condition_extracted = condition_matrix(:,linear_index);
         
-                        seawater_correction.(name) = dot(condition_extracted,repmat(polynomial_coefficients.(name)',numel(temp_k),1),2);
+                        seawater_correction_output(name) = dot(condition_extracted,repmat(inputs.polynomial_coefficients.(name)',numel(temp_k),1),2);
                     else
-                        seawater_correction.(name) = ones(numel(temp_k),1);
+                        seawater_correction_output(name) = 1;
                     end
                 end
             elseif inputs.seawater_correction_method=="MyAMI_Polynomial"
@@ -168,14 +170,19 @@ classdef kgen_static
                 pymyami = py.importlib.import_module("pymyami");
                 pymyami = py.importlib.reload(pymyami);
 
-                local_t = numpy.array(temp_c);
-                local_s = numpy.array(sal);
-                local_mg = numpy.array(magnesium);
-                local_ca = numpy.array(calcium);
+                local_t = numpy.array(inputs.temp_c);
+                local_s = numpy.array(inputs.sal);
+                local_mg = numpy.array(inputs.magnesium);
+                local_ca = numpy.array(inputs.calcium);
 
-                seawater_correction = struct(pymyami.approximate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
+                seawater_correction = kgen.kgen_static.python_to_matlab_dictionary(pymyami.approximate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
+                seawater_correction_output = containers.Map();
                 for name = inputs.names
-                    seawater_correction.(name) = double(seawater_correction.(name))';
+                    if seawater_correction.isKey(name)
+                        seawater_correction_output(name) = double(seawater_correction(name))';
+                    else
+                        seawater_correction_output(name) = 1;
+                    end
                 end
             elseif inputs.seawater_correction_method=="MyAMI"
                 numpy = py.importlib.import_module("numpy");
@@ -187,11 +194,12 @@ classdef kgen_static
                 local_ca = numpy.array(inputs.calcium);
 
                 seawater_correction = kgen.kgen_static.python_to_matlab_dictionary(pymyami.calculate_seawater_correction(pyargs("TempC",local_t,"Sal",local_s,"Mg",local_mg,"Ca",local_ca)));
+                seawater_correction_output = containers.Map();
                 for name = inputs.names
                     if seawater_correction.isKey(name)
-                        seawater_correction_output.(name) = double(seawater_correction(name))';
+                        seawater_correction_output(name) = double(seawater_correction(name))';
                     else
-                        seawater_correction_output.(name) = 1.0;
+                        seawater_correction_output(name) = 1.0;
                     end
                 end
             
@@ -242,7 +250,7 @@ classdef kgen_static
             
             if inputs.seawater_correction_method~="None" && inputs.seawater_correction_method~=""
                 seawater_chemistry_correction = kgen.kgen_static.calc_seawater_correction(names=[name],temp_c=inputs.temp_c,sal=inputs.sal,magnesium=inputs.magnesium,calcium=inputs.calcium,seawater_correction_method=inputs.seawater_correction_method);
-                K = K.*seawater_chemistry_correction.(name)';
+                K = K.*seawater_chemistry_correction(name);
             else
                 seawater_chemistry_correction = NaN;
             end
@@ -261,7 +269,7 @@ classdef kgen_static
             names = string(inputs.names.keys());
 
             for K_index = 1:numel(names)
-                Ks.(names(K_index)) = kgen.kgen_static.calc_K(names(K_index),temp_c=inputs.temp_c,sal=inputs.sal,p_bar=inputs.p_bar,magnesium=inputs.magnesium,calcium=inputs.calcium);
+                Ks.(names(K_index)) = kgen.kgen_static.calc_K(names(K_index),temp_c=inputs.temp_c,sal=inputs.sal,p_bar=inputs.p_bar,magnesium=inputs.magnesium,calcium=inputs.calcium,seawater_correction_method=inputs.seawater_correction_method);
                 % if any(string(fieldnames(seawater_correction))==names(K_index))
                 %     seawater_correction.(names(K_index)) = double(seawater_correction.(names(K_index)));
                 %     Ks.(names(K_index)) = Ks.(names(K_index)).*seawater_correction.(names(K_index));

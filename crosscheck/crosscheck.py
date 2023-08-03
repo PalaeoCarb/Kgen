@@ -56,6 +56,7 @@ class crosscheck(unittest.TestCase):
                 if np.all(maxrdiff <= RDIFF_TOLERANCE):
                     print(f'    OK')
                 else:
+                    print(rdiff)
                     msg = f'  Max relative difference:'
                     msg +='\n      ' + maxrdiff[maxrdiff>RDIFF_TOLERANCE].to_string().replace('\n', '\n      ')
                     test_pass = False

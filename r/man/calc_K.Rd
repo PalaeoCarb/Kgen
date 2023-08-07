@@ -3,7 +3,6 @@
 \name{calc_K}
 \alias{calc_K}
 \alias{calc_Ks}
-\alias{calc_all_Ks}
 \title{Calculate a single equilibrium constant}
 \usage{
 calc_K(
@@ -25,19 +24,8 @@ calc_Ks(
   p_bar = NULL,
   magnesium = 0.0528171,
   calcium = 0.0102821,
-  sulphate = NULL,
-  fluorine = NULL,
-  method = "r_polynomial"
-)
-
-calc_all_Ks(
-  temp_c = 25,
-  sal = 35,
-  p_bar = NULL,
-  magnesium = 0.0528171,
-  calcium = 0.0102821,
-  sulphate = NULL,
-  fluorine = NULL,
+  sulphate = calc_sulphate(sal = sal),
+  fluorine = calc_fluorine(sal = sal),
   method = "r_polynomial"
 )
 }
@@ -66,8 +54,6 @@ calc_all_Ks(
 \strong{A single} K at given conditions
 
 Data.table of \strong{multiple} Ks at given conditions
-
-Data.table of \strong{all} Ks at given conditions
 }
 \description{
 Calculate \strong{a single} specified stoichiometric equilibrium constant at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
@@ -75,8 +61,6 @@ Calculate \strong{a single} specified stoichiometric equilibrium constant at giv
 \section{Functions}{
 \itemize{
 \item \code{calc_Ks()}: Wrapper to calculate \strong{multiple} stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
-
-\item \code{calc_all_Ks()}: Wrapper to calculate \strong{all} stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
 
 }}
 \author{

@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 import numpy as np
-from kgen.K_functions import K_fns, calc_pressure_correction, calc_all_Ks
+from kgen.K_functions import K_fns, calc_pressure_correction, calc_Ks
 
 # boilerplate to deal with file paths
 cwd = os.getcwd()
@@ -64,7 +64,7 @@ class checkKValues(unittest.TestCase):
         S = check['input_conditions']['S']
         TC = check['input_conditions']['TC']
 
-        calc = calc_all_Ks(temp_c=TC, sal=S)
+        calc = calc_Ks(temp_c=TC, sal=S)
 
         for k in calc:
             check_val = check['check_values'][k]

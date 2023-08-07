@@ -150,8 +150,8 @@ calc_Ks <-
            p_bar = NULL,
            magnesium = 0.0528171,
            calcium = 0.0102821,
-           sulphate = NULL,
-           fluorine = NULL,
+           sulphate = calc_sulphate(sal = sal),
+           fluorine = calc_fluorine(sal = sal),
            method = "r_polynomial") {
     # Check if ks is supplied, use K_fns as default
     if (is.null(ks)) {
@@ -178,25 +178,4 @@ calc_Ks <-
     names(ks_value) <- ks
 
     return(ks_value)
-  }
-
-#' @title Calculate equilibrium constants for seawater
-#'
-#' @author Dennis Mayk
-#'
-#' @describeIn calc_K Wrapper to calculate \strong{all} stoichiometric equilibrium constants at given temperature, salinity, pressure and the concentration of magnesium, calcium, sulphate, and fluorine.
-#' @inheritParams calc_K
-#' @return Data.table of \strong{all} Ks at given conditions
-#' @export
-calc_all_Ks <-
-  function(temp_c = 25,
-           sal = 35,
-           p_bar = NULL,
-           magnesium = 0.0528171,
-           calcium = 0.0102821,
-           sulphate = NULL,
-           fluorine = NULL,
-           method = "r_polynomial") {
-    argg <- structure(c(as.list(environment()), list("ks" = NULL)))
-    do.call(calc_Ks, argg)
   }

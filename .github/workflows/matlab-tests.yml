@@ -17,7 +17,7 @@ jobs:
           source .environment/bin/activate
           pip install -r ./../python/requirements.txt
           deactivate
-      - name: Set environment
+      - name: Run tests
         uses: matlab-actions/run-command@v1
         with:
           command: cd 'matlab', pyenv('Version','.environment/bin/python'), modern_test

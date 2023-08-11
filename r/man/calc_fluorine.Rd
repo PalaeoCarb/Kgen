@@ -2,9 +2,7 @@
 % Please edit documentation in R/K_functions.R
 \name{calc_fluorine}
 \alias{calc_fluorine}
-\title{Calculate fluorine
-From Dickson et al., 2007, Table 2
-Note: Sal / 1.80655 = Chlorinity}
+\title{Calculate fluorine}
 \usage{
 calc_fluorine(sal)
 }
@@ -16,6 +14,7 @@ fluorine
 }
 \description{
 Calculate fluorine
-From Dickson et al., 2007, Table 2
-Note: Sal / 1.80655 = Chlorinity
+}
+\references{
+From Dickson et al., 2007, Table 2, Note: Sal / 1.80655 = Chlorinity
 }

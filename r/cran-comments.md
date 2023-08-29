@@ -1,4 +1,3 @@
-# KGen History.
 
 ## 0.3.0
 ### All
@@ -20,8 +19,8 @@
 ### Matlab
 - Restructed all primary functions to accept keyword arguments - restricting Matlab version to Matlab 2022b and later
 
-## 0.2.0
+## R CMD check results
 
-- Initial release across all languages.
-- Harmonised function and parameter names across languages.
-- All comparison checks passing.
+0 errors | 0 warnings | 1 note
+
+* This is a new release.

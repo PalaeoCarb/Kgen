@@ -2,7 +2,7 @@
 test_df <- read.csv("test_conditions.csv")
 
 # 2. Calculate and approximate Ks
-Ks_calc <- Kgen::calc_Ks(
+Ks_calc <- kgen::calc_Ks(
   temp_c = test_df$temp_c,
   sal = test_df$sal,
   p_bar = test_df$p_bar,
@@ -11,7 +11,7 @@ Ks_calc <- Kgen::calc_Ks(
   method = "MyAMI"
 )
 
-Ks_approx <- Kgen::calc_Ks(
+Ks_approx <- kgen::calc_Ks(
   temp_c = test_df$temp_c,
   sal = test_df$sal,
   p_bar = test_df$p_bar,

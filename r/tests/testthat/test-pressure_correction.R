@@ -6,7 +6,7 @@ skip_if_no_pymyami <- function() {
 }
 
 testthat::test_that("Test that the pressure correction produces expected results...", {
-  exp_val <- rjson::fromJSON(file = system.file("check_values/check_presscorr.json", package = "Kgen"))
+  exp_val <- rjson::fromJSON(file = system.file("check_values/check_presscorr.json", package = "kgen"))
   press_cor <- mapply(function(k) {
     calc_pressure_correction(
       k = k, temp_c = exp_val$input_conditions$TC,

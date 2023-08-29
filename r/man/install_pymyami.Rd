@@ -7,5 +7,5 @@
 install_pymyami()
 }
 \description{
-Install MyAMI from pypi
+Function to install pymyami in a default location.
 }

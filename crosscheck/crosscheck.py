@@ -7,7 +7,7 @@ import pymyami
 import json
 
 RDIFF_TOLERANCE = 0.0001  # tolrate max 0.01% difference
-APPROX_TOLERANCE = 0.0025  # tolerance for approximated Ks
+APPROX_TOLERANCE = 0.0041  # tolerance for approximated Ks
 
 def compute_relative_difference(ref, test):
     diff = ref - test

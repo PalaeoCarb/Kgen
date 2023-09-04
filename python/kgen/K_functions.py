@@ -441,7 +441,7 @@ def calc_K(K, temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0528171, calcium=0.0
         
     K = K_fns[K](coefficients=K_coefs[K], temp_c=temp_c, sal=sal)
 
-    if p_bar != 0.0:
+    if np.any(p_bar != 0.0):
         KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_c=temp_c, sal=sal)
         KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
         KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_c=temp_c, sal=sal)
@@ -452,7 +452,7 @@ def calc_K(K, temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0528171, calcium=0.0
         
         K *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
 
-    if calcium != 0.0102821 or magnesium != 0.0528171:
+    if np.any(calcium != 0.0102821) or np.any(magnesium != 0.0528171):
         seawater_correction = calc_seawater_correction(K, temp_c=temp_c, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
         if K in seawater_correction:
             K *= seawater_correction[K]
@@ -518,7 +518,7 @@ def calc_Ks(K_list=K_fns.keys(), temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0
     for k in K_list:
         Ks[k] = K_fns[k](coefficients=K_coefs[k], temp_c=temp_c, sal=sal)
         
-        if p_bar != 0.0:
+        if np.any(p_bar != 0.0):
             KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_c=temp_c, sal=sal)
             KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
             KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_c=temp_c, sal=sal)
@@ -530,7 +530,7 @@ def calc_Ks(K_list=K_fns.keys(), temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0
             if k in K_presscorr_coefs:
                 Ks[k] *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[k], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
 
-    if calcium != 0.0102821 or magnesium != 0.0528171:
+    if np.any(calcium != 0.0102821) or np.any(magnesium != 0.0528171):
         seawater_correction = calc_seawater_correction(K_list, temp_c=temp_c, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
         
         if k in seawater_correction:

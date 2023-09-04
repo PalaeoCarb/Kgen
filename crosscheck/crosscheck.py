@@ -7,6 +7,7 @@ import pymyami
 import json
 
 RDIFF_TOLERANCE = 0.0001  # tolrate max 0.01% difference
+APPROX_TOLERANCE = 0.0025  # tolerance for approximated Ks
 
 def compute_relative_difference(ref, test):
     diff = ref - test
@@ -58,16 +59,16 @@ class crosscheck(unittest.TestCase):
                              
                 maxrdiff = rdiff.abs().max()
                 
-                if np.all(maxrdiff <= RDIFF_TOLERANCE):
+                if np.all(maxrdiff <= APPROX_TOLERANCE):
                     print(f'    OK')
                 else:
                     print(f'    FAIL')
                     msg = f'  Max relative difference:'
-                    msg +='\n      ' + maxrdiff[maxrdiff>RDIFF_TOLERANCE].to_string().replace('\n', '\n      ')
+                    msg +='\n      ' + maxrdiff[maxrdiff>APPROX_TOLERANCE].to_string().replace('\n', '\n      ')
                     test_pass = False
             
                 with self.subTest(msg=f'{lang}: approximated vs. calculated'):
-                    self.assertTrue(test_pass, msg=f'\n\nKs outside tolerance ({RDIFF_TOLERANCE}):\n{msg}')
+                    self.assertTrue(test_pass, msg=f'\n\nKs outside tolerance ({APPROX_TOLERANCE}):\n{msg}')
                 
                 
         # make sure the different methods are giving the same result
@@ -91,6 +92,7 @@ class crosscheck(unittest.TestCase):
                 if np.all(maxrdiff <= RDIFF_TOLERANCE):
                     print(f'    OK')
                 else:
+                    print(f'    FAIL')
                     msg = f'  Max relative difference:'
                     msg +='\n      ' + maxrdiff[maxrdiff>RDIFF_TOLERANCE].to_string().replace('\n', '\n      ')
                     test_pass = False

@@ -26,10 +26,10 @@ Two functions are available in Python, `calc_Ks` for returning all available Ks,
 ```python
 from kgen import calc_Ks, calc_K
 
-calc_Ks(TempC=20, Salinity=35, Pressure=0, Mg=0.3, Ca=None)
+calc_Ks(temp_c=20, sal=35, p_bar=0, magnesium=0.3, calcium=None)
 ```
 
-Where `TempC` is the temperature in degrees Celsius, `Salinity` is the salinity in PSU, `Pressure` is the pressure in bars, and `Mg` and `Ca` are the magnesium and calcium concentrations in average seawater in mol kg<sup>-1</sup>.
+Where `temp_c` is the temperature in degrees Celsius, `sal` is the salinity in PSU, `p_bar` is the pressure in bars, and `magnesium` and `calcium` are the magnesium and calcium concentrations in average seawater in mol kg<sup>-1</sup>.
 
 The inputs to these parameters may be single numbers or arrays of numbers, but where they are arrays the shape of the array must be the same.
 

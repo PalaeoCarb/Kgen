@@ -3,6 +3,10 @@
 ## 0.3.1
 ### All
  - Clean up croscheck workflow and script.
+ 
+### R
+- adjust package call in zzz
+- initiate `seawater_correction`
 
 ### Python
  - Only perform pressure correction if some of the pressures are non-zero.

@@ -5,19 +5,41 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   calc_python:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
+    name: Cross-Check Python, R and Matlab Methods on ${{ matrix.config.os}}
+
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.9']
-        R: ['4.1.3']
-    name: Cross-Check Python, R and Matlab Methods
+        config:
+          - {os: ubuntu-latest, r: 'release', python: '3.9'}
+          
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
+      - name: Set Up Python ${{ matrix.config.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.config.python }}
+          
+      - name: Install Python Dependencies
+        run: |
+          cd python
+          python3 -m pip install -r requirements.txt
+          
+      - name: Running Python Kgen
+        run: |
+          cd crosscheck
+          python3 gen_python.py
+
       - name: Setup Matlab
         uses: matlab-actions/setup-matlab@v1
         
-      - name: Setup Python venv
+      - name: Setup Python venv for Matlab
         run: |
           ls -a .
           cd matlab
@@ -30,33 +52,22 @@ jobs:
         uses: matlab-actions/run-command@v1
         with:
           command: cd 'crosscheck',addpath("./../matlab/"),pyenv('Version','./../matlab/.environment/bin/python'),gen_matlab
-      
-      - name: Set Up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
           
-      - name: Install Python Dependencies
-        run: |
-          cd python
-          python3 -m pip install -r requirements.txt
-          
-      - name: Running Python Kgen
-        run: |
-          cd crosscheck
-          python3 gen_python.py
-          
-      - name: Set Up R ${{ matrix.R }}
+      - name: Set Up R ${{ matrix.config.r }}
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.R }}
-          
-      - name: Install Linux packages
+          r-version: ${{ matrix.config.r }}
+          rtools-version: '42'
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+        
+      - name: Install Linux dependencies for R
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get install libcurl4-openssl-dev -y
           sudo apt-get install curl -y
-          
-      - name: Install R dependencies
+
+      - name: Kgen dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(pkgdir = "r/", dependencies = TRUE, upgrade = "never")
@@ -64,7 +75,7 @@ jobs:
           reticulate::use_miniconda("r-reticulate")
           reticulate::py_install("pymyami==2.1.0", envname = "r-reticulate", pip=T)
           remotes::install_local("r/")
-        shell: Rscript {0}  
+        shell: Rscript {0}
           
       - name: Running R Kgen
         run: |

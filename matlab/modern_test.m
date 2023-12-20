@@ -5,7 +5,6 @@ pressure_check_values = jsondecode(fileread("./../check_values/check_presscorr.j
 
 temperature = check_values.input_conditions.TC;
 salinity = check_values.input_conditions.S;
-ionic_strength = (19.924.*salinity)./(1000-1.005.*salinity); % see Dickson 2007
 
 pressure = pressure_check_values.input_conditions.P;
 
@@ -13,7 +12,7 @@ tolerance = 1;
 
 %% Modern surface K's
 tolerance = 1e-2;
-K_output = kgen.kgen_static.calc_all_Ks(temperature,salinity,NaN,NaN,NaN,"None",NaN);
+K_output = kgen.kgen_static.calc_Ks(temp_c=temperature,sal=salinity);
 K_names = string(fieldnames(K_output));
 
 % Iterate over K's to calculate value + difference from check value
@@ -27,15 +26,16 @@ end
 
 %% Modern deep K's
 tolerance = 1e-3;
-[~,K_pressure_correction,~] = kgen.kgen_static.calc_all_Ks(temperature,salinity,pressure,NaN,NaN,"None",NaN);
-K_names = string(fieldnames(K_pressure_correction));
+K_pressure_correction = kgen.kgen_static.calc_pressure_correction(temp_c=temperature,p_bar=pressure);
+K_names = string(K_pressure_correction.keys());
+K_pressure_difference = containers.Map();
 
 % Iterate over K's to calculate value at depth + difference from check value
 for K_index = 1:numel(K_names)
     current_check_value = pressure_check_values.check_values.(K_names(K_index));
-    K_pressure_difference.(K_names(K_index)) = K_pressure_correction.(K_names(K_index))-current_check_value;
+    K_pressure_difference(K_names(K_index)) = K_pressure_correction(K_names(K_index))-current_check_value;
 
-    assert(abs(K_pressure_difference.(K_names(K_index)))<tolerance,"Modern deep "+K_names(K_index)+" mismatch")
+    assert(abs(K_pressure_difference(K_names(K_index)))<tolerance,"Modern deep "+K_names(K_index)+" mismatch")
 end
 
 %% MyAMI K's

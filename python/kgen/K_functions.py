@@ -9,159 +9,160 @@ import numpy as np
 from .coefs import K_coefs, K_presscorr_coefs
 from pymyami import calculate_seawater_correction, approximate_seawater_correction
 
-def fn_K1K2(p, TK, lnTK, S, sqrtS):
+def calc_K1K2(coefficients, temp_c, sal):
     """Calculate K1 or K2 from given parameters
 
     Parameters
     ----------
-    p : array-like
-        parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    coefficients : array-like
+        coefficients for K calculation
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
     array-like
         K1 or K2 on XXXXX pH scale.
     """
-    
+
+    temp_k = temp_c+273.15
     return np.power(10, 
-        p[0] +
-        p[1] / TK +
-        p[2] * lnTK +
-        p[3] * S +
-        p[4] * S * S
+        coefficients[0] +
+        coefficients[1] / temp_k +
+        coefficients[2] * np.log(temp_k) +
+        coefficients[3] * sal +
+        coefficients[4] * sal * sal
     )
     
-def fn_KW(p, TK, lnTK, S, sqrtS):
+def calc_KW(coefficients, temp_c, sal):
     """Calculate KW from given parameters.
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : arra-ylike
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
         
     Returns
     -------
     array-like
         KW on XXXXX pH scale.
     """
+
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0] +
-        p[1] / TK +
-        p[2] * lnTK +
-        + (p[3] / TK + p[4] + p[5] * lnTK) * sqrtS +
-        p[6] * S
+        coefficients[0] +
+        coefficients[1] / temp_k +
+        coefficients[2] * np.log(temp_k) +
+        + (coefficients[3] / temp_k + coefficients[4] + coefficients[5] * np.log(temp_k)) * np.sqrt(sal) +
+        coefficients[6] * sal
     )
     
-def fn_KB(p, TK, lnTK, S, sqrtS):
+def calc_KB(coefficients, temp_c, sal):
     """Calculate KB from given parameters.
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
         
     Returns
     -------
     array-like
         KB on XXXXX pH scale.
     """
+
+    temp_k = temp_c+273.15
     return np.exp(
-        (p[0] + p[1] * sqrtS + p[2] * S) + 
+        (coefficients[0] + coefficients[1] * np.sqrt(sal) + coefficients[2] * sal) + 
         (
-            p[3] +
-            p[4] * sqrtS +
-            p[5] * S +
-            p[6] * S * sqrtS +
-            p[7] * S * S
-        ) / TK +
-        (p[8] + p[9] * sqrtS + p[10] * S) * lnTK +
-        p[11] * sqrtS * TK
+            coefficients[3] +
+            coefficients[4] * np.sqrt(sal) +
+            coefficients[5] * sal +
+            coefficients[6] * sal * np.sqrt(sal) +
+            coefficients[7] * sal * sal
+        ) / temp_k +
+        (coefficients[8] + coefficients[9] * np.sqrt(sal) + coefficients[10] * sal) * np.log(temp_k) +
+        coefficients[11] * np.sqrt(sal) * temp_k
     )
     
-def fn_K0(p, TK, lnTK, S, sqrtS):
+def calc_K0(coefficients, temp_c, sal):
     """Calculate K0 from given parameters.
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
             
     Returns
     -------
     array-like
         K0 on XXXXX pH scale.
     """
+
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0] +
-        p[1] * 100 / TK +
-        p[2] * np.log(TK / 100) +
-        S * (p[3] + p[4] * TK / 100 + p[5] * (TK / 100) * (TK / 100))
+        coefficients[0] +
+        coefficients[1] * 100 / temp_k +
+        coefficients[2] * np.log(temp_k / 100) +
+        sal * (coefficients[3] + coefficients[4] * temp_k / 100 + coefficients[5] * (temp_k / 100) * (temp_k / 100))
     )
 
-def fn_KS(p, TK, lnTK, S, sqrtS):
-    Istr = (
-        19.924 * S / (1000 - 1.005 * S)
-    )
-    # Ionic strength after Dickson 1990a; see Dickson et al 2007
-    
+def calc_KS(coefficients, temp_c, sal):
+    """Calculate KS from given parameters.
+
+    Parameters
+    ----------
+    coefficients : array-like
+        parameters for K calculation
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
+        Salinity
+            
+    Returns
+    -------
+    array-like
+        KS on XXXXX pH scale.
+    """
+        
+    Istr = calc_ionic_strength(sal)
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0]
-        + p[1] / TK
-        + p[2] * lnTK
-        + np.sqrt(Istr) * (p[3] / TK + p[4] + p[5] * lnTK)
-        + Istr * (p[6] / TK + p[7] + p[8] * lnTK)
-        + p[9] / TK * Istr * np.sqrt(Istr)
-        + p[10] / TK * Istr ** 2
-        + np.log(1 - 0.001005 * S)
+        coefficients[0]
+        + coefficients[1] / temp_k
+        + coefficients[2] * np.log(temp_k)
+        + np.sqrt(Istr) * (coefficients[3] / temp_k + coefficients[4] + coefficients[5] * np.log(temp_k))
+        + Istr * (coefficients[6] / temp_k + coefficients[7] + coefficients[8] * np.log(temp_k))
+        + coefficients[9] / temp_k * Istr * np.sqrt(Istr)
+        + coefficients[10] / temp_k * Istr ** 2
+        + np.log(1 - 0.001005 * sal)
     )
     
-def fn_Ksp(p, TK, lnTK, S, sqrtS):
+def calc_Ksp(coefficients, temp_c, sal):
     """Calculate Ksp from given parameters
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
@@ -169,34 +170,31 @@ def fn_Ksp(p, TK, lnTK, S, sqrtS):
         KspA or KspC on XXXXX pH scale.
     """
 
+    temp_k = temp_c+273.15
     return np.power(
         10,
         (
-            p[0] + 
-            p[1] * TK +
-            p[2] / TK +
-            p[3] * np.log10(TK) +
-            (p[4] + p[5] * TK + p[6] / TK) * sqrtS +
-            p[7] * S +
-            p[8] * S * sqrtS
+            coefficients[0] + 
+            coefficients[1] * temp_k +
+            coefficients[2] / temp_k +
+            coefficients[3] * np.log10(temp_k) +
+            (coefficients[4] + coefficients[5] * temp_k + coefficients[6] / temp_k) * np.sqrt(sal) +
+            coefficients[7] * sal +
+            coefficients[8] * sal * np.sqrt(sal)
         ),
     )
 
-def fn_KP(p, TK, lnTK, S, sqrtS):
+def calc_KP(coefficients, temp_c, sal):
     """Calculate KP(s) from given parameters
     
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
@@ -204,29 +202,26 @@ def fn_KP(p, TK, lnTK, S, sqrtS):
         KP1, KP2 or KP3 on XXXXX pH scale.
     """
 
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0] / TK
-        + p[1]
-        + p[2] * lnTK
-        + (p[3] / TK + p[4]) * sqrtS
-        + (p[5] / TK + p[6]) * S
+        coefficients[0] / temp_k
+        + coefficients[1]
+        + coefficients[2] * np.log(temp_k)
+        + (coefficients[3] / temp_k + coefficients[4]) * np.sqrt(sal)
+        + (coefficients[5] / temp_k + coefficients[6]) * sal
     )
 
-def fn_KP3(p, TK, lnTK, S, sqrtS):
+def calc_KP3(coefficients, temp_c, sal):
     """Calculate KP3(s) from given parameters
     
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
@@ -234,28 +229,25 @@ def fn_KP3(p, TK, lnTK, S, sqrtS):
         KP3 on XXXXX pH scale.
     """
 
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0] / TK
-        + p[1]
-        + (p[2] / TK + p[3]) * sqrtS
-        + (p[4] / TK + p[5]) * S
+        coefficients[0] / temp_k
+        + coefficients[1]
+        + (coefficients[2] / temp_k + coefficients[3]) * np.sqrt(sal)
+        + (coefficients[4] / temp_k + coefficients[5]) * sal
     )
 
-def fn_KSi(p, TK, lnTK, S, sqrtS):
+def calc_KSi(coefficients, temp_c, sal):
     """Calculate KSi from given parameters
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
@@ -263,62 +255,61 @@ def fn_KSi(p, TK, lnTK, S, sqrtS):
         KSi on XXXXX pH scale.
     """
 
-    Istr = 19.924 * S / (1000 - 1.005 * S)
+    Istr = calc_ionic_strength(sal)
+    temp_k = temp_c+273.15
 
     return np.exp(
-        p[0] / TK + 
-        p[1] +
-        p[2] * np.log(TK) +
-        (p[3] / TK + p[4]) * Istr ** 0.5 +
-        (p[5] / TK + p[6]) * Istr +
-        (p[7] / TK + p[8]) * Istr ** 2
-    ) * (1 - 0.001005 * S)
+        coefficients[0] / temp_k + 
+        coefficients[1] +
+        coefficients[2] * np.log(temp_k) +
+        (coefficients[3] / temp_k + coefficients[4]) * Istr ** 0.5 +
+        (coefficients[5] / temp_k + coefficients[6]) * Istr +
+        (coefficients[7] / temp_k + coefficients[8]) * Istr ** 2
+    ) * (1 - 0.001005 * sal)
 
-def fn_KF(p, TK, lnTK, S, sqrtS):
+def calc_KF(coefficients, temp_c, sal):
     """Calculate KSi from given parameters
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters for K calculation
-    TK : array-like
-        Temperature in Kelvin
-    lnTK : array-like
-        natural log of temperature in kelvin
-    S : arry-like
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
         Salinity
-    sqrtS : array-like
-        square root of salinity
 
     Returns
     -------
     array-like
         KF on XXXXX pH scale.
     """
+    
+    temp_k = temp_c+273.15
     return np.exp(
-        p[0] / TK + 
-        p[1] + 
-        p[2] * sqrtS
+        coefficients[0] / temp_k + 
+        coefficients[1] + 
+        coefficients[2] * np.sqrt(sal)
     )
 
 K_fns = {
-    "K0": fn_K0,
-    "K1": fn_K1K2,
-    "K2": fn_K1K2,
-    "KW": fn_KW,
-    "KB": fn_KB,
-    "KS": fn_KS,
-    "KspA": fn_Ksp,
-    "KspC": fn_Ksp,
-    "KP1": fn_KP,
-    "KP2": fn_KP,
-    "KP3": fn_KP3,
-    "KSi": fn_KSi,
-    "KF": fn_KF
+    "K0": calc_K0,
+    "K1": calc_K1K2,
+    "K2": calc_K1K2,
+    "KW": calc_KW,
+    "KB": calc_KB,
+    "KS": calc_KS,
+    "KspA": calc_Ksp,
+    "KspC": calc_Ksp,
+    "KP1": calc_KP,
+    "KP2": calc_KP,
+    "KP3": calc_KP3,
+    "KSi": calc_KSi,
+    "KF": calc_KF
 }    
 
-def prescorr(p, P, TC):
-    """Calculate pressore correction factor for thermodynamic Ks.
+def calc_pressure_correction(coefficients, p_bar, temp_c):
+    """Calculate pressure correction factor for thermodynamic Ks.
 
     From Millero et al (2007, doi:10.1021/cr0503557)
     Eqns 38-40
@@ -329,18 +320,51 @@ def prescorr(p, P, TC):
 
     Parameters
     ----------
-    p : array-like
+    coefficients : array-like
         parameters to calculate pressure correction factors (Kcorr).
     TC : array-like
         Temperature in Celcius
-    S : arry-like
+    sal : array-like
         Salinity
     """
-    a0, a1, a2, b0, b1 = p
-    dV = a0 + a1 * TC + a2 * TC ** 2
-    dk = (b0 + b1 * TC)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
-    RT = 83.1451 * (TC + 273.15)
-    return np.exp((-dV + 0.5 * dk * P) * P / RT)    
+    a0, a1, a2, b0, b1 = coefficients
+    dV = a0 + a1 * temp_c + a2 * temp_c ** 2
+    dk = (b0 + b1 * temp_c)  # NB: there is a factor of 1000 in CO2sys, which has been incorporated into the coefficients for the function.    
+    RT = 83.1451 * (temp_c + 273.15)
+    return np.exp((-dV + 0.5 * dk * p_bar) * p_bar / RT)    
+
+def calc_seawater_correction(ks, temp_c, sal, magnesium, calcium, MyAMI_mode='calculate'):
+    """Calculate seawater correction factor for thermodynamic Ks.
+
+    Wrapper for pymyami functionality
+
+    Parameters
+    ----------
+    ks : array-like
+        list of strings for names of K's
+    temp_c : array-like
+        Temperature in Celcius
+    sal : array-like
+        Salinity
+    magnesium : array-like
+        Magnesium concentration in mol/kg
+    calcium : array-like
+        Calcium concentration in mol/kg
+    MyAMI_mode : str
+        Either 'calculate' for full MyAMI or 'approximate' for polynomial approximation
+    """
+    if MyAMI_mode == 'calculate':
+        seawater_correction = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
+    elif MyAMI_mode == 'approximate':
+        seawater_correction = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
+    else:
+        raise(ValueError("Unknown MyAMI_mode - must be 'calculate' or 'approximate'"))
+    
+    return {name:seawater_correction[name] for name in ks if name in seawater_correction}
+
+def calc_ionic_strength(sal):
+    # Ionic strength after Dickson 1990a; see Dickson et al 2007
+    return 19.924 * sal / (1000 - 1.005 * sal)
 
 def calc_sulphate(sal):
     """
@@ -351,7 +375,6 @@ def calc_sulphate(sal):
     """
     return 0.14 * sal / 1.80655 / 96.062 # mol/kg-SW
 
-
 def calc_fluorine(sal):
     """
     Calculate total Fluorine in mol/kg-SW
@@ -361,9 +384,9 @@ def calc_fluorine(sal):
     """
     return 6.7e-5 * sal / 1.80655 / 18.9984 # mol/kg-SW
 
-def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
+def calc_K(K, temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0528171, calcium=0.0102821, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
-    Calculate a specified stoichiometric equilibrium constants at given
+    Calculate a specified stoichiometric equilibrium constant at given
     temperature, salinity and pressure.
 
     TODO: document pH scales.
@@ -408,56 +431,45 @@ def calc_K(k, temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sul
     array-like
         The specified K at the given conditions.
     """
-    if k not in K_fns:
-        raise ValueError(f'{k} is not valid. Should be one of {K_fns.keys}')
-    
-    TK = temp_c + 273.15
-    lnTK = np.log(TK)
-    S = sal
-    sqrtS = S**0.5
+    if K not in K_fns:
+        raise ValueError(f'{K} is not valid. Should be one of {K_fns.keys}')
 
-    K = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-
-    if p_bar is not None:
-        if fluorine is None:
-            fluorine = calc_fluorine(sal=sal)
-        if sulphate is None:
-            sulphate = calc_sulphate(sal=sal)
+    if fluorine is None:
+        fluorine = calc_fluorine(sal=sal)
+    if sulphate is None:
+        sulphate = calc_sulphate(sal=sal)
         
-        KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-        KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
-        KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-        KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
-        
-        tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
-        sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
-        
-        K *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
-    
-    if magnesium is not None or calcium is not None:
-        if calcium is None:
-            calcium = 0.0102821
-        if magnesium is None:
-            magnesium = 0.0528171
-        if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        if k in Fcorr:
-            K *= Fcorr[k]
-    
-    return K
+    K_calc = K_fns[K](coefficients=K_coefs[K], temp_c=temp_c, sal=sal)
 
+    if np.any(p_bar != 0.0):
+        KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_c=temp_c, sal=sal)
+        KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
+        KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_c=temp_c, sal=sal)
+        KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], p_bar=p_bar, temp_c=temp_c)
+        
+        tot_to_sws_surface = (1 + sulphate / KS_surf + fluorine / KF_surf) / (1 + sulphate / KS_surf)  # convert from TOT to SWS before pressure correction
+        sws_to_tot_deep = (1 + sulphate / KS_deep) / (1 + sulphate / KS_deep + fluorine / KF_deep)  # convert from SWS to TOT after pressure correction
+        
+        K_calc *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[K], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep
 
-def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulphate=None, fluorine=None, MyAMI_mode='calculate', K_list=None):
+    if np.any(calcium != 0.0102821) or np.any(magnesium != 0.0528171):
+        seawater_corrections = calc_seawater_correction(K, temp_c=temp_c, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
+        if K in seawater_corrections:
+            K_calc *= seawater_corrections[K]
+    
+    return K_calc
+
+def calc_Ks(K_list=K_fns.keys(), temp_c=25.0, sal=35.0, p_bar=0.0, magnesium=0.0528171, calcium=0.0102821, sulphate=None, fluorine=None, MyAMI_mode='calculate'):
     """
-    Calculate all stoichiometric equilibrium constants at given
+    Calculate specified stoichiometric equilibrium constants at given
     temperature, salinity and pressure.
 
     TODO: document pH scales.
 
     Parameters
     ----------
+    K_list : array-like
+        List of Ks to calculate
     temp_c : array-like
         Temperature in Celcius
     sal : array-like
@@ -488,8 +500,6 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulph
         factor for the Ks. In the latter, a polynomial function is
         used to approximate the correction factor. The latter is faster,
         though marginally less accurate.
-    K_list : array-like
-        List of Ks to calculate. If None, all are calculated
 
     Returns
     -------
@@ -498,44 +508,34 @@ def calc_Ks(temp_c=25., sal=35., p_bar=None, magnesium=None, calcium=None, sulph
     """
     if K_list is None:
         K_list = K_fns.keys()
+    
+    if fluorine is None:
+        fluorine = calc_fluorine(sal=sal)
+    if sulphate is None:
+        sulphate = calc_sulphate(sal=sal)
 
-    TK = temp_c + 273.15
-    lnTK = np.log(TK)
-    S = sal
-    sqrtS = S**0.5
+    if np.any(calcium != 0.0102821) or np.any(magnesium != 0.0528171):
+        seawater_corrections = calc_seawater_correction(K_list, temp_c=temp_c, sal=sal, magnesium=magnesium, calcium=calcium, MyAMI_mode=MyAMI_mode)
+    else:
+        seawater_corrections = {}
 
     Ks = {}
     for k in K_list:
-        Ks[k] = K_fns[k](p=K_coefs[k], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-
-        if p_bar is not None:
-            if fluorine is None:
-                fluorine = calc_fluorine(sal=sal)
-            if sulphate is None:
-                sulphate = calc_sulphate(sal=sal)
+        Ks[k] = K_fns[k](coefficients=K_coefs[k], temp_c=temp_c, sal=sal)
+        
+        if np.any(p_bar != 0.0):
+            KS_surf = K_fns['KS'](coefficients=K_coefs['KS'], temp_c=temp_c, sal=sal)
+            KS_deep = KS_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KS'], p_bar=p_bar, temp_c=temp_c)
+            KF_surf = K_fns['KF'](coefficients=K_coefs['KF'], temp_c=temp_c, sal=sal)
+            KF_deep = KF_surf * calc_pressure_correction(coefficients=K_presscorr_coefs['KF'], p_bar=p_bar, temp_c=temp_c)
             
-            KS_surf = K_fns['KS'](p=K_coefs['KS'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-            KS_deep = KS_surf * prescorr(p=K_presscorr_coefs['KS'], P=p_bar, TC=temp_c)
-            KF_surf = K_fns['KF'](p=K_coefs['KF'], TK=TK, lnTK=lnTK, S=S, sqrtS=sqrtS)
-            KF_deep = KF_surf * prescorr(p=K_presscorr_coefs['KF'], P=p_bar, TC=temp_c)
-            
-            tot_to_sws_surface = (1 + sulphate / KS_surf) / (1 + sulphate / KS_surf + fluorine / KF_surf)  # convert from TOT to SWS before pressure correction
-            sws_to_tot_deep = (1 + sulphate / KS_deep + fluorine / KF_deep) / (1 + sulphate / KS_deep)  # convert from SWS to TOT after pressure correction
+            tot_to_sws_surface = (1 + sulphate / KS_surf + fluorine / KF_surf) / (1 + sulphate / KS_surf)  # convert from TOT to SWS before pressure correction
+            sws_to_tot_deep = (1 + sulphate / KS_deep) / (1 + sulphate / KS_deep + fluorine / KF_deep)  # convert from SWS to TOT after pressure correction
 
             if k in K_presscorr_coefs:
-                Ks[k] *= tot_to_sws_surface * prescorr(p=K_presscorr_coefs[k], P=p_bar, TC=temp_c) * sws_to_tot_deep
-    
-    if magnesium is not None or calcium is not None:
-        if calcium is None:
-            calcium = 0.0102821
-        if magnesium is None:
-            magnesium = 0.0528171
-        if MyAMI_mode == 'calculate':
-            Fcorr = calculate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        else:
-            Fcorr = approximate_seawater_correction(Sal=sal, TempC=temp_c, Mg=magnesium, Ca=calcium)
-        for k, f in Fcorr.items():
-            if k in Ks:
-                Ks[k] *= f
+                Ks[k] *= tot_to_sws_surface * calc_pressure_correction(coefficients=K_presscorr_coefs[k], p_bar=p_bar, temp_c=temp_c) * sws_to_tot_deep                
+        
+        if k in seawater_corrections:
+            Ks[k] *= seawater_corrections[k]            
     
     return Ks
